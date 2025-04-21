@@ -15,8 +15,10 @@ namespace mindev::encoding{
             std::vector<unsigned char> raw; //TLV编码后的字节数组
         public:
             typedef std::shared_ptr<Block> ptr;
-            Block();
-            ~Block();
+            Block(){};
+            Block(const std::vector<char>& buffer,bool verifyLength);
+            inline VlInt GetType()const{return tlvType;} 
+            void BuildBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength,const std::vector<char>& buffer,bool verifyLength);
     };
 }
 #endif

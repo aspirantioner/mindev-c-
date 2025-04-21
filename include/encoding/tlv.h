@@ -1,6 +1,8 @@
 #ifndef TLV_H_
 #define TLV_H_
 
+#include "mindev/include/encoding/vlint.h"
+#include <sys/stat.h>
 namespace mindev::encoding {
     class TLV{
 public:
@@ -85,6 +87,15 @@ public:
     // 目前已分配的最大的Tlv值，第一轮分配的最大值为500，超过该值则断定为不合法
     // TODO: 目前TLV值的分配，第一轮分配都在500以内，如果以后分配更高值时，需要修改此处的限制
     static const int MaxTlvNum = 500;
+    static int SizeOfNonNegativeInteger(long v);
+    static VlInt ReadVarNumber(const std::vector<char>& buffer,const VlInt& start);
+    static VlInt ReadType(const std::vector<char>& buffer,const VlInt& start);
+    static long ReadNonNegativeInteger(const std::vector<char>& buffer,int start,int end);
+    static inline bool ExpectType(const VlInt& current,const VlInt& target){return current.GetVlIntValue()==target.GetVlIntValue();}
+    static inline bool IsValidIdentifierType(const VlInt& tlvType){return tlvType.GetVlIntValue()>=bigint::_to_bigint(TLV::TlvIdentifierCommon) && tlvType.GetVlIntValue()<bigint::_to_bigint(TLV::TlvSignatureValue);}
+    static inline bool IsValidPacketType(const VlInt& tlvType){
+        return tlvType.GetVlIntValue()>bigint::_to_bigint(TLV::TlvInvalid) && tlvType.GetVlIntValue()<bigint::_to_bigint(TLV::TlvIdentifierField);
+    }
     };
 }
 

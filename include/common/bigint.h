@@ -531,7 +531,9 @@ class bigint {
         friend bool operator == (long long int n1, bigint const &n2) {
             return std::to_string(n1) == n2.str;
         }
-
+        friend bool operator == (bigint const& n1,bigint const& n2){
+            return n1.str == n2.str;
+        }
 
         /* Operator {!=} Overloadings, for different kind of 
         parameter for the programmer's convinience  */

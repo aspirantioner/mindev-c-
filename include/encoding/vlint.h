@@ -6,6 +6,7 @@
 #include "mindev/include/common/templateinit.h"
 
 namespace mindev::encoding {
+    class SizeT;
     class VlInt:public TemplateInit {
 public:
     typedef std::shared_ptr<VlInt> ptr;
@@ -22,17 +23,26 @@ public:
     static const long uint16Max = 2^16-1;
     static const long uint32Max = 2^32-1;
     static const long uint64Max = LONG_MAX;
-    
+    VlInt(){};
     template <typename T>
 	VlInt(const T& value);
     static int SizeOfVarNumber(const bigint& bignum);
-    inline int GetSize(){return this->size;}
-    inline bigint GetVlIntValue(){return this->VlIntValue;}
+    inline int GetSize() const {return this->size;}
+    inline bigint GetVlIntValue() const {return this->VlIntValue;}
     inline std::vector<char> GetVlIntBytes(){return this->VlIntBytes;}
     inline bool IsValidVlIntBytes(){return IsValidVlIntBytes(this->VlIntBytes);}
     inline bool IsValidVlIntValue(){return this->IsValidVlIntValue(this->VlIntValue);}
     inline bool IsInitial(){return this->size>0;}
-    
+    bool operator > (VlInt const &n) const{
+        return this->GetVlIntValue()>n.GetVlIntValue();
+    }
+    template<typename T>
+    VlInt operator + (const T val){
+         if constexpr(std::is_same_v<T,VlInt>){
+            return VlInt(this->GetVlIntValue()+val.GetVlIntValue());
+        }
+        return VlInt(this->GetVlIntValue()+val);
+    }
 private:
     std::vector<char> VlIntBytes;
     int size = -1;
