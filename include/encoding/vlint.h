@@ -29,12 +29,16 @@ public:
     static int SizeOfVarNumber(const bigint& bignum);
     inline int GetSize() const {return this->size;}
     inline bigint GetVlIntValue() const {return this->VlIntValue;}
-    inline std::vector<char> GetVlIntBytes(){return this->VlIntBytes;}
+    inline std::vector<char> GetVlIntBytes()const {return this->VlIntBytes;}
     inline bool IsValidVlIntBytes(){return IsValidVlIntBytes(this->VlIntBytes);}
     inline bool IsValidVlIntValue(){return this->IsValidVlIntValue(this->VlIntValue);}
     inline bool IsInitial(){return this->size>0;}
-    bool operator > (VlInt const &n) const{
-        return this->GetVlIntValue()>n.GetVlIntValue();
+    template<typename T>
+    bool operator > (const T n) const{
+        if constexpr(std::is_base_of_v<VlInt,T>){
+            return this->GetVlIntValue()>n.GetVlIntValue();
+        }
+        return this->GetVlIntValue()>n;
     }
     template<typename T>
     VlInt operator + (const T val){
@@ -42,6 +46,20 @@ public:
             return VlInt(this->GetVlIntValue()+val.GetVlIntValue());
         }
         return VlInt(this->GetVlIntValue()+val);
+    }
+    template<typename T>
+    bool operator <= (const T n) const{
+        if constexpr(std::is_same_v<T,VlInt>){
+            return this->GetVlIntValue()<=n.GetVlIntValue();
+        }
+        return this->GetVlIntValue()<=n;
+    }
+    template<typename T>
+    bool operator != (const T n) const{
+        if constexpr(std::is_base_of_v<VlInt,T>){
+            return this->GetVlIntValue()!=n.GetVlIntValue();
+        }
+        return this->GetVlIntValue()!=n;
     }
 private:
     std::vector<char> VlIntBytes;

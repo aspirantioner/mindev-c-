@@ -5,6 +5,7 @@
 namespace mindev::encoding {
     class SizeT :public VlInt{
 public:
+        using VlInt::VlInt;
         SizeT(){};
         template <typename T>
 	    SizeT(const T& value):VlInt(value){};

@@ -2,6 +2,7 @@
 #define ENCODER_H_
 
 #include <vector>
+#include "mindev/include/encoding/elementcontainer.h"
 #include "sizet.h"
 
 namespace mindev::encoding {
@@ -17,6 +18,17 @@ public:
     bool Check(const SizeT& size);
     int PrependByte(char value);
     int AppendByte(char value);
+    static std::vector<char> BuildNonNegativeIntegerArr(long uint64_value);
+    int PrependByteArray(std::vector<char>& array,const SizeT& size);
+    int AppendByteArray(std::vector<char>& array,const SizeT& size);
+    int AppendNonNegativeInteger(long uint64_value);
+    int PrependVarNumber(const VlInt& varNumber);
+    int AppendVarNumber(const VlInt& varNumber);
+    int PrependByteArrayBlock(const VlInt& tlvType, std::vector<char>& array,const SizeT& size);
+    int AppendByteArrayBlock(const VlInt& tlvType, std::vector<char>& array,const SizeT& size);
+    int PrependBlock(Block& block);
+    int AppendBlock(Block& block);
+    std::vector<char> GetBuffer() const;
 private:
     int left;
     int right;

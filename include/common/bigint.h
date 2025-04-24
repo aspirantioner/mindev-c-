@@ -430,6 +430,11 @@ class bigint {
         friend bool operator > (long long int n1, bigint const &n2) {
             return is_strictlyMaximum(std::to_string(n1), n2.str);
         }
+        template<typename T>
+        friend bool operator > (bigint const &n1,const T n2){
+            static_assert(std::is_integral_v<T>, "Only integral type are supported.");
+            return is_strictlyMaximum(n1.str, std::to_string(n2));
+        }
 
         /* Operator {<} Overloadings, for different kind of 
         parameter for the programmer's convinience  */
@@ -483,29 +488,32 @@ class bigint {
 
         /* Operator {<=} Overloadings, for different kind of 
         parameter for the programmer's convinience  */
-
-        bool operator <= (bigint const &n) {
-            return is_minimum(str, n.str);
-        }
-        friend bool operator <= (bigint const &n1, int n2) {
+        template<typename T >
+        friend bool operator <= (bigint const &n1,const T n2){
+            static_assert(std::is_integral_v<T>, "Only integral type are supported.");
             return is_minimum(n1.str, std::to_string(n2));
         }
-        friend bool operator <= (int n1, bigint const &n2) {
-            return is_minimum(std::to_string(n1), n2.str);
-        }
-        friend bool operator <= (bigint const &n1, long int n2) {
-            return is_minimum(n1.str, std::to_string(n2));
-        }
-        friend bool operator <= (long int n1, bigint const &n2) {
-            return is_minimum(std::to_string(n1), n2.str);
-        }
-        friend bool operator <= (bigint const &n1, long long int n2) {
-            return is_minimum(n1.str, std::to_string(n2));
-        }
-        friend bool operator <= (long long int n1, bigint const &n2) {
-            return is_minimum(std::to_string(n1), n2.str);
-        }
-
+//         bool operator <= (bigint const &n) {
+//             return is_minimum(str, n.str);
+//         }
+//         friend bool operator <= (bigint const &n1, int n2) {
+//             return is_minimum(n1.str, std::to_string(n2));
+//         }
+//         friend bool operator <= (int n1, bigint const &n2) {
+//             return is_minimum(std::to_string(n1), n2.str);
+//         }
+//         friend bool operator <= (bigint const &n1, long int n2) {
+//             return is_minimum(n1.str, std::to_string(n2));
+//         }
+//         friend bool operator <= (long int n1, bigint const &n2) {
+//             return is_minimum(std::to_string(n1), n2.str);
+//         }
+//         friend bool operator <= (bigint const &n1, long long int n2) {
+//             return is_minimum(n1.str, std::to_string(n2));
+//         }
+//         friend bool operator <= (long long int n1, bigint const &n2) {
+//             return is_minimum(std::to_string(n1), n2.str);
+//         }
 
         /* Operator {==} Overloadings, for different kind of 
         parameter for the programmer's convinience  */
@@ -558,6 +566,11 @@ class bigint {
         }
         friend bool operator != (long long int n1, bigint const &n2) {
             return std::to_string(n1) != n2.str;
+        }
+        template<typename T >
+        friend bool operator != (bigint const &n1,const T n2){
+            static_assert(std::is_integral_v<T>, "Only integral type are supported.");
+            return n1.str!=std::to_string(n2);
         }
 
         //-----------------------------------------------------------
