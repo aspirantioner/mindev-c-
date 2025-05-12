@@ -9,6 +9,13 @@ namespace mindev::component{
     class FreshnessPeriod:public TlvComponentBase,public mindev::encoding::IEncodingAble,public InitialAble{
 private:
     long freshnessPeriod;
+public:
+    FreshnessPeriod(){};
+    FreshnessPeriod(long freshnessperiod){this->SetFreshnessPeriod(freshnessperiod);};
+    inline long GetFreshnessPeriod() const{ return this->freshnessPeriod;};
+    inline void SetFreshnessPeriod(long freshnessperiod){this->freshnessPeriod = freshnessperiod;this->doInitial();};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

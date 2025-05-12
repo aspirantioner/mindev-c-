@@ -7,10 +7,15 @@
 
 namespace mindev::component{
     class ControlParameterPasswd:public mindev::encoding::IEncodingAble{
-private:
-    CommonString::ptr commonString=std::make_shared<CommonString>();
 public:
+    CommonString commonString;
     typedef std::shared_ptr<ControlParameterPasswd> ptr;
+    ControlParameterPasswd(){};
+    ControlParameterPasswd(const std::string& passwd){this->commonString=CommonString(mindev::encoding::VlInt(mindev::encoding::TLV::TlvManagementPasswd),passwd);};
+    inline std::string GetPasswd()const{return this->commonString.GetValue();};
+    inline void SetPasswd(const std::string& passwd){this->commonString.SetValue(passwd);};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

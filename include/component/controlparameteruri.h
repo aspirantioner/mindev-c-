@@ -12,6 +12,12 @@ private:
     std::string uri;
 public:
     typedef std::shared_ptr<ControlParameterUri> ptr;
+    ControlParameterUri(){};
+    ControlParameterUri(const std::string& uri){this->SetUri(uri);};
+    inline std::string GetUri() const{ return uri;};
+    inline void SetUri(const std::string& uri) {this->uri = uri;this->doInitial();};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

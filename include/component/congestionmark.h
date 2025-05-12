@@ -1,4 +1,3 @@
-
 #ifndef CONGESTIONMARK_H_
 #define CONGESTIONMARK_H_
 
@@ -10,6 +9,12 @@ namespace mindev::component{
     class CongestionMark:public TlvComponentBase,public InitialAble,public mindev::encoding::IEncodingAble{
 private:
     long congestionMark;
+public:
+    CongestionMark(){};
+    CongestionMark(long congestionMark){this->congestionMark = congestionMark;};
+    inline void SetCongestionLevel(long congestionMark){this->congestionMark = congestionMark;this->doInitial();};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

@@ -1,4 +1,3 @@
-
 #ifndef CONTROLPARAMETEREXPIRETIME_H_
 #define CONTROLPARAMETEREXPIRETIME_H_
 
@@ -11,6 +10,12 @@ private:
     long expireTime;
 public:
     typedef std::shared_ptr<ControlParameterExpireTime> ptr;
+    ControlParameterExpireTime(){};
+    ControlParameterExpireTime(long expireTime){this->SetExpireTime(expireTime);};
+    inline void SetExpireTime(long expireTime){this->expireTime = expireTime;this->doInitial();};
+    inline long GetExpireTime(){return this->expireTime;};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

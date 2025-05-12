@@ -1,4 +1,3 @@
-
 #ifndef TLVCOMPONENTBASE_H_
 #define TLVCOMPONENTBASE_H_
 

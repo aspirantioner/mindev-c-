@@ -10,6 +10,11 @@ namespace mindev::component{
 private:
     long capacity;
 public:
+    ControlParameterCapacity(){};
+    ControlParameterCapacity(long capacity){this->SetCapacity(capacity);};
+    inline void SetCapacity(long capacity){this->capacity = capacity;};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     typedef std::shared_ptr<ControlParameterCapacity> ptr;
     };
 }

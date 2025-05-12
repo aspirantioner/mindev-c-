@@ -1,4 +1,3 @@
-
 #ifndef CANBEPREFIX_H_
 #define CANBEPREFIX_H_
 
@@ -8,6 +7,12 @@
 
 namespace mindev::component{
     class CanBePrefix:public TlvComponentBase,public InitialAble,public mindev::encoding::IEncodingAble{
+public:
+    CanBePrefix(){};
+    CanBePrefix(bool canBePrefix){this->canBePrefix=canBePrefix;this->doInitial();};
+    inline bool GetCanBePrefix()const{return this->canBePrefix;};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
 private:
     bool canBePrefix;
     };

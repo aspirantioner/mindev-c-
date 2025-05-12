@@ -3,9 +3,10 @@
 
 #include <vector>
 #include "mindev/include/encoding/elementcontainer.h"
-#include "sizet.h"
+#include "mindev/include/encoding/sizet.h"
 
 namespace mindev::encoding {
+    class Block;
     class Encoder{
 public:
     static const int MaxPacketSize = 8000;
@@ -22,6 +23,7 @@ public:
     int PrependByteArray(std::vector<char>& array,const SizeT& size);
     int AppendByteArray(std::vector<char>& array,const SizeT& size);
     int AppendNonNegativeInteger(long uint64_value);
+    int PrependNonNegativeInteger(long uint64_value);
     int PrependVarNumber(const VlInt& varNumber);
     int AppendVarNumber(const VlInt& varNumber);
     int PrependByteArrayBlock(const VlInt& tlvType, std::vector<char>& array,const SizeT& size);

@@ -1,23 +1,23 @@
 #ifndef ELEMENTCONTAINER_H_
 #define ELEMENTCONTAINER_H_
-#include <list>
-#include "block.h"
 
-
+#include "mindev/include/encoding/vlint.h"
+#include <optional>
+namespace mindev::encoding { class Block; }
 namespace mindev::encoding{
-    class Block;
     class ElementContainer {
 public:
     typedef std::shared_ptr<ElementContainer> ptr;
-    inline std::list<Block> GetElements() const {return element_container;}
-    inline int Length(){return element_container.size();}
+    ElementContainer(){};
+    inline std::vector<Block>& GetElements() {return element_container;}
+    inline int Length()const{return element_container.size();}
     inline void Clear(){element_container.clear();}
-    inline void AddElement(const Block& block){element_container.push_back(block);}
+    inline void AddElement(const Block& block){element_container.emplace_back(block);}
     void RemoveElements(const VlInt& tlvType);
-    Block GetFirstBlockByType(VlInt tlvType,bool& state) const;
-    Block GetBlock(int index,bool& state) const;
+    std::optional<std::reference_wrapper<Block>> GetBlock(int index) const;
+    std::optional<std::reference_wrapper<Block>> GetFirstBlockByType(const VlInt& tlvType) const;
 private:
-    std::list<Block> element_container;
+    std::vector<Block> element_container;
     };
 }
 #endif

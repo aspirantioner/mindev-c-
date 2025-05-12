@@ -1,11 +1,15 @@
 #ifndef IENCODINGABLE_H_
 #define IENCODINGABLE_H_
-#include "encoder.h"
-#include "block.h"
+
+#include "mindev/include/encoding/encoder.h"
+#include "mindev/include/encoding/block.h"
+
 namespace mindev::encoding {
     class IEncodingAble{
-        virtual int wireEncode(Encoder encoder){return 0;}
-        virtual bool wireDecode(Block block){return true;}
+public:
+        virtual int WireEncode(Encoder& encoder){return 0;}
+        virtual bool WireDecode(Block& block){return true;}
+        virtual ~IEncodingAble() = default;
     };
 }
 

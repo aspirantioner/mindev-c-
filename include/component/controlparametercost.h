@@ -1,4 +1,3 @@
-
 #ifndef CONTROLPARAMETERCOST_H_
 #define CONTROLPARAMETERCOST_H_
 
@@ -11,6 +10,12 @@ private:
     long cost;
 public:
     typedef std::shared_ptr<ControlParameterCost> ptr;
+    ControlParameterCost(){};
+    ControlParameterCost(long cost){this->cost = cost;};
+    inline long GetCost()const{return this->cost;};
+    inline void SetCost(long cost){this->cost = cost;this->doInitial();};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

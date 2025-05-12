@@ -1,5 +1,6 @@
 #ifndef VLINT_H_
 #define VLINT_H_
+
 #include <climits>
 #include <vector>
 #include "mindev/include/common/bigint.h"

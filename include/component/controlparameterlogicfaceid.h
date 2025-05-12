@@ -1,4 +1,3 @@
-
 #ifndef CONTROLPARAMETERLOGICFACEID_H_
 #define CONTROLPARAMETERLOGICFACEID_H_
 
@@ -11,6 +10,12 @@ private:
     long logicFaceId;
 public:
     typedef std::shared_ptr<ControlParameterLogicFaceId> ptr;
+    ControlParameterLogicFaceId(){};
+    ControlParameterLogicFaceId(long logicFaceId){this->SetLogicFaceId(logicFaceId);};
+    inline void SetLogicFaceId(long logicFaceId){this->logicFaceId = logicFaceId;this->doInitial();};
+    inline long GetLogicFaceId(){return this->logicFaceId;};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

@@ -70,7 +70,7 @@ namespace mindev::encoding {
         if(Check(size) && size<=array.size()){
             auto copy_len = bigint::_bigint_to<int>(size.GetVlIntValue());
             if(!this->isEstimator){
-                std::copy(this->buffer.begin()+this->left-copy_len+1,this->buffer.begin()+this->left+1,array.begin());
+                std::copy(array.begin(),array.begin()+copy_len,this->buffer.begin()+this->left-copy_len+1);
             }
             this->left -= array.size();
             return copy_len;
@@ -81,7 +81,7 @@ namespace mindev::encoding {
         if(Check(size) && size<=array.size()){
             auto copy_len = bigint::_bigint_to<int>(size.GetVlIntValue());
             if(!this->isEstimator){
-                std::copy(this->buffer.begin()+this->right,this->buffer.begin()+this->right+copy_len,array.begin());
+                std::copy(array.begin(),array.begin()+copy_len,this->buffer.begin()+this->right);
             }
             this->right += array.size();
             return copy_len;
@@ -91,7 +91,10 @@ namespace mindev::encoding {
     int Encoder::AppendNonNegativeInteger(long uint64_value){
         auto bytes = BuildNonNegativeIntegerArr(uint64_value);
         return this->AppendByteArray(bytes,SizeT(bytes.size()));
-        
+    }
+    int Encoder::PrependNonNegativeInteger(long uint64_value){
+        auto bytes = BuildNonNegativeIntegerArr(uint64_value);
+        return this->PrependByteArray(bytes,SizeT(bytes.size()));
     }
     int Encoder::PrependVarNumber(const VlInt& varNumber){
         auto temp = varNumber.GetVlIntBytes();

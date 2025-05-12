@@ -1,4 +1,3 @@
-
 #ifndef CONTROLPARAMETERMTU_H_
 #define CONTROLPARAMETERMTU_H_
 
@@ -11,7 +10,14 @@ private:
     long mtu;
 public:
     typedef std::shared_ptr<ControlParameterMtu> ptr;
+    ControlParameterMtu(){};
+    ControlParameterMtu(long mtu){this->SetMtu(mtu);};
+    inline void SetMtu(long mtu){this->mtu = mtu;this->doInitial();};
+    inline long GetMtu(){return this->mtu;};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
+    
 }
 
 #endif

@@ -11,6 +11,12 @@ private:
     Identifier prefix;
 public:
     typedef std::shared_ptr<ControlParameterPrefix> ptr;
+    ControlParameterPrefix(){};
+    ControlParameterPrefix(const Identifier& prefix){this->SetPrefix(prefix);};
+    inline Identifier& GetPrefix(){return this->prefix;};
+    inline void SetPrefix(const Identifier& prefix){this->prefix = prefix;this->doInitial();};
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

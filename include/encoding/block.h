@@ -3,23 +3,50 @@
 
 #include "vlint.h"
 #include "elementcontainer.h"
+#include "tlv.h"
+#include <optional>
 
 namespace mindev::encoding{
-    class ElementContainer;
+    class Encoder;
     class Block{
         private:
             VlInt tlvType; //TLV-Type
             VlInt length;//TLV-Length
             std::vector<char> value; //    TLV-Value
-            std::shared_ptr<ElementContainer> elements;// TLV-sub-elements
+            ElementContainer elements;// TLV-sub-elements
             std::vector<char> raw; //TLV编码后的字节数组
         public:
             typedef std::shared_ptr<Block> ptr;
             Block(){};
-            Block(const std::vector<char>& buffer,bool verifyLength);
-            inline VlInt GetType()const{return tlvType;} 
-            inline std::vector<char> GetValue()const{return value;};
-            inline VlInt GetLength()const{return length;};
+            static std::optional<Block> CreateBlockByBuffer(std::vector<char>& buffer,bool verifyLength);
+            static std::optional<Block> CreateBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength, std::vector<char>& buffer, bool verifyLength);
+            inline VlInt& GetType(){return tlvType;} 
+            inline void SetType(const VlInt& tlvType) {this->tlvType = tlvType;}
+            inline std::vector<char>& GetValue(){return value;};
+            inline void SetValue(const std::vector<char>& value){this->value=value;};
+            inline const VlInt& GetLength()const{return length;};
+            inline void SetLength(const VlInt& length){this->length = length;};
+            inline std::vector<char> GetRaw() const{return raw;};
+            static inline std::vector<char> GetRaw(std::optional<Block>& block){if(block.has_value()){
+                return block.value().GetRaw();
+            }
+            return std::vector<char>();
+            }
+            std::optional<SizeT> GetSize() const;
+            inline ElementContainer& GetSubElements(){return this->elements;};
+            inline std::optional<Block> GetElement(const VlInt& tlvType){return this->elements.GetFirstBlockByType(tlvType);};
+            inline void RemoveElement(const VlInt& tlvType){this->elements.RemoveElements(tlvType);};
+            inline void AddElement(const Block& block){this->elements.AddElement(block);};
+            inline bool HasValue()const{return this->value.size()!=0;};
+            inline bool HasRaw()const{return this->raw.size()!=0;};
+            inline bool HasSubElement()const{return this->elements.Length()!=0;};
+            inline bool IsValid()const{
+                long long int val = 1;
+                return this->tlvType != val;
+            };
+            inline void ClearElements(){this->elements.Clear();};
+            bool ParseSubElements();
+            int Encode(Encoder& encoder);
             bool BuildBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength,std::vector<char>& buffer,bool verifyLength);
     };
 }
