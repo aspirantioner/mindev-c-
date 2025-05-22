@@ -24,7 +24,7 @@
 #define DATA_H_
 #include "mindev/include/encoding/iencodingable.h"
 #include "interactwithfield.h"
-#include <string>
+#include <string>   
 #include "mindev/include/component/ttl.h"
 #include "mindev/include/component/payload.h"
 #include "mindev/include/component/identifier.h"
@@ -38,87 +38,78 @@ namespace mindev::encoding{
 }
 
 namespace mindev::packet{
-    class Data:public IEncodingAble,public InteractWithField{
+    class Data:public mindev::encoding::IEncodingAble,public InteractWithField{
 public:
     MINPacket minPacket;
-    mindev::component::FreshnessPeriod freshnessPeriod;
-    mindev::component::NoCache noCache;
+    mindev::component::FreshnessPeriod freshnessPeriod; //表示一个内容的新鲜期 TLV 组件
+    mindev::component::NoCache noCache; 
     mindev::component::Payload payload;
     mindev::component::CongestionMark congestionMark;
     mindev::component::TTL ttl;
     mindev::component::Identifier name;
     Data();
     ~Data();
-    Data(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::FreshnessPeriod& freshnessPeriod,mindev::component::NoCache& noCache,mindev::component::CongestionMark congestionMark,mindev::component::TTL& ttl,);
+    Data(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::FreshnessPeriod& freshnessPeriod,mindev::component::NoCache& noCache,mindev::component::CongestionMark congestionMark,mindev::component::TTL& ttl);
     /**
      * 根据一个 MINPacket 创建一个 Data
-     *
      * @return
      */
-    Data createDataByMINPacket(MINPacket& minPacket);
+    Data CreateDataByMINPacket(MINPacket& minPacket);
     /**
      * 展示数据包的 URI
-     *
      * @return
      */
-    String toUri();
+    std::string ToUri();
     /**
      * 获取内容数据包的名字
-     *
      * @return
      */
-    mindev::component::Identifier getName();
+    mindev::component::Identifier GetName();
     /**
      * 使用字符串设置数据包的名字
      * @param name
      * @throws PacketException
      */
-    void setName(mindev::component::Identifier& name);
+    void SetName(mindev::component::Identifier& name);
     /**
      * 使用字符串设置数据包的名字
      * @param name
      * @throws PacketException
      */
-    void setNameByString(String name);
+    void SetNameByString(std::string name);
       /**
      * 将 Data 的各项属性填充到 MINPacket 中定义的对应分区当中
-     *
      * @return
      */
-    bool doFillDataToFields(MINPacket& minPacket);
+    bool DoFillDataToFields(MINPacket& minPacket);
     /**
      * 将 Data 的各项属性填充到 MINPacket 中定义的对应分区当中
-     *
      * @return
      */
-    bool fillDataToFields();
+    bool FillDataToFields();
     /**
      * 从 MINPacket 的分区中提取出 Data 的各项属性
-     *
      * @return
      */
-    bool doExtraDataFromFields(MINPacket& minPacket);
+    bool DoExtraDataFromFields(MINPacket& minPacket);
     /**
      * 从 MINPacket 的分区中提取出 Data 的各项属性
-     *
      * @return
      * @throws PacketException
      */
-    bool extraDataFromFields();
+    bool ExtraDataFromFields();
     /**
      * 将 Data 线速编码为一个 TLV
-     *
      * @param encoder
      * @return
      */
-    int wireEncode(mindev::encoding::Encoder& encoder);
+    int WireEncode(mindev::encoding::Encoder& encoder);
     /**
      * 从 TLV Block 中解码出一个 Data
-     *
      * @param block
      * @return
      */
-    bool wireDecode(mindev::encoding::Block& block);
+    bool WireDecode(mindev::encoding::Block& block);
     };
 
 #endif

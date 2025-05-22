@@ -1,0 +1,179 @@
+/*
+ * @Author: Wang Feng
+ * @Description:
+ * @Version: 1.0.0
+ * @Date: 11:22 2021/3/16
+ * @Copyright: MIN-Group；国家重大科技基础设施——未来网络北大实验室；深圳市信息论与未来网络重点实验室
+ */
+//
+// 表示一个通用的内容兴趣包
+//
+// @Description:
+//	1. 包格式如下：
+//		Interest = 5 TLV-LENGTH
+//             { InterestIdentifier }        => 标识区
+//             { Signature }                 => 签名区
+//             {                             => 只读区
+//                 [CanBePrefix]
+//                 [MustBeRefresh]
+//                 [InterestLifeTime]
+//                 [Nonce]
+//                 [HopLimit]
+//                 [NackHeader]
+//                 <Payload>
+//             }
+//             {                             => 可变区
+//                 {                         => 受保护区
+//                     [CongestionMark]
+//                 }
+//                 {                         => 非受保护区
+//                     [TTL]
+//                 }
+//             }
+//
+#ifndef INTEREST_H_
+#define INTEREST_H_
+#include "mindev/include/packet/minpacket.h"
+#include "mindev/include/component/canbeprefix.h"
+#include "mindev/include/component/mustberefresh.h"
+#include "mindev/include/component/nonce.h"
+#include "mindev/include/component/hoplimit.h"
+#include "mindev/include/component/interestlifetime.h"
+#include "mindev/include/component/nackheader.h"
+#include "mindev/include/component/congestionmark.h"
+#include "mindev/include/component/ttl.h"
+#include "mindev/include/component/payload.h"
+#include "mindev/include/component/incominglogicfaceid.h"
+#include "mindev/include/component/identifier.h"
+#include "mindev/include/packet/data.h"
+#include "mindev/include/component/block.h"
+#incldue "mindev/include/encoding/encoder.h"
+#include "mindev/include/component/controlparameters.h"
+#include <string>
+
+namespace mindev::packet{
+    class Interest:public InteractWithField,public mindev::encoding::IEncodingAble{
+private:
+    
+    
+public:
+    MINPacket minPacket;
+    mindev::component::CanBePrefix canBePrefix;
+    mindev::component::MustBeRefresh mustBeRefresh;
+    mindev::component::InterestLifeTime interestLifeTime;
+    mindev::component::Nonce nonce;
+    mindev::component::HopLimit hopLimit;
+    mindev::component::Payload payload;
+    mindev::component::CongestionMark congestionMark;
+    mindev::component::TTL ttl;
+    mindev::component::NackHeader nackHeader;
+    mindev::component::IncomingLogficFaceId incomingLogficFaceId;
+    mindev::component::Identifier name;
+    Interest();
+    Interest(Identifier& name,mindev::component::Payload& payload,mindev::component::InterestLifeTime& interestLifeTime,mindev::component::CanBePrefix& canBePrefix,mindev::component::MustBeRefresh& mustBeRefresh,mindev::component::Nonce& nonce,mindev::component::HopLimit& hopLimit,mindev::component::NackHeader& nackHeader,mindev::component::CongestionMark& congestionMark,mindev::component::TTL& ttl,mindev::component::IncomingLogficFaceId& incomingLogficFaceId);
+    /**
+     * 根据一个 MINPacket 创建一个 Interest
+     * @param minPacket
+     * @return
+     */
+    std::unique_ptr<Interest> CreateInterestByMINPacket(MINPacket& minPacket);
+    /**
+     * 获取内容兴趣包的名字
+     *
+     * @return
+     */
+    mindev::packet::Identifier& GetName();
+    /**
+     * 使用字符串设置兴趣包的名字
+     * @param name
+     * @throws PacketException
+     */
+    void SetName(mindev::component::Identifier& identifier);
+    /**
+     * 使用字符串设置兴趣包的名字
+     * @param name
+     * @throws PacketException
+     */
+    void setNameByString(std::string& name);
+    /**
+     * 判断一个指定的名字和当前的兴趣包的名字是否匹配
+     *
+     * @param identifier
+     * @return
+     */
+    bool MatchesName(mindev::component::Identifier& identifier);
+    /**
+     * 判断一个内容兴趣包和一个内容数据包是否匹配
+     *
+     * @param data
+     * @return
+     */
+    bool MatchesData(Data& data);
+    };
+    /**
+     * 判断一个内容兴趣包和当前兴趣包是否匹配
+     *
+     * @param interest
+     * @return
+     */
+    bool MatchesInterest(Interest& interest);
+    /**
+     * 展示兴趣包的 URI
+     *
+     * @return
+     */
+    std::string ToUri();
+    /**
+     * AppendCommandParameters 在名字中添加命令参数字段
+     * @param parameters
+     * @return
+     */
+    bool AppendCommandParameters(mindev::mgmt::ControlParameters& parameters)
+    /**
+     * AppendVersionNumber 在名字后面添加一个版本号
+     * @param versionNumber
+     * @return
+     */
+    bool AppendVersionNumber(long versionNumber);
+    /**
+     * AppendFragmentNumber 在名字后面添加一个分片号
+     * @param fragmentNumber
+     * @return
+     */
+    bool AppendFragmentNumber(long fragmentNumber);
+    /**
+     * 将 Interest 的各项属性填充到 MINPacket 中定义的对应分区当中
+     *
+     * @return
+     */
+    bool DoFillDataToFields(MINPacket& minPacket);
+    /**
+     * 将 Interest 的各项属性填充到 MINPacket 中定义的对应分区当中
+     * @return
+     * @throws PacketException
+     */
+    bool FillDataToFields();
+    /**
+     * 从 MINPacket 的分区中提取出 Interest 的各项属性
+     *
+     * @return
+     */
+    bool DoExtraDataFromFields(MINPacket& minPacket);
+    bool ExtraDataFromFields(); 
+    /**
+     * 将 Interest 线速编码为一个 TLV
+     *
+     * @param encoder
+     * @return
+     */
+    int WireEncode(mindev::encoding::Encoder& encoder);
+    /**
+     * 从 TLV Block 中解码出一个 Interest
+     *
+     * @param block
+     * @return
+     */
+    bool WireDecode(mindev::encoding::Block& block);
+
+}
+#endif
