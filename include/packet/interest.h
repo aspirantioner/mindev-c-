@@ -33,6 +33,8 @@
 //
 #ifndef INTEREST_H_
 #define INTEREST_H_
+#include "mindev/include/packet/interactwithfield.h"
+#include "mindev/include/encoding/iencodingable.h"
 #include "mindev/include/packet/minpacket.h"
 #include "mindev/include/component/canbeprefix.h"
 #include "mindev/include/component/mustberefresh.h"

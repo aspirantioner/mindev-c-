@@ -176,6 +176,7 @@ bool Interest::FillDataToMINPacket(){
 }
 
 bool Interest::DoExtraDataFromMINPacket(MINPacket& minPacket){
+    //解析可变区
     mindev::encoding::Block block=minPacket.mutableField.mutableProtectField.GetBlockByType(mindev::encoding::VlInt::VlInt(mindev::encoding::TLV.TlvCongestionMark));
     if(!this->congestionMark.WireDecode(block)){
         return false;

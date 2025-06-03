@@ -47,62 +47,62 @@ namespace mindev::packet{
         CPacket();
         CPacket(mindev::component::Identifier srcIdentifier,mindev::component::Identifier dstIdentifier ,mindev::component::Payload payload,mindev::component::TTL ttl);
         ~CPacket();
-        const std::vector<char>& getRawData() const;
+        std::vector<char>& GetRawData() const;
         /**
          * @Description: 编码CPacket
          */    
-        bool encodeSelf();
-        CPacket createCPacketByMINPacket(MINPacket& minpacket);
+        bool EncodeSelf();
+        CPacket CreateCPacketByMINPacket(MINPacket& minpacket);
         /**
          * @Description: 获取、设置源标识
          */    
-        const mindev::component::Identifier& getSrcIdentifier() const;
-        void setSrcIdentifier(mindev::component::Identifier& srcIdentifier);
+        mindev::component::Identifier& GetSrcIdentifier() const;
+        void SetSrcIdentifier(mindev::component::Identifier& srcIdentifier);
         /**
          * @Description: 获取、设置目的标识
          */    
-        const mindev::component::Identifier& getDstIdentifier() const;
-        void setDstIdentifier(mindev::component::Identifier& dstIdentifier);
+        mindev::component::Identifier& GetDstIdentifier() const;
+        void SetDstIdentifier(mindev::component::Identifier& dstIdentifier);
         /**
          * @Description: 获取、设置TTL
          */    
-        const mindev::component::TTL& getTtl() const;
-        void setTtl(mindev::component::TTL& ttl);
+        mindev::component::TTL& GetTtl() const;
+        void SetTtl(mindev::component::TTL& ttl);
         /**
          * @Description: 展示目的标识
          */    
-        std::string toUri();
+        std::string ToUri();
         /**
          * @Description: 获取pyload中的value
          */    
-        const std::vector<char>& getValue() const;
+        std::vector<char>& GetValue() const;
         /**
          * @Description: 将CPacket的各项属性填充到目标MINPacket中定义的对应分区当中
          * @param {MINPacket*} minPacket
          */    
-        bool doFillDataToFields(MINPacket& minPacket);
+        bool DoFillDataToFields(MINPacket& minPacket);
         /**
          * @Description: 将CPacket中的各项属性填充到本对象的minPacket的对应分区
          */    
-        bool fillDataToFields();
+        bool FillDataToFields();
         /**
          * @Description: 从minPacket的对应分区中提取CPacket的各项属性
          * @param {MINPacket*} minPacket
          */    
-        bool doExtraDataFromFields(MINPacket& minPacket);
+        bool DoExtraDataFromFields(MINPacket& minPacket);
         /**
          * @Description: 从本对象的minPacket中提取CPacket的各项属性
          */    
-        bool extraDataFromFields();
+        bool ExtraDataFromFields();
         /**
          * @Description:将CPacket编码成TLV
          */    
-        int wireEncode(mindev::encoding::Encoder& encoder);
+        int WireEncode(mindev::encoding::Encoder& encoder);
         /**
          * @Description: 从tlv块中解码出一个CPacket
          * @param {Block*} block
          */    
-        bool wireDecode(mindev::encoding::Block& block);
+        bool WireDecode(mindev::encoding::Block& block);
     };
 }
 

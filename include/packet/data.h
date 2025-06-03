@@ -23,6 +23,7 @@
 #ifndef DATA_H_
 #define DATA_H_
 #include "mindev/include/encoding/iencodingable.h"
+#include "mindev/include/packet/interactwithfield.h"
 #include "interactwithfield.h"
 #include <string>   
 #include "mindev/include/component/ttl.h"
@@ -64,7 +65,7 @@ public:
      * 获取内容数据包的名字
      * @return
      */
-    mindev::component::Identifier GetName();
+    mindev::component::Identifier& GetName() const;
     /**
      * 使用字符串设置数据包的名字
      * @param name

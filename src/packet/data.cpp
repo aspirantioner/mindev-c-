@@ -24,7 +24,7 @@ std::unique_ptr<Data> Data::CreateDataByMINPacket(MINPacket& minPacket){
 std::string Data::ToUir(){
     return this->name.ToUri();
 }
-mindev::component::Identifier& Data::GetName(){return this->name;}
+mindev::component::Identifier& Data::GetName() const{return this->name;}
 
 void Data::SetName(mindev::component::Identifier& name){this->name=name;}
 

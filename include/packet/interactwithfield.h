@@ -9,12 +9,12 @@ public:
      * 将包的属性填充到网络包的四个分区当中
      * @return
      */
-    virtual bool fillDataToFields()=0;
+    virtual bool FillDataToFields()=0;
     /**
      * 从网络包的四个分区当中提取出特定网络包的相关属性
      * @return
      */
-    virtual bool extraDataFromFields()=0;
+    virtual bool ExtraDataFromFields()=0;
     };
 }
 
