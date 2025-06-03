@@ -10,10 +10,37 @@
 
 namespace mindev::component{
     class LpPacketHeader:public TlvComponentBase,public mindev::encoding::IEncodingAble{
+public:
+    LpPacketHeader(){}
+    LpPacketHeader(const LpPacketFragmentId& id,const LpPacketFragmentNum& num,const LpPacketFragmentSeq& seq){
+        this->lpPacketFragmentId = id;
+        this->lpPacketFragmentNum = num;
+        this->lpPacketFragmentSeq = seq;
+    }
+    inline LpPacketFragmentId& GetLpPacketFragmentId(){
+        return this->lpPacketFragmentId;
+    }
+    inline LpPacketFragmentNum& GetLpPacketFragmentNum(){
+        return this->lpPacketFragmentNum;
+    }
+    inline LpPacketFragmentSeq& GetLpPacketFragmentSeq(){
+        return this->lpPacketFragmentSeq;
+    }
+    inline void SetLpPacketFragmentId(const LpPacketFragmentId& id){
+        this->lpPacketFragmentId = id;
+    }
+    inline void GetLpPacketFragmentNum(const LpPacketFragmentNum& num){
+        this->lpPacketFragmentNum = num;
+    }
+    inline void GetLpPacketFragmentSeq(const LpPacketFragmentSeq& seq){
+        this->lpPacketFragmentSeq = seq;
+    }
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
 private:
-    LpPacketFragmentId::ptr lpPacketFragmentId = std::make_shared<LpPacketFragmentId>();
-    LpPacketFragmentNum::ptr lpPacketFragmentNum = std::make_shared<LpPacketFragmentNum>();
-    LpPacketFragmentSeq::ptr lpPacketFragmentSeq = std::make_shared<LpPacketFragmentSeq>();
+    LpPacketFragmentId lpPacketFragmentId ;
+    LpPacketFragmentNum lpPacketFragmentNum ;
+    LpPacketFragmentSeq lpPacketFragmentSeq ;
     };
 }
 

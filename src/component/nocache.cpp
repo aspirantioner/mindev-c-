@@ -1,21 +1,19 @@
-#include "mindev/include/nocache.h"
+#include "mindev/include/component/nocache.h"
 
 namespace mindev::component{
     int NoCache::WireEncode(mindev::encoding::Encoder& encoder){
-        
-        int totalLength = 0;
-        std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
-        if(tmpLen<0){
-            return -1;
+        if(!this->noCache){
+            return 0;
         }
-        totalLength += tmpLen;
-        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
+
+        int totalLength = 0; 
+        
+        int tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(this->tlvType);
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvNoCache));
         if(tmpLen<0){
             return -1;
         }
@@ -23,8 +21,10 @@ namespace mindev::component{
         return totalLength;
     }
     bool NoCache::WireDecode(mindev::encoding::Block& block){
-        this->tlvType = block.GetType();
-        this->SetValue(std::string(block.GetValue().begin(),block.GetValue().end()));
+        if(!mindev::encoding::TLV::ExpectType(block.GetType(),mindev::encoding::VlInt(mindev::encoding::TLV::TlvNoCache))){
+            return false;
+        }
+        this->SetNoCache(true);
         return true;
     }
 }

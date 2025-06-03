@@ -35,6 +35,7 @@ public:
         }
         return Identifier::BuildIdentifierByComponents(val.value());
     }
+    inline bool IsValid(){return this->components.Length()>0;}
     inline void Append(const IdentifierComponent& component){
         this->components.AddElement(component);
     }

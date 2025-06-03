@@ -10,6 +10,21 @@ namespace mindev::component{
     class InterestLifeTime:public mindev::encoding::IEncodingAble,public InitialAble,public TlvComponentBase{
 private:
     long interestLifeTime;
+public:
+    InterestLifeTime(){}
+
+    InterestLifeTime(long interestLifeTime){
+        this->SetInterestLifeTime(interestLifeTime);
+    }
+    long GetInterestLifeTime() {
+        return interestLifeTime;
+    }
+    void SetInterestLifeTime(long interestLifeTime) {
+        this->interestLifeTime = interestLifeTime;
+        this->doInitial();
+    }
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

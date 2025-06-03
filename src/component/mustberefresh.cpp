@@ -1,30 +1,33 @@
-#include "mindev/include/mustberefresh.h"
+#include "mindev/include/component/mustberefresh.h"
 
 namespace mindev::component{
     int MustBeRefresh::WireEncode(mindev::encoding::Encoder& encoder){
         
+        if(!this->mustBeRefresh){
+            return 0;
+        }
+
         int totalLength = 0;
-        std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
-        if(tmpLen<0){
-            return -1;
-        }
-        totalLength += tmpLen;
-        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
+        int tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(this->tlvType);
+        
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvMustBeRefresh));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
+
         return totalLength;
     }
     bool MustBeRefresh::WireDecode(mindev::encoding::Block& block){
-        this->tlvType = block.GetType();
-        this->SetValue(std::string(block.GetValue().begin(),block.GetValue().end()));
+        if(!mindev::encoding::TLV::ExpectType(block.GetType(), mindev::encoding::VlInt(mindev::encoding::TLV::TlvMustBeRefresh))){
+            return false;
+        }
+        this->mustBeRefresh = true;
+        this->doInitial();
         return true;
     }
 }

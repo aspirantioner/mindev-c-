@@ -1,21 +1,23 @@
-#include "mindev/include/signaturetype.h"
+#include "mindev/include/component/signaturetype.h"
 
 namespace mindev::component{
     int SignatureType::WireEncode(mindev::encoding::Encoder& encoder){
         
         int totalLength = 0;
-        std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
+        
+        int tmpLen = encoder.PrependNonNegativeInteger(this->value.GetSignatureAlgorithm());
         if(tmpLen<0){
             return -1;
         }
         totalLength += tmpLen;
+
         tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(this->tlvType);
+
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvSignatureType));
         if(tmpLen<0){
             return -1;
         }
@@ -23,8 +25,14 @@ namespace mindev::component{
         return totalLength;
     }
     bool SignatureType::WireDecode(mindev::encoding::Block& block){
-        this->tlvType = block.GetType();
-        this->SetValue(std::string(block.GetValue().begin(),block.GetValue().end()));
+        if(!mindev::encoding::TLV::ExpectType(block.GetType(), mindev::encoding::VlInt(mindev::encoding::TLV::TlvSignatureType))){
+            return false;
+        }
+        long value = mindev::encoding::TLV::ReadNonNegativeInteger(block.GetValue(), 0,bigint::_bigint_to<int>(block.GetLength().GetVlIntValue()));
+        if(value<0){
+            return false;
+        }
+        this->value = SignatureAlgorithm(value);
         return true;
     }
 }

@@ -10,8 +10,11 @@
 namespace mindev::component{
     class MutableField:public TlvComponentBase,public mindev::encoding::IEncodingAble{
 public:
-    MutableProtectField::ptr mutableProtectField = std::make_shared<MutableProtectField>();
-    MutableDangerousProtectField::ptr mutableDangerousFiled = std::make_shared<MutableDangerousProtectField>();
+    MutableProtectField mutableProtectField;
+    MutableDangerousField mutableDangerousFiled;
+    MutableField(){}
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
     };
 }
 

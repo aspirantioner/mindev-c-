@@ -29,9 +29,7 @@ public:
     explicit IdentifierComponent(T&& val) {
         using ParamType = std::conditional_t<std::is_scalar_v<std::decay_t<T>>, std::decay_t<T>, const std::decay_t<T>&>;
         const ParamType value = std::forward<T>(val);
-    
-    //IdentifierComponent(std::conditional_t<std::is_scalar_v<T>, T, const T&> value){
-//         using ParamType = std::conditional_t<std::is_scalar_v<T>, T, const T&>;
+        
         if constexpr(std::is_same_v<ParamType,const std::string&>){
             this->identifierBlock.SetType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifierComponent));
             int len = value.size();

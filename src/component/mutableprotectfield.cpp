@@ -1,21 +1,29 @@
-#include "mindev/include/mutableprotectfield.h"
+#include "mindev/include/component/mutableprotectfield.h"
 
 namespace mindev::component{
     int MutableProtectField::WireEncode(mindev::encoding::Encoder& encoder){
         
-        int totalLength = 0;
-        std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
-        if(tmpLen<0){
-            return -1;
+        if(this->blocks.Length()==0){
+            return 0;
         }
-        totalLength += tmpLen;
+
+        int totalLength = 0;
+        int tmpLen = 0;
+        for(auto iter = this->blocks.GetElements().rbegin();iter!=this->blocks.GetElements().rend();iter++){
+            tmpLen = encoder.PrependBlock(*iter);
+            if(tmpLen<0){
+                return -1;
+            }
+            totalLength += tmpLen;
+        }
+        
         tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(this->tlvType);
+
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::TLV::TlvMutableProtectField);
         if(tmpLen<0){
             return -1;
         }
@@ -23,8 +31,13 @@ namespace mindev::component{
         return totalLength;
     }
     bool MutableProtectField::WireDecode(mindev::encoding::Block& block){
-        this->tlvType = block.GetType();
-        this->SetValue(std::string(block.GetValue().begin(),block.GetValue().end()));
+        if(!mindev::encoding::TLV::ExpectType(block.GetType(), mindev::encoding::VlInt(mindev::encoding::TLV::TlvMutableProtectField))){
+            return false;
+        }
+        if(!block.ParseSubElements()){
+            return false;
+        }
+        this->blocks = block.GetSubElements();
         return true;
     }
 }

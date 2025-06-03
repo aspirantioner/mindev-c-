@@ -1,11 +1,10 @@
-#include "mindev/include/payload.h"
+#include "mindev/include/component/payload.h"
 
 namespace mindev::component{
     int Payload::WireEncode(mindev::encoding::Encoder& encoder){
         
         int totalLength = 0;
-        std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
+        int tmpLen = encoder.PrependByteArray(this->value,mindev::encoding::SizeT(this->value.size()));
         if(tmpLen<0){
             return -1;
         }
@@ -15,7 +14,7 @@ namespace mindev::component{
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(this->tlvType);
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::TLV::TlvPayload);
         if(tmpLen<0){
             return -1;
         }
@@ -23,8 +22,10 @@ namespace mindev::component{
         return totalLength;
     }
     bool Payload::WireDecode(mindev::encoding::Block& block){
-        this->tlvType = block.GetType();
-        this->SetValue(std::string(block.GetValue().begin(),block.GetValue().end()));
+        if(!mindev::encoding::TLV::ExpectType(block.GetType(),mindev::encoding::VlInt(mindev::encoding::TLV::TlvPayload))){
+            return false;
+        }
+        this->SetValue(block.GetValue());
         return true;
     }
 }

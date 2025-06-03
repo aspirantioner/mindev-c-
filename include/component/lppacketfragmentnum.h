@@ -10,6 +10,12 @@ namespace mindev::component{
     class LpPacketFragmentNum:public mindev::encoding::IEncodingAble,public InitialAble,public TlvComponentBase{
 public:
     typedef std::shared_ptr<LpPacketFragmentNum> ptr;
+    inline long GetFragmentNum(){return this->fragmentNum;}
+    inline void SetFragmentNum(long fragmentNum){this->fragmentNum = fragmentNum;this->doInitial();}
+    LpPacketFragmentNum(){}
+    LpPacketFragmentNum(long fragmentNum){this->SetFragmentNum(fragmentNum);}
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
 private:
     long fragmentNum;
     };

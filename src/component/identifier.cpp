@@ -3,7 +3,7 @@
 #include "mindev/include/component/identifiercomponent.h"
 #include "mindev/include/encoding/block.h"
 #include "mindev/include/encoding/elementcontainer.h"
-#include "mindev/include/encoding/selfencodingbase.h"
+#include "mindev/include/encoding/selfencodingbase.h":
 #include <optional>
 
 mindev::component::IdentifierComponent BuildIdentifierComponentByBlock(mindev::encoding::Block& block);

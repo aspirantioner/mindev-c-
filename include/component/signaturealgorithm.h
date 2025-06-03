@@ -1,4 +1,3 @@
-
 #ifndef SIGNATUREALGORITHM_H_
 #define SIGNATUREALGORITHM_H_
 
@@ -10,7 +9,9 @@ namespace mindev::component{
     public:
         typedef std::shared_ptr<SignatureAlgorithm> ptr;
         SignatureAlgorithm(){}
-        SignatureAlgorithm(int value){this->signatureAlgorithm=value;}
+        SignatureAlgorithm(int value){this->SetSignatureAlgorithm(value);}
+        inline int GetSignatureAlgorithm(){return this->signatureAlgorithm;}
+        inline void SetSignatureAlgorithm(int value){this->signatureAlgorithm = value;}
     };
 }
 

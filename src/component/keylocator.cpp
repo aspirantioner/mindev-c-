@@ -1,30 +1,44 @@
-#include "mindev/include/keylocator.h"
+#include "mindev/include/component/keylocator.h"
 
 namespace mindev::component{
     int KeyLocator::WireEncode(mindev::encoding::Encoder& encoder){
         
         int totalLength = 0;
-        std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
+        
+        int tmpLen = this->identifier.WireEncode(encoder);
         if(tmpLen<0){
             return -1;
         }
         totalLength += tmpLen;
+
         tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(this->tlvType);
+
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvKeyLocator));
         if(tmpLen<0){
             return -1;
         }
         totalLength+=tmpLen;
+
         return totalLength;
     }
     bool KeyLocator::WireDecode(mindev::encoding::Block& block){
-        this->tlvType = block.GetType();
-        this->SetValue(std::string(block.GetValue().begin(),block.GetValue().end()));
-        return true;
+        if(!mindev::encoding::TLV::ExpectType(block.GetType(), mindev::encoding::VlInt(mindev::encoding::TLV::TlvKeyLocator))){
+            return false;
+        }
+        if(!block.ParseSubElements()){
+            return false;
+        }
+        if(block.GetSubElements().Length()!=1){
+            return false;
+        }
+        auto val = block.GetSubElements().GetBlock(0);
+        if(val.has_value()){
+            return false;
+        }
+        return this->identifier.WireDecode(val.value());
     }
 }

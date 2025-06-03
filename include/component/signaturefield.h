@@ -5,8 +5,15 @@
 
 namespace mindev::component{
     class SignatureField{
+public:
+    SignatureField(){}
+    SignatureField(const SignatureContainer& container){this->signatures = container;}
+    inline void AddSignature(const Signature& signature){this->signatures.AddElement(signature);}
+    inline SignatureContainer& GetSignatures(){return this->signatures;}
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
+    bool WireDecode(mindev::encoding::Block& block) override ;
 private:
-    SignatureContainer::ptr signatures= std::make_shared<SignatureContainer>();
+    SignatureContainer signatures;
     };
 }
 
