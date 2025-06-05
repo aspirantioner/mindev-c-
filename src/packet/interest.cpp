@@ -5,43 +5,33 @@
 #include "mindev/include/component/identifierwrapper.h"
 
 
-
 namespace mindev::packet{
-Interest::Interest():minPacket(MINPacket()),canBePrefix(mindev::component::CanBePrefix()),mustBeReFresh(mindev::component::MustBeRefresh()),interestLifeTime(mindev::component::InterestLifeTime()),nonce(mindev::component::Nonce()),hopLimit(mindev::component::HopLimit()),payload(mindev::component::Payload()),congestionMark(mindev::component::CongestionMark()),ttl(mindev::component::TTL()),nackHeader(mindev::component::NackHeader()),incomingLogicFaceId(mindev::component::IncomingLogicFaceId()),identifier(mindev::component::Identifier()){};
-
-Interest::Interest(Identifier& name,mindev::component::Payload& payload,mindev::component::InterestLifeTime& interestLifeTime,mindev::component::CanBePrefix& canBePrefix,mindev::component::MustBeRefresh& mustBeRefresh,mindev::component::Nonce& nonce,mindev::component::HopLimit& hopLimit,mindev::component::NackHeader& nackHeader,mindev::component::CongestionMark& congestionMark,mindev::component::TTL& ttl,mindev::component::IncomingLogficFaceId& incomingLogficFaceId){
-    this->name=name;
-    this->payload=payload;
-    this->interestLifeTime=interestLifeTime;
-    this->canBePrefix=canBePrefix;
-    this->mustBeRefresh=mustBeRefresh;
-    this->nonce=nonce;
-    this->hopLimit=hopLimit;
-    this->nackHeader=nackHeader;
-    this->congestionMark=congestionMark;
-    this->ttl=ttl;
-    this->incomingLogficFaceId=incomingLogficFaceId;
-}
-
-std::unique_ptr<Interest> Interest::CreateInterestByMINPacket(MINPacket& minPacket){
-    std::unique_ptr<Interest> interest(new Interest());
-    if(minPacket.packetType.IsEqual(mindev::encoding::TLV.TlvPacketMINManagement)){
-        interest->isCommandInterest=true;
+    Interest::Interest(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::InterestLifeTime& interestLifeTime,mindev::component::CanBePrefix& canBePrefix,mindev::component::MustBeRefresh& mustBeRefresh,mindev::component::Nonce& nonce,mindev::component::HopLimit& hopLimit,mindev::component::NackHeader& nackHeader,mindev::component::CongestionMark& congestionMark,mindev::component::TTL& ttl,mindev::component::IncomingLogficFaceId& incomingLogficFaceId){
+        this->name=name;
+        this->payload=payload;
+        this->interestLifeTime=interestLifeTime;
+        this->canBePrefix=canBePrefix;
+        this->mustBeRefresh=mustBeRefresh;
+        this->nonce=nonce;
+        this->hopLimit=hopLimit;
+        this->nackHeader=nackHeader;
+        this->congestionMark=congestionMark;
+        this->ttl=ttl;
+        this->incomingLogficFaceId=incomingLogficFaceId;
     }
-    interest->minPacket.signatureField.SetSignatures(minPacket.signatureField.GetSignatures());
-    if(!interest->DoExtraDataFromMINPacket(minPacket)){
-        return nullptr;
+
+    std::optional<Interest> Interest::CreateInterestByMINPacket(MINPacket& minPacket){
+        Interest interest();
+        if(minPacket.packetType == mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINManagement)){
+            interest->isCommandInterest=true;
+        }
+        interest->minPacket.signatureField.SetSignatures(minPacket.signatureField.GetSignatures());
+        if(!interest->DoExtraDataFromMINPacket(minPacket)){
+            return nullptr;
+        }
+        return interest;
     }
-    return interest;
-}
 
-mindev::component::Identifier& Interest::GetName(){
-    return this->name;
-}
-
-void Interest::SetName(mindev::component::Identifier& name){
-    this->name=name;
-}
 
 void Interest::SetNameByString(std::string& name){
     mindev::component::Identifier identifier(Identifier(name));

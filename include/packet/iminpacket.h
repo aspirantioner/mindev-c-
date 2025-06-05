@@ -1,4 +1,3 @@
-
 #ifndef IMINPACKET_H_
 #define IMINPACKET_H_
 

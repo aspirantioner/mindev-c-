@@ -22,6 +22,7 @@
 //
 #ifndef DATA_H_
 #define DATA_H_
+
 #include "mindev/include/encoding/iencodingable.h"
 #include "mindev/include/packet/interactwithfield.h"
 #include "interactwithfield.h"
@@ -32,7 +33,8 @@
 #include "mindev/include/component/nocache.h"
 #include "mindev/include/component/congestionmark.h"
 #include "mindev/include/component/freshnessperiod.h"
-#include "MINPacket.h"
+#include "minpacket.h"
+
 namespace mindev::encoding{
     class Block;
     class Encoder;
@@ -48,8 +50,7 @@ public:
     mindev::component::CongestionMark congestionMark;
     mindev::component::TTL ttl;
     mindev::component::Identifier name;
-    Data();
-    ~Data();
+    Data(){};
     Data(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::FreshnessPeriod& freshnessPeriod,mindev::component::NoCache& noCache,mindev::component::CongestionMark congestionMark,mindev::component::TTL& ttl);
     /**
      * 根据一个 MINPacket 创建一个 Data

@@ -1,14 +1,16 @@
-#ifndef MINPACKET_H
-#define MINPACKET_H
-#include "mindev/include/encoding/Iencodingable.h"
+#ifndef MINPACKET_H_
+#define MINPACKET_H_
+
+#include "mindev/include/encoding/iencodingable.h"
 #include "mindev/include/packet/iminpacket.h"
 #include "mindev/include/component/identifierfield.h"
 #include "mindev/include/component/signaturefield.h"
 #include "mindev/include/component/readonlyfield.h"
 #include "mindev/include/component/mutablefield.h"
 #include "mindev/include/encoding/vlint.h"
-namespace minddev::packet{
-class MINPacket :public IEncodingAble,IMINPacket{
+
+namespace mindev::packet{
+class MINPacket :public mindev::encoding::IEncodingAble,public IMINPacket{
     public:
         mindev::component::IdentifierField identifierField;
         mindev::component::SignatureField signatureField;
@@ -17,8 +19,9 @@ class MINPacket :public IEncodingAble,IMINPacket{
         mindev::encoding::VlInt packetType;
         int WireEncode(mindev::encoding::Encoder& encoder) override;
         bool WireDecode(mindev::encoding::Block& block) override;
-        bool IsPacketValid() override;
-        MINPacket();
+        inline bool IsPacketValid() {return mindev::encoding::TLV::IsValidPacketType(this->packetType);};
+        MINPacket(){};
+        std::optional<mindev::encoding::VlInt> GetPacketType();
 };
 }
 #endif

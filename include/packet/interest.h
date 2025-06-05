@@ -48,16 +48,13 @@
 #include "mindev/include/component/incominglogicfaceid.h"
 #include "mindev/include/component/identifier.h"
 #include "mindev/include/packet/data.h"
-#include "mindev/include/component/block.h"
-#incldue "mindev/include/encoding/encoder.h"
+#include "mindev/include/encoding/block.h"
+#include "mindev/include/encoding/encoder.h"
 #include "mindev/include/component/controlparameters.h"
 #include <string>
 
 namespace mindev::packet{
     class Interest:public InteractWithField,public mindev::encoding::IEncodingAble{
-private:
-    
-    
 public:
     MINPacket minPacket;
     mindev::component::CanBePrefix canBePrefix;
@@ -69,28 +66,28 @@ public:
     mindev::component::CongestionMark congestionMark;
     mindev::component::TTL ttl;
     mindev::component::NackHeader nackHeader;
-    mindev::component::IncomingLogficFaceId incomingLogficFaceId;
+    mindev::component::IncomingLogicFaceId incomingLogficFaceId;
     mindev::component::Identifier name;
-    Interest();
-    Interest(Identifier& name,mindev::component::Payload& payload,mindev::component::InterestLifeTime& interestLifeTime,mindev::component::CanBePrefix& canBePrefix,mindev::component::MustBeRefresh& mustBeRefresh,mindev::component::Nonce& nonce,mindev::component::HopLimit& hopLimit,mindev::component::NackHeader& nackHeader,mindev::component::CongestionMark& congestionMark,mindev::component::TTL& ttl,mindev::component::IncomingLogficFaceId& incomingLogficFaceId);
+    Interest(){};
+    Interest(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::InterestLifeTime& interestLifeTime,mindev::component::CanBePrefix& canBePrefix,mindev::component::MustBeRefresh& mustBeRefresh,mindev::component::Nonce& nonce,mindev::component::HopLimit& hopLimit,mindev::component::NackHeader& nackHeader,mindev::component::CongestionMark& congestionMark,mindev::component::TTL& ttl,mindev::component::IncomingLogicFaceId& incomingLogficFaceId);
     /**
      * 根据一个 MINPacket 创建一个 Interest
      * @param minPacket
      * @return
      */
-    std::unique_ptr<Interest> CreateInterestByMINPacket(MINPacket& minPacket);
+    std::optional<Interest> CreateInterestByMINPacket(MINPacket& minPacket);
     /**
      * 获取内容兴趣包的名字
      *
      * @return
      */
-    mindev::packet::Identifier& GetName();
+    inline mindev::component::Identifier& GetName(){return this->name;}
     /**
      * 使用字符串设置兴趣包的名字
      * @param name
      * @throws PacketException
      */
-    void SetName(mindev::component::Identifier& identifier);
+    inline void SetName(const mindev::component::Identifier& identifier){this->name = identifier;}
     /**
      * 使用字符串设置兴趣包的名字
      * @param name
@@ -111,7 +108,6 @@ public:
      * @return
      */
     bool MatchesData(Data& data);
-    };
     /**
      * 判断一个内容兴趣包和当前兴趣包是否匹配
      *
@@ -124,25 +120,25 @@ public:
      *
      * @return
      */
-    std::string ToUri();
+    inline std::string ToUri(){return this->name.ToUri();}
     /**
      * AppendCommandParameters 在名字中添加命令参数字段
      * @param parameters
      * @return
      */
-    bool AppendCommandParameters(mindev::mgmt::ControlParameters& parameters)
+    bool AppendCommandParameters(mindev::mgmt::ControlParameters& parameters);
     /**
      * AppendVersionNumber 在名字后面添加一个版本号
      * @param versionNumber
      * @return
      */
-    bool AppendVersionNumber(long versionNumber);
+    inline bool AppendVersionNumber(long versionNumber){return this->name.AppendVersionNumber(versionNumber);}
     /**
      * AppendFragmentNumber 在名字后面添加一个分片号
      * @param fragmentNumber
      * @return
      */
-    bool AppendFragmentNumber(long fragmentNumber);
+    inline bool AppendFragmentNumber(long fragmentNumber){return this->name.AppendFragmentNumber(fragmentNumber);};
     /**
      * 将 Interest 的各项属性填充到 MINPacket 中定义的对应分区当中
      *
@@ -176,6 +172,7 @@ public:
      * @return
      */
     bool WireDecode(mindev::encoding::Block& block);
-
+};
 }
+    
 #endif

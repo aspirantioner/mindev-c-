@@ -23,7 +23,7 @@
 //
 #ifndef CPACKET_H_
 #define CPACKET_H_
-#include "MINPacket.h"
+#include "minpacket.h"
 #include "interactwithfield.h"
 #include "mindev/include/encoding/iencodingable.h"
 #include "mindev/include/component/ttl.h"

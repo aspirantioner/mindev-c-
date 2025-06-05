@@ -1,4 +1,3 @@
-
 #ifndef IDENTIFIERFIELD_H_
 #define IDENTIFIERFIELD_H_
 
