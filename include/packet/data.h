@@ -55,7 +55,7 @@ public:
      * 根据一个 MINPacket 创建一个 Data
      * @return
      */
-    Data CreateDataByMINPacket(MINPacket& minPacket);
+    std::unique_ptr<Data> CreateDataByMINPacket(MINPacket& minPacket);
     /**
      * 展示数据包的 URI
      * @return

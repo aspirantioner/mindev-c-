@@ -11,13 +11,13 @@ std::vector<char> LpPacket::GetRawPayload() const {
 
 bool LpPacket::DecodeSelf(){
     std::vector<char> payload=this->payload.GetValue();
-    mindev::component::Block block(payload,true);
+    mindev::encoding::Block block(payload,true);
     MINPacket minPacket;
     if(!minPacket.WireDecode(block)){
         return false;
     }
-    CPacket cPacket=CPacket().CreateCPacketbyMINPacket(minPacket);
-    this->rawPayload=cpacket.GetValue();
+    std::unique_ptr<CPacket> cPacket=CPacket().CreateCPacketbyMINPacket(minPacket);
+    this->rawPayload=cpacket->GetValue();
     return true;
 }
 
@@ -57,7 +57,7 @@ void LpPacket::SetValue(std::vector<char>& value){
     this->payload.SetValue(value);
 }
 
-std::vector<char>& LpPacket::GetValue() const{
+std::vector<char> LpPacket::GetValue() const{
     return this->payload.GetValue();
 }
 

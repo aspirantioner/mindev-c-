@@ -47,12 +47,12 @@ namespace mindev::packet{
         CPacket();
         CPacket(mindev::component::Identifier srcIdentifier,mindev::component::Identifier dstIdentifier ,mindev::component::Payload payload,mindev::component::TTL ttl);
         ~CPacket();
-        std::vector<char>& GetRawData() const;
+        std::vector<char> GetRawData() const;
         /**
          * @Description: 编码CPacket
          */    
         bool EncodeSelf();
-        CPacket CreateCPacketByMINPacket(MINPacket& minpacket);
+        std::unique_ptr<CPacket> CreateCPacketByMINPacket(MINPacket& minpacket);
         /**
          * @Description: 获取、设置源标识
          */    
@@ -75,7 +75,7 @@ namespace mindev::packet{
         /**
          * @Description: 获取pyload中的value
          */    
-        std::vector<char>& GetValue() const;
+        std::vector<char> GetValue() const;
         /**
          * @Description: 将CPacket的各项属性填充到目标MINPacket中定义的对应分区当中
          * @param {MINPacket*} minPacket
