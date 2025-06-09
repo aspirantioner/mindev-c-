@@ -1,5 +1,5 @@
-#ifndef CONTROLPARAMETERS_H_
-#define CONTROLPARAMETERS_H_
+#ifndef COMPONENT_CONTROLPARAMETERS_H_
+#define COMPONENT_CONTROLPARAMETERS_H_
 
 #include "mindev/include/component/controlparametercommonstring.h"
 #include "mindev/include/component/controlparametermtu.h"

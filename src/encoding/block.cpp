@@ -4,11 +4,14 @@
 
 namespace mindev::encoding {
     std::optional<Block> Block::CreateBlockByBuffer(std::vector<char> &buffer, bool verifyLength){
-        auto tlvType = TLV::ReadType(buffer, VlInt(0));
+        auto tmp = VlInt(0);
+        auto tlvType = TLV::ReadType(buffer, tmp);
         if(!tlvType.IsInitial()){
             std::runtime_error("buffer can't construct Block!");
         }
-        auto tlvLength = TLV::ReadVarNumber(buffer, VlInt(tlvType.GetSize()));
+        auto val = tlvType.GetSize();
+        tmp = VlInt(val);
+        auto tlvLength = TLV::ReadVarNumber(buffer, tmp);
         if(!tlvLength.IsInitial()){
             std::runtime_error("tlvLength read error!");
         }
@@ -18,14 +21,14 @@ namespace mindev::encoding {
         }
         return res;
     }
-    std::optional<Block> Block::CreateBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength, std::vector<char> &buffer, bool verifyLength){
+    std::optional<Block> Block::CreateBlockByTypeLengthBuffer(VlInt& tlvType,VlInt& tlvLength, std::vector<char> &buffer, bool verifyLength){
         Block res;
         if(res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)==-1){
             return std::nullopt;
         }
         return res;
     }
-    bool Block::BuildBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength,std::vector<char>& buffer,bool verifyLength){
+    bool Block::BuildBlockByTypeLengthBuffer(VlInt& tlvType,VlInt& tlvLength,std::vector<char>& buffer,bool verifyLength){
         
         this->tlvType = tlvType;
         this->length = tlvLength;
@@ -34,10 +37,13 @@ namespace mindev::encoding {
             return false;
         }
         Encoder encoder = Encoder();
-        if(encoder.EncoderReset(SizeT(tlvType.GetSize()+tlvLength.GetSize()+buffer.size()), SizeT(0))){
+        auto size1 = SizeT(tlvType.GetSize()+tlvLength.GetSize()+buffer.size());
+        auto size2 = SizeT(0);
+        if(encoder.EncoderReset(size1,size2)){
             return false;
         }
-        if(encoder.PrependByteArray(buffer, SizeT(buffer.size()))<0){
+        auto tmp = SizeT(buffer.size());
+        if(encoder.PrependByteArray(buffer,tmp)<0){
             return false;
         }
         if(encoder.PrependVarNumber(tlvLength)<0){
@@ -54,7 +60,7 @@ namespace mindev::encoding {
         this->value = buffer;
         return true;
     }
-    std::optional<SizeT> Block::GetSize() const{
+    std::optional<SizeT> Block::GetSize() {
         if(!IsValid()){
             return std::nullopt;
         }
@@ -65,13 +71,15 @@ namespace mindev::encoding {
             return true;
         }
         for(int start=0;start<this->value.size();){
-            auto tlvType = TLV::ReadType(this->value, VlInt(start));
+            auto tmp = VlInt(start);
+            auto tlvType = TLV::ReadType(this->value, tmp);
             if(!tlvType.IsInitial()){
                 this->ClearElements();
                 return false;
             }
             start+=tlvType.GetSize();
-            auto tlvLength = TLV::ReadVarNumber(this->value, VlInt(start));
+            tmp = VlInt(start);
+            auto tlvLength = TLV::ReadVarNumber(this->value, tmp);
             if(!tlvLength.IsInitial()){
                 this->ClearElements();
                 return false;
@@ -96,12 +104,14 @@ namespace mindev::encoding {
     };
     int Block::Encode(Encoder& encoder){
         if(this->HasRaw()){
-            return encoder.PrependByteArray(this->raw, SizeT(this->raw.size()));
+            auto tmp = SizeT(this->raw.size());
+            return encoder.PrependByteArray(this->raw, tmp);
         }
         
         int res = 0;
         if(this->HasValue()){
-            auto tmplen = encoder.PrependByteArray(this->value, SizeT(this->value.size()));
+            auto tmp = SizeT(this->value.size());
+            auto tmplen = encoder.PrependByteArray(this->value, tmp);
             if(tmplen<=0){
                 return -1;
             }
@@ -116,7 +126,8 @@ namespace mindev::encoding {
                 res+=tmplen;
             }
         }
-        auto tmplen = encoder.PrependVarNumber(VlInt(res));
+        auto tmp = VlInt(res);
+        auto tmplen = encoder.PrependVarNumber(tmp);
         if(tmplen<=0){
             return -1;
         }

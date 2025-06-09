@@ -88,13 +88,13 @@ public:
     // TODO: 目前TLV值的分配，第一轮分配都在500以内，如果以后分配更高值时，需要修改此处的限制
     static const int MaxTlvNum = 500;
     static int SizeOfNonNegativeInteger(long v);
-    static VlInt ReadVarNumber(const std::vector<char>& buffer,const VlInt& start);
-    static VlInt ReadType(const std::vector<char>& buffer,const VlInt& start);
+    static VlInt ReadVarNumber(const std::vector<char>& buffer,VlInt& start);
+    static VlInt ReadType(const std::vector<char>& buffer,VlInt& start);
     static long ReadNonNegativeInteger(const std::vector<char>& buffer,int start,int end);
-    static inline bool ExpectType(const VlInt& current,const VlInt& target){return current.GetVlIntValue()==target.GetVlIntValue();}
-    static inline bool IsValidIdentifierType(const VlInt& tlvType){return tlvType.GetVlIntValue()>=bigint::_to_bigint(TLV::TlvIdentifierCommon) && tlvType.GetVlIntValue()<bigint::_to_bigint(TLV::TlvSignatureValue);}
-    static inline bool IsValidPacketType(const VlInt& tlvType){
-        return tlvType.GetVlIntValue()>bigint::_to_bigint(TLV::TlvInvalid) && tlvType.GetVlIntValue()<bigint::_to_bigint(TLV::TlvIdentifierField);
+    static inline bool ExpectType(const VlInt& current,const VlInt& target){return const_cast<VlInt&>(current).GetVlIntValue()== const_cast<VlInt&>(target).GetVlIntValue();}
+    static inline bool IsValidIdentifierType( VlInt& tlvType){return tlvType.GetVlIntValue()>=bigint::_to_bigint(TLV::TlvIdentifierCommon) && tlvType.GetVlIntValue()<bigint::_to_bigint(TLV::TlvSignatureValue);}
+    static inline bool IsValidPacketType( VlInt& tlvType){
+        return tlvType.GetVlIntValue()>TLV::TlvInvalid && tlvType.GetVlIntValue()<TLV::TlvIdentifierField;
     }
     };
 }

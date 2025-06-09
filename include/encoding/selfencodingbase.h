@@ -19,8 +19,8 @@ namespace mindev::encoding {
         public:
             inline Block GetRawBlock(){return this->rawBlock;};
             SelfEncodingBase(){};
-            std::optional<Block> SelfWireEncode(IEncodingAble& iEncodingAble);
-            std::optional<Block> EasyEncoder(IEncodingAble& iEncodingAble);
+            std::optional<Block> SelfWireEncode(mindev::encoding::IEncodingAble& iEncodingAble);
+            std::optional<Block> EasyEncoder(mindev::encoding::IEncodingAble& iEncodingAble);
     };
 }
 #endif

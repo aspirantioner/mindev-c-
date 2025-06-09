@@ -22,7 +22,7 @@ public:
     }
     inline std::optional<std::reference_wrapper<IdentifierWrapper>> GetElementByType(const mindev::encoding::VlInt& vlnt){
         for(auto elem:this->identifierWrappers){
-            if(elem.GetTlvType()==vlnt){
+            if(elem.GetTlvType()==const_cast<mindev::encoding::VlInt&>(vlnt)){
                 return elem;
             }
         }

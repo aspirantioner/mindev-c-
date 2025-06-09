@@ -40,7 +40,7 @@ namespace mindev::component{
         }
         IdentifierContainer identifiercontainer;
         for(auto iter = block.GetSubElements().GetElements().begin();iter!=block.GetSubElements().GetElements().end();iter++){
-            IdentifierWrapper identifierwrapper(iter);
+            IdentifierWrapper identifierwrapper(*iter);
             if(!identifierwrapper.IsValid()){
                 return false;
             }

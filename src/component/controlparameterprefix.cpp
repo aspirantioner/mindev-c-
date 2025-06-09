@@ -29,7 +29,11 @@ namespace mindev::component{
             return false;
         }
         Identifier identifier;
-        if(!identifier.WireDecode(block.GetElement(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifier)))){
+        auto val = block.GetElement(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifier));
+        if(!val.has_value()){
+            return false;
+        }
+        if(!identifier.WireDecode(val.value())){
             return false;
         };
         this->SetPrefix(identifier);

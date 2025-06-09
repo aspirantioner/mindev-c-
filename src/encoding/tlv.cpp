@@ -13,7 +13,7 @@ namespace mindev::encoding {
             return 8;
         }
     }
-    VlInt TLV::ReadVarNumber(const std::vector<char>& buffer,const VlInt& start){
+    VlInt TLV::ReadVarNumber(const std::vector<char>& buffer, VlInt& start){
         VlInt res = VlInt();
         auto length = bigint::_to_bigint(std::to_string(buffer.size()));
         
@@ -47,7 +47,7 @@ namespace mindev::encoding {
         }
         return res;
     }
-    VlInt TLV::ReadType(const std::vector<char>& buffer,const VlInt& start){
+    VlInt TLV::ReadType(const std::vector<char>& buffer,VlInt& start){
         auto tlvtype = ReadVarNumber(buffer, start);
         
         if(!tlvtype.IsInitial()||static_cast<bigint>(tlvtype.GetVlIntValue())==bigint::_to_bigint(TLV::TlvInvalid)||static_cast<bigint>(tlvtype.GetVlIntValue())>bigint::_to_bigint(TLV::MaxTlvNum)){

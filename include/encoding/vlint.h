@@ -3,7 +3,7 @@
 
 #include <climits>
 #include <vector>
-#include "mindev/include/common/bigint.h"
+#include "mindev/include/common/bigint.hpp"
 #include "mindev/include/common/templateinit.h"
 
 namespace mindev::encoding {
@@ -26,43 +26,94 @@ public:
     static const long uint64Max = LONG_MAX;
     VlInt(){};
     template <typename T>
-	VlInt(const T& value);
+	VlInt(T value){
+        if constexpr (std::is_same_v<T, std::vector<char>>){
+            if(IsValidVlIntBytes(value)){
+               this->VlIntBytes =  value;
+               this->VlIntValue =  VlintBytesToBigInter(this->VlIntBytes);
+               this->size = SizeOfVarNumber(this->VlIntValue); 
+            }
+        } else if constexpr(std::is_same_v<T,bigint>) {
+            if(IsValidVlIntValue(value)){
+                this->VlIntValue = value;
+                this->VlIntBytes = BigInterToVlintBytes(value);
+                this->size = SizeOfVarNumber(this->VlIntValue);
+            }
+        } else if constexpr(std::is_base_of<VlInt,T>::value) {
+            if(value.IsInitial()){
+                this->VlIntValue = value.GetVlIntValue();
+                this->VlIntBytes = value.GetVlIntBytes();
+                this->size = value.GetSize();
+            }
+        } else if constexpr(std::is_integral_v<T>) {
+            bigint num = bigint::_to_bigint(value);
+            if(IsValidVlIntValue(num)){
+                this->VlIntValue = num;
+                this->VlIntBytes = BigInterToVlintBytes(this->VlIntValue);
+                this->size = SizeOfVarNumber(num);
+            }
+        } else{
+            static_assert(always_false<T>,"unsported type to init !");
+        }
+    }
     static int SizeOfVarNumber(const bigint& bignum);
     inline int GetSize() const {return this->size;}
-    inline bigint GetVlIntValue() const {return this->VlIntValue;}
-    inline std::vector<char> GetVlIntBytes()const {return this->VlIntBytes;}
+    inline bigint& GetVlIntValue()  {return this->VlIntValue;}
+    inline std::vector<char>& GetVlIntBytes() {return this->VlIntBytes;}
     inline bool IsValidVlIntBytes(){return IsValidVlIntBytes(this->VlIntBytes);}
     inline bool IsValidVlIntValue(){return this->IsValidVlIntValue(this->VlIntValue);}
     inline bool IsInitial(){return this->size>0;}
     template<typename T>
-    bool operator > (const T n) const{
+    bool operator > (T n){
         if constexpr(std::is_base_of_v<VlInt,T>){
             return this->GetVlIntValue()>n.GetVlIntValue();
+        }else if constexpr(std::is_integral_v<T>){
+            return this->GetVlIntValue()>n;
+        }else{
+            static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
         }
-        return this->GetVlIntValue()>n;
     }
     template<typename T>
-    VlInt operator + (const T val){
-         if constexpr(std::is_same_v<T,VlInt>){
+    VlInt operator + (T val){
+        if constexpr(std::is_same_v<T,VlInt>){
             return VlInt(this->GetVlIntValue()+val.GetVlIntValue());
+        }else if constexpr(std::is_integral_v<T>){
+            return VlInt(this->GetVlIntValue()+val);
+        }else{
+            static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
         }
-        return VlInt(this->GetVlIntValue()+val);
     }
     template<typename T>
-    bool operator <= (const T n) const{
+    bool operator <= (T n) {
         if constexpr(std::is_same_v<T,VlInt>){
             return this->GetVlIntValue()<=n.GetVlIntValue();
+        }else if constexpr(std::is_integral_v<T>){
+            return this->GetVlIntValue()<=n;
+        }else{
+            static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
         }
-        return this->GetVlIntValue()<=n;
     }
     template<typename T>
-    bool operator != (const T n) const{
+    bool operator != (T n) {
         if constexpr(std::is_base_of_v<VlInt,T>){
             return this->GetVlIntValue()!=n.GetVlIntValue();
+        }else if constexpr(std::is_integral_v<T>){
+            return this->GetVlIntValue()!=n;
+        }else{
+            static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
         }
-        return this->GetVlIntValue()!=n;
     }
-private:
+    template<typename T>
+    bool operator == (T n){
+        if constexpr(std::is_base_of_v<VlInt,T>){
+            return this->GetVlIntValue()==n.GetVlIntValue();
+        }else if constexpr(std::is_integral_v<T>){
+            return this->GetVlIntValue()==n;
+        }else{
+            static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
+        }
+    }
+protected:
     std::vector<char> VlIntBytes;
     int size = -1;
     bigint VlIntValue;

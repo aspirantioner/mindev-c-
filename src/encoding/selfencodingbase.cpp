@@ -19,7 +19,9 @@ namespace mindev::encoding {
         if(targetLen<0){
             return std::nullopt;
         }
-        if(!encoder.EncoderReset(SizeT(targetLen),SizeT(0))){
+        auto size1 = SizeT(targetLen);
+        auto size2 = SizeT(0);
+        if(!encoder.EncoderReset(size1,size2)){
             return std::nullopt;
         }
         auto buffer = encoder.GetBuffer();

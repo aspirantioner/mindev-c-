@@ -2,7 +2,6 @@
 #ifndef SIGNATUREVALUE_H_
 #define SIGNATUREVALUE_H_
 
-#include "mindev/include/component/signature.h"
 #include "mindev/include/common/templateinit.h"
 #include "tlvcomponentbase.h"
 #include "mindev/include/encoding/iencodingable.h"

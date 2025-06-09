@@ -13,7 +13,7 @@ public:
     std::vector<char> buffer;
     bool isInitial;
     void EstimatorReset();
-    bool EncoderReset(const SizeT& totalReverse,const SizeT& reserveFromBack);
+    bool EncoderReset(SizeT& totalReverse,SizeT& reserveFromBack);
     inline bool Empty()const{return this->left+1>=this->right;}
     inline SizeT Size()const{return SizeT(this->right-this->left-1);}
     bool Check(const SizeT& size);
@@ -21,13 +21,13 @@ public:
     int AppendByte(char value);
     static std::vector<char> BuildNonNegativeIntegerArr(long uint64_value);
     int PrependByteArray(std::vector<char>& array,const SizeT& size);
-    int AppendByteArray(std::vector<char>& array,const SizeT& size);
+    int AppendByteArray(std::vector<char>& array,SizeT& size);
     int AppendNonNegativeInteger(long uint64_value);
     int PrependNonNegativeInteger(long uint64_value);
     int PrependVarNumber(const VlInt& varNumber);
-    int AppendVarNumber(const VlInt& varNumber);
-    int PrependByteArrayBlock(const VlInt& tlvType, std::vector<char>& array,const SizeT& size);
-    int AppendByteArrayBlock(const VlInt& tlvType, std::vector<char>& array,const SizeT& size);
+    int AppendVarNumber(VlInt& varNumber);
+    int PrependByteArrayBlock(VlInt& tlvType, std::vector<char>& array,SizeT& size);
+    int AppendByteArrayBlock(VlInt& tlvType, std::vector<char>& array,SizeT& size);
     int PrependBlock(Block& block);
     int AppendBlock(Block& block);
     std::vector<char> GetBuffer() const;

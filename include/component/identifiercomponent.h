@@ -24,8 +24,12 @@ private:
     
 public:
     IdentifierComponent(){};
-    
-    template<typename T>
+    IdentifierComponent(const IdentifierComponent&) = default;
+    IdentifierComponent(IdentifierComponent&&) noexcept = default;
+    IdentifierComponent& operator=(const IdentifierComponent&) = default;
+    IdentifierComponent& operator=(IdentifierComponent&&) noexcept = default;
+    //template<typename T>
+    template<typename T, std::enable_if_t<!std::is_same_v<std::decay_t<T>, IdentifierComponent>, int> = 0>
     explicit IdentifierComponent(T&& val) {
         using ParamType = std::conditional_t<std::is_scalar_v<std::decay_t<T>>, std::decay_t<T>, const std::decay_t<T>&>;
         const ParamType value = std::forward<T>(val);
@@ -55,7 +59,7 @@ public:
             this->identifierBlock.SetLength(mindev::encoding::VlInt(value.size()+1));
             std::vector<char> tmp(value.size()+1);
             tmp[0] = MarkerNonNegativeInteger;
-            std::copy(tmp.begin()+1,tmp.end(),value.begin());
+            std::copy(value.begin(),value.end(),tmp.begin()+1);
             this->identifierBlock.SetValue(tmp);
             this->marker = MarkerByteArray;
             this->byteArrayValue = value; 

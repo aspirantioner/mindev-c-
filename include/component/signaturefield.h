@@ -4,7 +4,7 @@
 #include "signaturecontainer.h"
 
 namespace mindev::component{
-    class SignatureField{
+    class SignatureField:public mindev::encoding::IEncodingAble,public TlvComponentBase{
 public:
     SignatureField(){}
     SignatureField(const SignatureContainer& container){this->signatures = container;}

@@ -15,7 +15,7 @@ namespace mindev::component{
             return -1;
         }
         totalLength+=tmpLen;
-        tmpLen = encoder.PrependVarNumber(new mindev::encoding::VlInt(mindev::encoding::TLV::TlvManagementLocalUri));
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvManagementLocalUri));
         if(tmpLen<0){
             return -1;
         }

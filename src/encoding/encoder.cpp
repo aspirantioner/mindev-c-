@@ -1,4 +1,5 @@
 #include "mindev/include/encoding/encoder.h"
+#include "mindev/include/encoding/block.h"
 #include <algorithm>
 #include <cstdint>
 
@@ -10,7 +11,7 @@ namespace mindev::encoding {
         this->isEstimator = true;
         this->totalReserve = SizeT(LONG_MAX);
     }
-    bool Encoder::EncoderReset(const SizeT& totalReverve,const SizeT& reserveFromBack){
+    bool Encoder::EncoderReset(SizeT& totalReverve,SizeT& reserveFromBack){
         if(reserveFromBack.GetVlIntValue()>totalReverve.GetVlIntValue()){
             return false;
         }    
@@ -67,8 +68,8 @@ namespace mindev::encoding {
         return std::vector<char>(vlInt.GetVlIntBytes().begin()+1,vlInt.GetVlIntBytes().end());
     }
     int Encoder::PrependByteArray(std::vector<char>& array,const SizeT& size){
-        if(Check(size) && size<=array.size()){
-            auto copy_len = bigint::_bigint_to<int>(size.GetVlIntValue());
+        if(Check(size) && const_cast<SizeT&>(size)<=int(array.size())){
+            auto copy_len = bigint::_bigint_to<int>(const_cast<SizeT&>(size).GetVlIntValue());
             if(!this->isEstimator){
                 std::copy(array.begin(),array.begin()+copy_len,this->buffer.begin()+this->left-copy_len+1);
             }
@@ -77,7 +78,7 @@ namespace mindev::encoding {
         }
         return -1;
     }
-    int Encoder::AppendByteArray(std::vector<char>& array,const SizeT& size){
+    int Encoder::AppendByteArray(std::vector<char>& array,SizeT& size){
         if(Check(size) && size<=array.size()){
             auto copy_len = bigint::_bigint_to<int>(size.GetVlIntValue());
             if(!this->isEstimator){
@@ -90,39 +91,47 @@ namespace mindev::encoding {
     }
     int Encoder::AppendNonNegativeInteger(long uint64_value){
         auto bytes = BuildNonNegativeIntegerArr(uint64_value);
-        return this->AppendByteArray(bytes,SizeT(bytes.size()));
+        auto tmp = SizeT(bytes.size());
+        return this->AppendByteArray(bytes,tmp);
     }
     int Encoder::PrependNonNegativeInteger(long uint64_value){
         auto bytes = BuildNonNegativeIntegerArr(uint64_value);
-        return this->PrependByteArray(bytes,SizeT(bytes.size()));
+        auto tmp = SizeT(bytes.size());
+        return this->PrependByteArray(bytes,tmp);
     }
     int Encoder::PrependVarNumber(const VlInt& varNumber){
-        auto temp = varNumber.GetVlIntBytes();
-        return this->PrependByteArray(temp, SizeT(varNumber.GetSize()));
+        auto temp = const_cast<VlInt&>(varNumber).GetVlIntBytes();
+        auto tmp = SizeT(const_cast<VlInt&>(varNumber).GetSize());
+        return this->PrependByteArray(temp, tmp);
     }
-    int Encoder::AppendVarNumber(const VlInt& varNumber){
+    int Encoder::AppendVarNumber(VlInt& varNumber){
         auto temp = varNumber.GetVlIntBytes();
-        return this->AppendByteArray(temp, SizeT(varNumber.GetSize()));
+        auto tmp = SizeT(varNumber.GetSize());
+        return this->AppendByteArray(temp, tmp);
     }
-    int Encoder::PrependByteArrayBlock(const VlInt& tlvType,std::vector<char>& array,const SizeT& size){
+    int Encoder::PrependByteArrayBlock(VlInt& tlvType,std::vector<char>& array,SizeT& size){
         int totalLength = this->PrependByteArray(array, size);
-        totalLength += this->PrependVarNumber(VlInt(size));
-        totalLength += this->PrependVarNumber((tlvType));
+        auto tmp = VlInt(size);
+        totalLength += this->PrependVarNumber(tmp);
+        totalLength += this->PrependVarNumber(tlvType);
         return totalLength;
     }
-    int Encoder::AppendByteArrayBlock(const VlInt& tlvType,std::vector<char>& array,const SizeT& size){
-        int totalLength =this->PrependVarNumber((tlvType)); 
-        totalLength += this->PrependVarNumber(VlInt(size));
+    int Encoder::AppendByteArrayBlock(VlInt& tlvType,std::vector<char>& array,SizeT& size){
+        int totalLength =this->PrependVarNumber(tlvType); 
+        auto tmp = VlInt(size);
+        totalLength += this->PrependVarNumber(tmp);
         totalLength += this->PrependByteArray(array, size);
         return totalLength;
     }
     int Encoder::PrependBlock(Block& block){
         auto temp = block.GetValue();
-        return this->PrependByteArrayBlock(block.GetType(), temp, SizeT(block.GetLength()));
+        auto tmp = SizeT(block.GetLength());
+        return this->PrependByteArrayBlock(block.GetType(), temp, tmp);
     }
     int Encoder::AppendBlock(Block& block){
         auto temp = block.GetValue();
-        return this->AppendByteArrayBlock(block.GetType(), temp, SizeT(block.GetLength()));
+        auto tmp = SizeT(block.GetLength());
+        return this->AppendByteArrayBlock(block.GetType(), temp, tmp);
     }
     std::vector<char> Encoder::GetBuffer() const {
         std::vector<char> res;

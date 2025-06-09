@@ -15,11 +15,11 @@ public:
     }
     inline mindev::encoding::ElementContainer& GetBlocks(){return this->blocks;}
     inline void AddBlock(const mindev::encoding::Block& block){this->blocks.AddElement(block);}
-    inline std::optional<std::reference_wrapper<mindev::encoding::Block>> GetBlock(int index) const{
+    inline std::optional<std::reference_wrapper<mindev::encoding::Block>> GetBlock(int index) {
         return this->blocks.GetBlock(index);
     }
-    inline std::optional<std::reference_wrapper<mindev::encoding::Block>> GetFirstBlockByType(const mindev::encoding::VlInt& tlvType) const{
-        return this->blocks.GetFirstBlockByType(tlvType);
+    inline std::optional<std::reference_wrapper<mindev::encoding::Block>> GetFirstBlockByType(const mindev::encoding::VlInt& tlvType) {
+        return this->blocks.GetFirstBlockByType(const_cast<mindev::encoding::VlInt&>(tlvType));
     }
     };
 }

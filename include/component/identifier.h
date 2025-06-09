@@ -2,10 +2,11 @@
 #define IDENTIFIER_H_
 
 #include "identifiercomponentcontainer.h"
-#include "mindev/include/component/controlparameters.h"
+// #include "mindev/include/component/controlparameters.h"
 #include "mindev/include/component/tlvcomponentbase.h"
 
 namespace mindev::component{
+    class ControlParameters;
     class Identifier:public mindev::encoding::IEncodingAble,public TlvComponentBase{
 public:
     typedef std::shared_ptr<Identifier> ptr;
@@ -39,7 +40,7 @@ public:
     inline void Append(const IdentifierComponent& component){
         this->components.AddElement(component);
     }
-    bool AppendCommandParameters(const ControlParameters& parameters);
+    bool AppendCommandParameters(ControlParameters& parameters);
     bool AppendVersionNumber(long versionNumber);
     bool AppendFragmentNumber(long fragmentNumber);
 private:

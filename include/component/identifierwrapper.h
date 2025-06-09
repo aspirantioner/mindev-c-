@@ -13,7 +13,7 @@ private:
     Identifier identifier = Identifier();
     mindev::encoding::VlInt tlvType = mindev::encoding::VlInt(mindev::encoding::TLV::TlvInvalid);
 public:
-    inline const mindev::encoding::VlInt GetTlvType(){
+    inline mindev::encoding::VlInt GetTlvType(){
         return this->tlvType;
     }
     inline  bool IsValid(){return mindev::encoding::TLV::IsValidIdentifierType(this->tlvType);};
@@ -24,10 +24,13 @@ public:
             auto&& [block] = std::forward_as_tuple(std::forward<Args>(args)...);
             if constexpr (std::is_same_v<std::decay_t<decltype(block)>, mindev::encoding::Block>){
                 if(block.ParseSubElements()){
-                    auto value = Identifier::BuildIdentifierByBlock(block.GetSubElements().GetBlock(0));
-                    if(value.has_value()){
-                        this->tlvType = block.GetType();
-                        this->identifier = value.value(); 
+                    auto tmp = block.GetSubElements().GetBlock(0);
+                    if(tmp.has_value()){
+                        auto value = Identifier::BuildIdentifierByBlock(tmp.value());
+                        if(value.has_value()){
+                            this->tlvType = block.GetType();
+                            this->identifier = value.value(); 
+                        }
                     }
                 }
             }else{

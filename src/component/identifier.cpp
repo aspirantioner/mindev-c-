@@ -3,14 +3,19 @@
 #include "mindev/include/component/identifiercomponent.h"
 #include "mindev/include/encoding/block.h"
 #include "mindev/include/encoding/elementcontainer.h"
-#include "mindev/include/encoding/selfencodingbase.h":
+#include "mindev/include/encoding/selfencodingbase.h"
+#include "mindev/include/component/controlparameters.h"
 #include <optional>
 
-mindev::component::IdentifierComponent BuildIdentifierComponentByBlock(mindev::encoding::Block& block);
-mindev::component::IdentifierComponent BuildIdentifierComponentByVersionNumber(long versionNumber);
-mindev::component::IdentifierComponent BuildIdentifierComponentByFragmentNumber(long FragmentNumber);
 using namespace mindev::encoding;
 namespace mindev::component{
+    
+    class IdentifierComponent; // 或完整定义
+    // 声明全局函数（供外部调用）
+    IdentifierComponent BuildIdentifierComponentByVersionNumber(long versionNumber);
+    IdentifierComponent BuildIdentifierComponentByFragmentNumber(long fragmentNumber);
+    IdentifierComponent BuildIdentifierComponentByBlock(mindev::encoding::Block& block);
+
     const std::string mindev::component::Identifier::identifier_split_str = "/";
     std::optional<Identifier> Identifier::BuildIdentifierByBlock(mindev::encoding::Block& block){
         if(!block.ParseSubElements()){
@@ -62,7 +67,7 @@ namespace mindev::component{
         }
 
         // 编码 TLV-LENGTH
-        int tmpLen = encoder.PrependVarNumber(new mindev::encoding::VlInt(totalLength));
+        int tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
         if (tmpLen < 0) {
             return -1;
         }
@@ -70,7 +75,7 @@ namespace mindev::component{
 
         // 编码 TLV-TYPE
 
-        tmpLen = encoder.PrependVarNumber(new mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifier));
+        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifier));
 
         if (tmpLen < 0) {
             return -1;
@@ -80,7 +85,7 @@ namespace mindev::component{
         return totalLength;
     }
     bool Identifier::WireDecode(mindev::encoding::Block& block){
-       if (!mindev::encoding::TLV::ExpectType(block.GetType(), new mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifier))) {
+       if (!mindev::encoding::TLV::ExpectType(block.GetType(), mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifier))) {
             return false;
         }
 
@@ -92,7 +97,7 @@ namespace mindev::component{
         this->components.Clear();
         mindev::encoding::ElementContainer elementContainer = block.GetSubElements();
         for (auto elem:elementContainer.GetElements()) {
-            auto tmp = BuildIdentifierComponentByBlock(elem);
+            auto tmp = mindev::component::BuildIdentifierComponentByBlock(elem);
             if(tmp.IsValid()){
                 this->components.AddElement(tmp);
             }else{
@@ -124,6 +129,7 @@ namespace mindev::component{
     }
     bool Identifier::AppendCommandParameters(ControlParameters& parameters){
         auto selfEncodingBase = mindev::encoding::SelfEncodingBase();
+        static_assert(std::is_base_of<mindev::encoding::IEncodingAble, mindev::component::ControlParameters>::value, "ControlParameters should derive from IEncodingAble");
         auto block = selfEncodingBase.SelfWireEncode(parameters);
         if(!block.has_value()){
             return false;
@@ -133,7 +139,7 @@ namespace mindev::component{
         return true;
     }
     bool Identifier::AppendVersionNumber(long versionNumber){
-        auto res = BuildIdentifierComponentByVersionNumber(versionNumber);
+        auto res = mindev::component::BuildIdentifierComponentByVersionNumber(versionNumber);
         if(!res.IsValid()){
             return false;
         }
@@ -141,7 +147,7 @@ namespace mindev::component{
         return true;
     }
     bool Identifier::AppendFragmentNumber(long fragmentNumber){
-        auto res = BuildIdentifierComponentByFragmentNumber(fragmentNumber);
+        auto res = mindev::component::BuildIdentifierComponentByFragmentNumber(fragmentNumber);
         if(!res.IsValid()){
             return false;
         }

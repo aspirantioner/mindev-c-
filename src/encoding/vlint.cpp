@@ -77,37 +77,6 @@ namespace mindev::encoding {
         }
         return res;
     }
-    template <typename T>
-	VlInt::VlInt(const T& value){
-        if constexpr (std::is_same_v<T, std::vector<char>>){
-            if(IsValidVlIntBytes(value)){
-               this->VlIntBytes =  value;
-               this->VlIntValue =  VlintBytesToBigInter(this->VlIntBytes);
-               this->size = SizeOfVarNumber(this->VlIntValue); 
-            }
-        } else if constexpr(std::is_same_v<T,bigint>) {
-            if(IsValidVlIntValue(value)){
-                this->VlIntValue = value;
-                this->VlIntBytes = BigInterToVlintBytes(value);
-                this->size = SizeOfVarNumber(this->VlIntValue);
-            }
-        } else if constexpr(std::is_same_v<T, VlInt>) {
-            if(value.isInitial()){
-                this->VlIntValue = value.GetVlIntValue();
-                this->VlIntBytes = value.GetVlIntBytes();
-                this->size = value.GetSize();
-            }
-        } else if constexpr(std::is_integral_v<T>) {
-            bigint num = bigint::_to_bigint(value);
-            if(IsValidVlIntValue(num)){
-                this->VlIntValue = num;
-                this->VlIntBytes = BigInterToVlintBytes(this->VlIntValue);
-                this->size = SizeOfVarNumber(num);
-            }
-        } else{
-            static_assert(always_false<T>,"unsported type to init !");
-        }
-    }
 }
 
 // /**

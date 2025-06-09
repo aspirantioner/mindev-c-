@@ -6,12 +6,14 @@ namespace mindev::component{
             return 0;
         }
         int totalLength = 0;
-        int tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
+        auto tmp1 = mindev::encoding::VlInt(totalLength);
+        int tmpLen = encoder.PrependVarNumber(tmp1);
         if(tmpLen<0){
             return -1;
         }
         totalLength += tmpLen;
-        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(mindev::encoding::TLV::TlvCanBePrefix));
+        auto tmp2 = mindev::encoding::VlInt(mindev::encoding::TLV::TlvCanBePrefix);
+        tmpLen = encoder.PrependVarNumber(tmp2);
         if(tmpLen<0){
             return -1;
         }

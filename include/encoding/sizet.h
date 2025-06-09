@@ -2,23 +2,28 @@
 #define SIZET_H_
 
 #include "mindev/include/encoding/vlint.h"
+#include "mindev/include/common/templateinit.h"
+
 namespace mindev::encoding {
-    class SizeT :public VlInt{
+    class SizeT :public VlInt,public TemplateInit{
 public:
         using VlInt::VlInt;
         SizeT(){};
         template <typename T>
-	    SizeT(const T& value):VlInt(value){};
+	    SizeT(const T value):VlInt(value){};
         template<typename T>
-        SizeT operator + (const T val) const {
-            if constexpr(std::is_same_v<T,SizeT> || std::is_same_v<T, VlInt>){
+        SizeT operator + (T val) {
+            if constexpr(std::is_base_of<VlInt,T>::value){
                 return SizeT(this->GetVlIntValue()+val.GetVlIntValue());
+            }else if constexpr(std::is_integral_v<T>){
+                return this->GetVlIntValue()+val;
+            }else{
+                static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
             }
-            return SizeT(this->GetVlIntValue()+val);
         }
-        SizeT operator + (const SizeT& val) const {
-            return SizeT(this->GetVlIntValue()+val.GetVlIntValue());
-        }
+//         SizeT operator + (SizeT& val) {
+//             return SizeT(this->GetVlIntValue()+val.GetVlIntValue());
+//         }
     };
 }
 

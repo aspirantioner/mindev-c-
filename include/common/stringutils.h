@@ -8,7 +8,7 @@
 #include <iomanip>
 
 namespace stringutils {
-    std::vector<std::string> SplitBySubstr(const std::string& input, const std::string& delimiter) {
+    static std::vector<std::string> SplitBySubstr(const std::string& input, const std::string& delimiter) {
         std::vector<std::string> result;
         size_t pos = 0, prev = 0;
     
@@ -22,14 +22,14 @@ namespace stringutils {
     
         return result;
     }
-    bool StartWith(const std::string& str, const std::string& prefix) {
+    static bool StartWith(const std::string& str, const std::string& prefix) {
         return str.size() >= prefix.size() &&
                std::equal(prefix.begin(), prefix.end(), str.begin());
     }
-    inline char ToHexChar(unsigned char n) {
+    static inline char ToHexChar(unsigned char n) {
         return "0123456789ABCDEF"[n & 0xF];
     }
-    inline unsigned char FromHexToChar(char c) {
+    static inline unsigned char FromHexToChar(char c) {
         if (c >= '0' && c <= '9') {
             return static_cast<unsigned char>(c - '0');
         } else if (c >= 'a' && c <= 'f') {
@@ -40,7 +40,7 @@ namespace stringutils {
             return 100; // 标记非法
         }
     }
-    std::string Escape(const std::string& str) {
+    static std::string Escape(const std::string& str) {
         std::ostringstream oss;
         for (unsigned char ch : str) {
             if ((ch >= 'a' && ch <= 'z') ||
@@ -56,7 +56,7 @@ namespace stringutils {
         }
         return oss.str();
     }
-    std::string Unescape(const std::string& str) {
+    static std::string Unescape(const std::string& str) {
         std::ostringstream oss;
         size_t len = str.length();
     

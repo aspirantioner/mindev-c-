@@ -5,12 +5,14 @@ namespace mindev::component{
         
         int totalLength = 0;
         std::vector<char> vec(this->value.begin(),this->value.end());
-        int tmpLen = encoder.PrependByteArray(vec,mindev::encoding::SizeT(vec.size()));
+        auto tmp1 = mindev::encoding::SizeT(vec.size());
+        int tmpLen = encoder.PrependByteArray(vec,tmp1);
         if(tmpLen<0){
             return -1;
         }
         totalLength += tmpLen;
-        tmpLen = encoder.PrependVarNumber(mindev::encoding::VlInt(totalLength));
+        auto tmp2 = mindev::encoding::VlInt(totalLength);
+        tmpLen = encoder.PrependVarNumber(tmp2);
         if(tmpLen<0){
             return -1;
         }
