@@ -31,12 +31,13 @@
 #include "mindev/include/component/identifier.h"
 #include <vector>
 #include <string>
+#include <optional>
 namespace mindev::encoding{
     class Block;
     class Encoder;
 }
 namespace mindev::packet{
-    class CPacket:public InteractWithField,public IEncodingAble{
+    class CPacket:public InteractWithField,public mindev::encoding::IEncodingAble{
     public:
         MINPacket minPacket;
         mindev::component::TTL ttl;
@@ -44,30 +45,29 @@ namespace mindev::packet{
         mindev::component::Identifier srcIdentifier;
         mindev::component::Identifier dstIdentifier;
         std::vector<char> rawData; //CPacket编码后的数据
-        CPacket();
-        CPacket(mindev::component::Identifier srcIdentifier,mindev::component::Identifier dstIdentifier ,mindev::component::Payload payload,mindev::component::TTL ttl);
-        ~CPacket();
-        std::vector<char>& GetRawData() const;
+        CPacket(){};
+        CPacket(const mindev::component::Identifier& srcIdentifier,const mindev::component::Identifier& dstIdentifier ,const mindev::component::Payload& payload,const mindev::component::TTL& ttl);
+        std::vector<char>& GetRawData(){return this->rawData};
         /**
          * @Description: 编码CPacket
          */    
         bool EncodeSelf();
-        CPacket CreateCPacketByMINPacket(MINPacket& minpacket);
+        std::optional<CPacket> CreateCPacketByMINPacket(const MINPacket& minpacket);
         /**
          * @Description: 获取、设置源标识
          */    
-        mindev::component::Identifier& GetSrcIdentifier() const;
-        void SetSrcIdentifier(mindev::component::Identifier& srcIdentifier);
+        mindev::component::Identifier& GetSrcIdentifier(){return this->srcIdentifier;};
+        void SetSrcIdentifier(const mindev::component::Identifier& srcIdentifier){this->srcIdentifier = srcIdentifier};
         /**
          * @Description: 获取、设置目的标识
          */    
-        mindev::component::Identifier& GetDstIdentifier() const;
-        void SetDstIdentifier(mindev::component::Identifier& dstIdentifier);
+        mindev::component::Identifier& GetDstIdentifier(){return this->dstIdentifier;};
+        void SetDstIdentifier(const mindev::component::Identifier& dstIdentifier){this->dstIdentifier = dstIdentifier;};
         /**
          * @Description: 获取、设置TTL
          */    
-        mindev::component::TTL& GetTtl() const;
-        void SetTtl(mindev::component::TTL& ttl);
+        mindev::component::TTL& GetTtl() {return this->ttl;};
+        void SetTtl(const mindev::component::TTL& ttl){this->ttl = ttl;};
         /**
          * @Description: 展示目的标识
          */    
@@ -75,7 +75,7 @@ namespace mindev::packet{
         /**
          * @Description: 获取pyload中的value
          */    
-        std::vector<char>& GetValue() const;
+        std::vector<char>& GetValue();
         /**
          * @Description: 将CPacket的各项属性填充到目标MINPacket中定义的对应分区当中
          * @param {MINPacket*} minPacket
@@ -89,7 +89,7 @@ namespace mindev::packet{
          * @Description: 从minPacket的对应分区中提取CPacket的各项属性
          * @param {MINPacket*} minPacket
          */    
-        bool DoExtraDataFromFields(MINPacket& minPacket);
+        bool DoExtraDataFromFields(const MINPacket& minPacket);
         /**
          * @Description: 从本对象的minPacket中提取CPacket的各项属性
          */    

@@ -3,6 +3,10 @@
 
 #include "mindev/include/encoding/iencodingable.h"
 #include "tlvcomponentbase.h"
+#include "mindev/include/encoding/vlint.h"
+#include <optional>
+#include "mindev/include/encoding/block.h"
+#include "mindev/include/encoding/elementcontainer.h"
 
 namespace mindev::component{
     class ReadOnlyField:public TlvComponentBase,public mindev::encoding::IEncodingAble{
@@ -13,6 +17,7 @@ public:
     }
     inline void ClearBlocks(){this->blocks.Clear();}
     inline mindev::encoding::ElementContainer& GetBlocks(){return this->blocks;}
+    std::optional<std::reference_wrapper<Block>> GetBlockByType(const mindev::encoding::VlInt& tlvType);
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
 private:
