@@ -34,6 +34,7 @@
 #include "mindev/include/component/congestionmark.h"
 #include "mindev/include/component/freshnessperiod.h"
 #include "minpacket.h"
+#include <optional>
 
 namespace mindev::encoding{
     class Block;
@@ -51,12 +52,12 @@ public:
     mindev::component::TTL ttl;
     mindev::component::Identifier name;
     Data(){};
-    Data(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::FreshnessPeriod& freshnessPeriod,mindev::component::NoCache& noCache,mindev::component::CongestionMark congestionMark,mindev::component::TTL& ttl);
+    Data(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::FreshnessPeriod& freshnessPeriod,const mindev::component::NoCache& noCache,const mindev::component::CongestionMark congestionMark,const mindev::component::TTL& ttl);
     /**
      * 根据一个 MINPacket 创建一个 Data
      * @return
      */
-    Data CreateDataByMINPacket(MINPacket& minPacket);
+    std::optional<Data> CreateDataByMINPacket(const MINPacket& minPacket);
     /**
      * 展示数据包的 URI
      * @return
@@ -66,13 +67,13 @@ public:
      * 获取内容数据包的名字
      * @return
      */
-    mindev::component::Identifier& GetName() const;
+    mindev::component::Identifier& GetName(){return this->name;};
     /**
      * 使用字符串设置数据包的名字
      * @param name
      * @throws PacketException
      */
-    void SetName(mindev::component::Identifier& name);
+    void SetName(const mindev::component::Identifier& name){this->name=name;};
     /**
      * 使用字符串设置数据包的名字
      * @param name
@@ -93,7 +94,7 @@ public:
      * 从 MINPacket 的分区中提取出 Data 的各项属性
      * @return
      */
-    bool DoExtraDataFromFields(MINPacket& minPacket);
+    bool DoExtraDataFromFields(const MINPacket& minPacket);
     /**
      * 从 MINPacket 的分区中提取出 Data 的各项属性
      * @return
@@ -113,5 +114,6 @@ public:
      */
     bool WireDecode(mindev::encoding::Block& block);
     };
+}
 
 #endif

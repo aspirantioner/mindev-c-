@@ -33,9 +33,9 @@
 //
 #ifndef INTEREST_H_
 #define INTEREST_H_
-#include "mindev/include/packet/interactwithfield.h"
+#include "interactwithfield.h"
+#include "minpacket.h"
 #include "mindev/include/encoding/iencodingable.h"
-#include "mindev/include/packet/minpacket.h"
 #include "mindev/include/component/canbeprefix.h"
 #include "mindev/include/component/mustberefresh.h"
 #include "mindev/include/component/nonce.h"
@@ -52,7 +52,7 @@
 #include "mindev/include/encoding/encoder.h"
 #include "mindev/include/component/controlparameters.h"
 #include <string>
-
+#include <optional>
 namespace mindev::packet{
     class Interest:public InteractWithField,public mindev::encoding::IEncodingAble{
 public:
@@ -69,13 +69,13 @@ public:
     mindev::component::IncomingLogicFaceId incomingLogficFaceId;
     mindev::component::Identifier name;
     Interest(){};
-    Interest(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::InterestLifeTime& interestLifeTime,mindev::component::CanBePrefix& canBePrefix,mindev::component::MustBeRefresh& mustBeRefresh,mindev::component::Nonce& nonce,mindev::component::HopLimit& hopLimit,mindev::component::NackHeader& nackHeader,mindev::component::CongestionMark& congestionMark,mindev::component::TTL& ttl,mindev::component::IncomingLogicFaceId& incomingLogficFaceId);
+    Interest(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::InterestLifeTime& interestLifeTime,const mindev::component::CanBePrefix& canBePrefix,const mindev::component::MustBeRefresh& mustBeRefresh,const mindev::component::Nonce& nonce,const mindev::component::HopLimit& hopLimit,const mindev::component::NackHeader& nackHeader,const mindev::component::CongestionMark& congestionMark,const mindev::component::TTL& ttl,const mindev::component::IncomingLogicFaceId& incomingLogficFaceId);
     /**
      * 根据一个 MINPacket 创建一个 Interest
      * @param minPacket
      * @return
      */
-    std::optional<Interest> CreateInterestByMINPacket(MINPacket& minPacket);
+    std::optional<Interest> CreateInterestByMINPacket(const MINPacket& minPacket);
     /**
      * 获取内容兴趣包的名字
      *
@@ -93,21 +93,21 @@ public:
      * @param name
      * @throws PacketException
      */
-    void setNameByString(std::string& name);
+    void setNameByString(const std::string& name);
     /**
      * 判断一个指定的名字和当前的兴趣包的名字是否匹配
      *
      * @param identifier
      * @return
      */
-    bool MatchesName(mindev::component::Identifier& identifier);
+    bool MatchesName(const mindev::component::Identifier& identifier);
     /**
      * 判断一个内容兴趣包和一个内容数据包是否匹配
      *
      * @param data
      * @return
      */
-    bool MatchesData(Data& data);
+    bool MatchesData(const Data& data);
     /**
      * 判断一个内容兴趣包和当前兴趣包是否匹配
      *
@@ -126,7 +126,7 @@ public:
      * @param parameters
      * @return
      */
-    bool AppendCommandParameters(mindev::mgmt::ControlParameters& parameters);
+    bool AppendCommandParameters(const mindev::mgmt::ControlParameters& parameters){return this->name.AppendCommandParameters(parameters);};
     /**
      * AppendVersionNumber 在名字后面添加一个版本号
      * @param versionNumber
