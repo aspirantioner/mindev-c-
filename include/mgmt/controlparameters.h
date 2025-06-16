@@ -2,6 +2,16 @@
 #define MGMT_CONTROLPARAMETERS_H_
 
 #include "mindev/include/component/controlparameterprefix.h"
+#include "mindev/include/component/controlparameterlogicfaceid.h"
+#include "mindev/include/component/controlparametercost.h"
+#include "mindev/include/component/controlparametercapacity.h"
+#include "mindev/include/component/controlparametercount.h"
+#include "mindev/include/component/controlparameterexpiretime.h"
+#include "mindev/include/component/controlparameteruri.h"
+#include "mindev/include/component/controlparameterlocaluri.h"
+#include "mindev/include/component/controlparameterlogicfacepersistency.h"
+#include "mindev/include/component/controlparameterurischeme.h"
+#include "mindev/include/component/controlparametermtu.h"
 #include "mindev/include/encoding/iencodingable.h"
 
 namespace mindev::mgmt{
@@ -20,6 +30,7 @@ public:
     mindev::component::ControlParameterMtu controlParameterMtu;
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
+    bool Parse(Interest& interest);
     };
 }
 
