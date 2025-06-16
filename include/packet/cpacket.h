@@ -47,7 +47,7 @@ namespace mindev::packet{
         std::vector<char> rawData; //CPacket编码后的数据
         CPacket(){};
         CPacket(const mindev::component::Identifier& srcIdentifier,const mindev::component::Identifier& dstIdentifier ,const mindev::component::Payload& payload,const mindev::component::TTL& ttl);
-        std::vector<char>& GetRawData(){return this->rawData};
+        std::vector<char>& GetRawData(){return this->rawData;};
         /**
          * @Description: 编码CPacket
          */    
@@ -57,7 +57,7 @@ namespace mindev::packet{
          * @Description: 获取、设置源标识
          */    
         mindev::component::Identifier& GetSrcIdentifier(){return this->srcIdentifier;};
-        void SetSrcIdentifier(const mindev::component::Identifier& srcIdentifier){this->srcIdentifier = srcIdentifier};
+        void SetSrcIdentifier(const mindev::component::Identifier& srcIdentifier){this->srcIdentifier = srcIdentifier;};
         /**
          * @Description: 获取、设置目的标识
          */    
@@ -70,12 +70,14 @@ namespace mindev::packet{
         void SetTtl(const mindev::component::TTL& ttl){this->ttl = ttl;};
         /**
          * @Description: 展示目的标识
-         */    
-        std::string ToUri();
+         */
+        inline std::string ToUri() { return this->dstIdentifier.ToUri();}
         /**
          * @Description: 获取pyload中的value
          */    
-        std::vector<char>& GetValue();
+        inline std::vector<char>& GetValue(){
+            return this->payload.GetValue();
+        }
         /**
          * @Description: 将CPacket的各项属性填充到目标MINPacket中定义的对应分区当中
          * @param {MINPacket*} minPacket

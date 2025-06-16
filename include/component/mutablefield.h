@@ -11,7 +11,7 @@ namespace mindev::component{
     class MutableField:public TlvComponentBase,public mindev::encoding::IEncodingAble{
 public:
     MutableProtectField mutableProtectField;
-    MutableDangerousField mutableDangerousFiled;
+    MutableDangerousField mutableDangerousField;
     MutableField(){}
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;

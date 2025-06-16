@@ -13,7 +13,7 @@ public:
     std::vector<char> buffer;
     bool isInitial;
     void EstimatorReset();
-    bool EncoderReset(SizeT& totalReverse,SizeT& reserveFromBack);
+    bool EncoderReset(const SizeT& totalReverse,const SizeT& reserveFromBack);
     inline bool Empty()const{return this->left+1>=this->right;}
     inline SizeT Size()const{return SizeT(this->right-this->left-1);}
     bool Check(const SizeT& size);

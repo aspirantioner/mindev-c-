@@ -29,13 +29,6 @@ namespace mindev::component{
         totalLength+=tmpLen;
         return totalLength;
     }
-    std::option<std::reference_wrapper<Block>> ReadOnlyField::GetBlockByType(const mindev::encoding::VlInt& tlvType){
-        if(this->blocks.GetBlockByType(tlvType)){
-            return this->blocks.GetBlockByType(tlvType);
-        }else{
-            return std::nullopt;
-        }
-    }
     bool ReadOnlyField::WireDecode(mindev::encoding::Block& block){
         if(!mindev::encoding::TLV::ExpectType(block.GetType(),mindev::encoding::VlInt(mindev::encoding::TLV::TlvReadOnlyField))){
             return false;

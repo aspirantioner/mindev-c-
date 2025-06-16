@@ -127,9 +127,8 @@ namespace mindev::component{
         }
         return res;
     }
-    bool Identifier::AppendCommandParameters(ControlParameters& parameters){
+    bool Identifier::AppendCommandParameters(mindev::mgmt::ControlParameters& parameters){
         auto selfEncodingBase = mindev::encoding::SelfEncodingBase();
-        static_assert(std::is_base_of<mindev::encoding::IEncodingAble, mindev::component::ControlParameters>::value, "ControlParameters should derive from IEncodingAble");
         auto block = selfEncodingBase.SelfWireEncode(parameters);
         if(!block.has_value()){
             return false;

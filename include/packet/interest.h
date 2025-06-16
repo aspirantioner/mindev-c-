@@ -34,6 +34,7 @@
 #ifndef INTEREST_H_
 #define INTEREST_H_
 #include "interactwithfield.h"
+#include "mindev/include/mgmt/controlparameters.h"
 #include "minpacket.h"
 #include "mindev/include/encoding/iencodingable.h"
 #include "mindev/include/component/canbeprefix.h"
@@ -68,6 +69,8 @@ public:
     mindev::component::NackHeader nackHeader;
     mindev::component::IncomingLogicFaceId incomingLogficFaceId;
     mindev::component::Identifier name;
+    bool isCommandInterest=false;
+    
     Interest(){};
     Interest(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::InterestLifeTime& interestLifeTime,const mindev::component::CanBePrefix& canBePrefix,const mindev::component::MustBeRefresh& mustBeRefresh,const mindev::component::Nonce& nonce,const mindev::component::HopLimit& hopLimit,const mindev::component::NackHeader& nackHeader,const mindev::component::CongestionMark& congestionMark,const mindev::component::TTL& ttl,const mindev::component::IncomingLogicFaceId& incomingLogficFaceId);
     /**
@@ -93,28 +96,33 @@ public:
      * @param name
      * @throws PacketException
      */
-    void setNameByString(const std::string& name);
+    inline void SetNameByString(const std::string& name){
+        auto val = mindev::component::Identifier::BuildIdentifierByString(name);
+        if(val.has_value()){
+            this->name=val.value();    
+        }
+    }
     /**
      * 判断一个指定的名字和当前的兴趣包的名字是否匹配
      *
      * @param identifier
      * @return
      */
-    bool MatchesName(const mindev::component::Identifier& identifier);
+    bool MatchesName(const mindev::component::Identifier& identifier){return false;};
     /**
      * 判断一个内容兴趣包和一个内容数据包是否匹配
      *
      * @param data
      * @return
      */
-    bool MatchesData(const Data& data);
+    bool MatchesData(const Data& data){return false;};
     /**
      * 判断一个内容兴趣包和当前兴趣包是否匹配
      *
      * @param interest
      * @return
      */
-    bool MatchesInterest(Interest& interest);
+    bool MatchesInterest(const Interest& interest){return false;};
     /**
      * 展示兴趣包的 URI
      *

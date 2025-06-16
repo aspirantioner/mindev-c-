@@ -10,6 +10,7 @@ public:
     SignatureField(const SignatureContainer& container){this->signatures = container;}
     inline void AddSignature(const Signature& signature){this->signatures.AddElement(signature);}
     inline SignatureContainer& GetSignatures(){return this->signatures;}
+    inline void SetSignatures(const SignatureContainer& signatures){this->signatures=signatures;}
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
 private:

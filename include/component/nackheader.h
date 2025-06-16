@@ -15,7 +15,7 @@ public:
     static const long NackReasonNoRoute = 2;
     NackHeader(){};
     NackHeader(long nackReason){this->SetNackReason(nackReason);this->doInitial();}
-    inline long  GetNackReason(){return this->nackReason;}
+    inline long  GetNackReason()const{return this->nackReason;}
     inline void SetNackReason(long nackReason){this->nackReason = nackReason;}
     static std::string GetNackReasonString(long reason){
         switch(reason){

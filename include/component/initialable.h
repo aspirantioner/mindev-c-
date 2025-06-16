@@ -8,7 +8,7 @@ public:
     void doInitial(){this->initial= true;};
 
     // 判断当前组件是否已经初始化
-    bool isInitial(){return this->initial;};
+    bool isInitial()const{return this->initial;};
 protected:
     bool initial = false;
     };

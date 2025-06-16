@@ -11,16 +11,16 @@ namespace mindev::encoding {
         this->isEstimator = true;
         this->totalReserve = SizeT(LONG_MAX);
     }
-    bool Encoder::EncoderReset(SizeT& totalReverve,SizeT& reserveFromBack){
-        if(reserveFromBack.GetVlIntValue()>totalReverve.GetVlIntValue()){
+    bool Encoder::EncoderReset(const SizeT& totalReverve,const SizeT& reserveFromBack){
+        if(const_cast<SizeT&>(reserveFromBack).GetVlIntValue()>const_cast<SizeT&>(totalReverve).GetVlIntValue()){
             return false;
         }    
-        auto len = bigint::_bigint_to<int>(totalReverve.GetVlIntValue());
+        auto len = bigint::_bigint_to<int>(const_cast<SizeT&>(totalReverve).GetVlIntValue());
         if(len<=0){
             return false;
         }
         this->buffer.resize(len);
-        this->right = bigint::_bigint_to<int>(totalReverve.GetVlIntValue() - reserveFromBack.GetVlIntValue());
+        this->right = bigint::_bigint_to<int>(const_cast<SizeT&>(totalReverve).GetVlIntValue() - const_cast<SizeT&>(reserveFromBack).GetVlIntValue());
         this->left = this->right-1;
         this->isInitial = true;
         this->isEstimator = false;

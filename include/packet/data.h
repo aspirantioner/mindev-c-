@@ -57,7 +57,7 @@ public:
      * 根据一个 MINPacket 创建一个 Data
      * @return
      */
-    std::optional<Data> CreateDataByMINPacket(const MINPacket& minPacket);
+    std::optional<Data> CreateDataByMINPacket(MINPacket& minPacket);
     /**
      * 展示数据包的 URI
      * @return
@@ -79,7 +79,7 @@ public:
      * @param name
      * @throws PacketException
      */
-    void SetNameByString(std::string name);
+    void SetNameByString(const std::string& name);
       /**
      * 将 Data 的各项属性填充到 MINPacket 中定义的对应分区当中
      * @return
@@ -94,7 +94,7 @@ public:
      * 从 MINPacket 的分区中提取出 Data 的各项属性
      * @return
      */
-    bool DoExtraDataFromFields(const MINPacket& minPacket);
+    bool DoExtraDataFromFields(MINPacket& minPacket);
     /**
      * 从 MINPacket 的分区中提取出 Data 的各项属性
      * @return

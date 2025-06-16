@@ -1,12 +1,12 @@
 #include "mindev/include/packet/data.h"
 #include "mindev/include/encoding/selfencodingbase.h"
 #include "mindev/include/encoding/tlv.h"
-#include "mindev/include/component/elementcontainer.h"
+#include "mindev/include/encoding/elementcontainer.h"
 #include "mindev/include/component/identifierwrapper.h"
 
 
 namespace mindev::packet{
-    Data::Data(mindev::component::Identifier& name,mindev::component::Payload& payload,mindev::component::FreshnessPeriod& freshnessPeriod,mindev::component::NoCache& noCache,mindev::component::CongestionMark congestionMark,mindev::component::TTL& ttl){
+    Data::Data(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::FreshnessPeriod& freshnessPeriod,const mindev::component::NoCache& noCache,const mindev::component::CongestionMark congestionMark,const mindev::component::TTL& ttl){
         this->name=name;
         this->payload=payload;
         this->freshnessPeriod=freshnessPeriod;
@@ -16,18 +16,21 @@ namespace mindev::packet{
     std::optional<Data> Data::CreateDataByMINPacket(MINPacket& minPacket){
         Data data;
         data.minPacket.signatureField.SetSignatures(minPacket.signatureField.GetSignatures());
-        if (!data->DoExtraDataFromFields(minPacket)) {
+        if (!data.DoExtraDataFromFields(minPacket)) {
             return std::nullopt;
         }
         return data;
     
     }
-    std::string Data::ToUir(){
+    std::string Data::ToUri(){
         return this->name.ToUri();
     }
 
-    void Data::SetNameByString(std::string& name){
-        this->name=mindev::component::Identifier(name);
+    void Data::SetNameByString(const std::string& name){
+        auto tmp = mindev::component::Identifier::BuildIdentifierByString(name);
+        if(tmp.has_value()){
+            this->name = tmp.value();
+        }
     }
     bool Data::DoFillDataToFields(MINPacket& minPacket){
                 /////////////////////////////////////////////////////////////
@@ -52,8 +55,8 @@ namespace mindev::packet{
         //填充可变非保护区
         minPacket.mutableField.mutableDangerousField.ClearBlocks();
         // TTL
-        block =mindev::encoding::SelfEncodingBase().selfWireEncode(this->ttl);
-        if (block == nullopt) {
+        block =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->ttl);
+        if (block == std::nullopt) {
             return false;
         }
         minPacket.mutableField.mutableDangerousField.AddBlock(*block);
@@ -67,17 +70,17 @@ namespace mindev::packet{
         /////////////////////////////////////////////////////////////
         minPacket.readOnlyField.ClearBlocks();
         //freshnessPeriod
-        if (this->freshnessPeriod.IsInitial()) {
-            block=mindev::encoding::SelfEncodingBase().selfWireEncode(this->freshnessPeriod);
-            if (block==nullopt) {
-                return false
+        if (this->freshnessPeriod.isInitial()) {
+            block=mindev::encoding::SelfEncodingBase().SelfWireEncode(this->freshnessPeriod);
+            if (block==std::nullopt) {
+                return false;
             }
             minPacket.readOnlyField.AddBlock(*block);
         }
         //noCache
-        if (this->noCache.IsInitial()) {
+        if (this->noCache.isInitial()) {
             block=mindev::encoding::SelfEncodingBase().SelfWireEncode(this->noCache);
-            if (block==nullopt) {
+            if (block==std::nullopt) {
                 return false;
             }
             minPacket.readOnlyField.AddBlock(*block);
@@ -85,7 +88,7 @@ namespace mindev::packet{
         //Payload
         if (!this->payload.GetValue().empty()) {
             block=mindev::encoding::SelfEncodingBase().SelfWireEncode(this->payload);
-            if (block==nullopt) {
+            if (block==std::nullopt) {
                 return false;
             }
             minPacket.readOnlyField.AddBlock(*block);
@@ -94,8 +97,8 @@ namespace mindev::packet{
         //// 填充标识区
         /////////////////////////////////////////////////////////////
         minPacket.identifierField.ClearIdentifiers();
-        auto identifierWrapper=mindev::component::IdentifierWrapper().CreateContentDataIdentifierByComponents(this->name.GetComponents());
-        if(identifierWrapper==nullopt){
+        auto identifierWrapper= mindev::component::IdentifierWrapper::BuildIdentifierWrapper(this->name.GetComponents(),mindev::encoding::TLV::TlvIdentifierContentInterest);
+        if(identifierWrapper==std::nullopt){
             return false;
         }
         minPacket.identifierField.AddIdentifier(*identifierWrapper);
@@ -110,7 +113,7 @@ namespace mindev::packet{
         return this->DoFillDataToFields(this->minPacket);
     }
 
-    bool Data::DoExtraDataFromFields(const MINPacket& minPacket){
+    bool Data::DoExtraDataFromFields(MINPacket& minPacket){
                     /////////////////////////////////////////////////////////////
                 //// 解析可变区
                 //             {                             => 可变区
@@ -147,7 +150,7 @@ namespace mindev::packet{
                 //                 <Payload>
                 //             }
                 /////////////////////////////////////////////////////////////
-        for(auto elem:minpacket.readOnlyField.GetBlocks().GetElements()){
+        for(auto elem:minPacket.readOnlyField.GetBlocks().GetElements()){
             auto type = bigint::_bigint_to<int>(elem.GetType().GetVlIntValue());
             switch (type){
                 case mindev::encoding::TLV::TlvFreshnessPeriod:
@@ -165,11 +168,11 @@ namespace mindev::packet{
             }
             }
         //解析标识区
-        auto identifierWrapper=minpacket.identifierField.GetIdentifierByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifierContentData));
-        if(!identifierWrapper){
+        auto identifierWrapper=minPacket.identifierField.GetIdentifierByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifierContentData));
+        if(!identifierWrapper.has_value()){
             return false;
         }
-        this->name=identifierWrapper->GetIdentifier();
+        this->name=identifierWrapper.value().get().GetIdentifier();
         return true;
     }
     bool Data::ExtraDataFromFields(){
