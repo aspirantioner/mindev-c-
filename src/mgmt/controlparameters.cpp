@@ -1,4 +1,7 @@
 #include "mindev/include/mgmt/controlparameters.h"
+#include "mindev/include/component/identifier.h"
+#include "mindev_cpp/include/component/identifiercomponentcontainer.h"
+#include "mindev_cpp/include/encoding/elementcontainer.h"
 
 namespace mindev::mgmt{
     int ControlParameters::WireEncode(mindev::encoding::Encoder& encoder){
@@ -176,5 +179,29 @@ namespace mindev::mgmt{
             }
         }
         return true;
+    }
+    bool ControlParameters::Parse(mindev::packet::Interest& interest){
+    mindev::component::Identifier identifier=interest.GetName();
+    mindev::component::IdentifierComponentContainer components=identifier.GetComponents();
+    int len=components.Length();
+    if(len<3){
+        return false;
+    }
+    //没有分片 最后一个就是控制参数
+    if(components.GetElement(len-1).IsByteArray()){
+        mindev::encoding::Block block(components.GetElement(len-1).GetByteArray(),true);
+        if(!this->WireDecode(block)){
+            return false;
+        }
+    }else if(components.GetElement(len-1).IsFragmentNumber() && components.GetElement(len-2).IsVersionNumber() && components.GetElement(len-3).IsByteArray()){
+    //如果最后一位是分片号 倒数第二位是版本号 倒数第三位是控制参数
+    mindev::encoding::Block block(components.GetElement(len-3).GetByteArray(),true);
+    if(!this->WireDecode(block)){
+        return false;
+    }
+    }else{
+        return false;
+    }
+    return true;
     }
 }
