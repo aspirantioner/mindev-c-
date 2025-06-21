@@ -13,6 +13,7 @@
 #include "mindev/include/component/controlparameterurischeme.h"
 #include "mindev/include/component/controlparametermtu.h"
 #include "mindev/include/encoding/iencodingable.h"
+#include "mindev/include/packet/interest.h"
 
 namespace mindev::mgmt{
     class ControlParameters:public mindev::encoding::IEncodingAble{
