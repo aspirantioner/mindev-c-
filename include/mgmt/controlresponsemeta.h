@@ -1,9 +1,11 @@
 #ifndef CONTROLRESPONSEMETA_H_
 #define CONTROLRESPONSEMETA_H_
-#include "controlresponse.h"
+
 #include <optional>
+
 //一个表示管理控制命令的元数据结构
 namespace mindev::mgmt {
+    class ControlResponse;
     class ControlResponseMeta{
 public:
     //版本号
