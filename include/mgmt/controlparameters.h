@@ -31,7 +31,7 @@ public:
     mindev::component::ControlParameterMtu controlParameterMtu;
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
-    bool Parse(Interest& interest);
+    bool Parse(mindev::packet::Interest& interest);
     };
 }
 
