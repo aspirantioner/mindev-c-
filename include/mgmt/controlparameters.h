@@ -14,6 +14,10 @@
 #include "mindev/include/component/controlparametermtu.h"
 #include "mindev/include/encoding/iencodingable.h"
 
+namespace mindev::packet {
+    class Interest;
+};
+
 namespace mindev::mgmt{
     class ControlParameters:public mindev::encoding::IEncodingAble{
 public:
@@ -30,7 +34,7 @@ public:
     mindev::component::ControlParameterMtu controlParameterMtu;
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
-    bool Parse(Interest& interest);
+    bool Parse(mindev::packet::Interest& interest);
     };
 }
 
