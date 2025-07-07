@@ -13,14 +13,14 @@ namespace mindev::encoding {
             return 8;
         }
     }
-    VlInt TLV::ReadVarNumber(const std::vector<char>& buffer, VlInt& start){
+    VlInt TLV::ReadVarNumber(const std::vector<char>& buffer,const VlInt& start){
         VlInt res = VlInt();
         auto length = bigint::_to_bigint(std::to_string(buffer.size()));
         
-        if(static_cast<bigint>(start.GetVlIntValue())>=length){
+        if(static_cast<bigint>(const_cast<VlInt&>(start).GetVlIntValue())>=length){
             return res;
         }
-        auto index = bigint::_bigint_to<int>(start.GetVlIntValue());
+        auto index = bigint::_bigint_to<int>(const_cast<VlInt&>(start).GetVlIntValue());
         if(index<0 || index>=buffer.size()){
             return res;
         }
@@ -47,8 +47,8 @@ namespace mindev::encoding {
         }
         return res;
     }
-    VlInt TLV::ReadType(const std::vector<char>& buffer,VlInt& start){
-        auto tlvtype = ReadVarNumber(buffer, start);
+    VlInt TLV::ReadType(const std::vector<char>& buffer,const VlInt& start){
+        auto tlvtype = ReadVarNumber(buffer, const_cast<VlInt&>(start));
         
         if(!tlvtype.IsInitial()||static_cast<bigint>(tlvtype.GetVlIntValue())==bigint::_to_bigint(TLV::TlvInvalid)||static_cast<bigint>(tlvtype.GetVlIntValue())>bigint::_to_bigint(TLV::MaxTlvNum)){
             return VlInt();

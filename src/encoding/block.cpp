@@ -7,13 +7,13 @@ namespace mindev::encoding {
         auto tmp = VlInt(0);
         auto tlvType = TLV::ReadType(buffer, tmp);
         if(!tlvType.IsInitial()){
-            std::runtime_error("buffer can't construct Block!");
+            return std::nullopt;
         }
         auto val = tlvType.GetSize();
         tmp = VlInt(val);
         auto tlvLength = TLV::ReadVarNumber(buffer, tmp);
         if(!tlvLength.IsInitial()){
-            std::runtime_error("tlvLength read error!");
+            return std::nullopt;
         }
         Block res;
         if(res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)==-1){
