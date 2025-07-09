@@ -21,7 +21,7 @@ bool RegisterPrefixHelper::RegisterPrefix(const mindev::component::Identifier &i
     ControlParameters parameters;
     parameters.controlParameterPrefix.SetPrefix(identifier);
     std::optional<mindev::mgmt::RegisterPrefixCommand> registerPrefixCommand =
-        mindev::mgmt::RegisterPrefixCommand::CreateRegisterPrefixCommand("/min-mir/mgmt/localhost", parameters);
+        mindev::mgmt::fibcommands::RegisterPrefixCommand::CreateRegisterPrefixCommand("/min-mir/mgmt/localhost", parameters);
     std::shared_ptr<IControlCommand> command = std::make_shared<RegisterPrefixCommand>(registerPrefixCommand.value());
     CommandExecutor commandExecutor = controller.value().PrepareCommandExecutor(command).value();
     if (!commandExecutor.has_value()) {
