@@ -17,6 +17,10 @@ namespace mindev::logicface{
         Inner = 4,
     };
     const int DefaultMtuSize = 9000;
+    // 分片兴趣包发送情况
+    static const int PENDING = -3;
+    static const int FAIL = -2;
+    static const int FINISHED = -1;
     class LogicFace{
 public:
     typedef std::shared_ptr<LogicFace> ptr; 

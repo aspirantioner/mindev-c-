@@ -15,6 +15,10 @@
 #include "mindev/include/encoding/iencodingable.h"
 #include "mindev/include/packet/interest.h"
 
+namespace mindev::packet {
+    class Interest;
+};
+
 namespace mindev::mgmt{
     class ControlParameters:public mindev::encoding::IEncodingAble{
 public:
