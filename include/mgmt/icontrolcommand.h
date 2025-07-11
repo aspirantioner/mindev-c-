@@ -2,7 +2,7 @@
 #define ICONTROLCOMMAND_H_
 
 #include <string>
-#include "mindev/include/mgmt/controlparameters.h"
+#include "controlparameters.h"
 
 namespace mindev::mgmt{
     class IControlCommand{
