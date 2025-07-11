@@ -5,7 +5,7 @@ namespace mindev::component{
         
         int totalLength = 0;
 
-        int tmpLen = this->mutableDangerousFiled.WireEncode(encoder);
+        int tmpLen = this->mutableDangerousField.WireEncode(encoder);
         if(tmpLen<0){
             return -1;
         }
@@ -44,7 +44,7 @@ namespace mindev::component{
                     return false;
                 }
             }else if(subblock.GetType() == mindev::encoding::VlInt(mindev::encoding::TLV::TlvMutableDangerousField)){
-                if(!this->mutableDangerousFiled.WireDecode(subblock)){
+                if(!this->mutableDangerousField.WireDecode(subblock)){
                     return false;
                 }
             }else{

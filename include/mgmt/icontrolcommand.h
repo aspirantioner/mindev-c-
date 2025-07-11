@@ -2,15 +2,15 @@
 #define ICONTROLCOMMAND_H_
 
 #include <string>
-#include "mindev/include/mgmt/controlparameters.h"
+#include "controlparameters.h"
 
 namespace mindev::mgmt{
-    class IControlCommnd{
+    class IControlCommand{
 public:
-    virtual std::string GetTopPrefix()=0;
-    virtual std::string GetModuleName()=0;
-    virtual std::string GetAction()=0;
-    virtual ControlParameters getParameters()=0;
+    virtual std::string& GetTopPrefix()=0;
+    virtual std::string& GetModuleName()=0;
+    virtual std::string& GetAction()=0;
+    virtual ControlParameters& getParameters()=0;
     };
 }
 

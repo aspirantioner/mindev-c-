@@ -9,8 +9,12 @@ namespace mindev::component{
     class CanBePrefix:public TlvComponentBase,public InitialAble,public mindev::encoding::IEncodingAble{
 public:
     CanBePrefix(){};
-    CanBePrefix(bool canBePrefix){this->canBePrefix=canBePrefix;this->doInitial();};
+    CanBePrefix(bool canBePrefix){this->SetCanBePrefix(canBePrefix);};
     inline bool GetCanBePrefix()const{return this->canBePrefix;};
+    inline void SetCanBePrefix(bool canBePrefix){
+        this->canBePrefix=canBePrefix;
+        this->doInitial();
+    }
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
 private:

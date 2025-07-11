@@ -29,10 +29,10 @@ public:
     inline void SetLpPacketFragmentId(const LpPacketFragmentId& id){
         this->lpPacketFragmentId = id;
     }
-    inline void GetLpPacketFragmentNum(const LpPacketFragmentNum& num){
+    inline void SetLpPacketFragmentNum(const LpPacketFragmentNum& num){
         this->lpPacketFragmentNum = num;
     }
-    inline void GetLpPacketFragmentSeq(const LpPacketFragmentSeq& seq){
+    inline void SetLpPacketFragmentSeq(const LpPacketFragmentSeq& seq){
         this->lpPacketFragmentSeq = seq;
     }
     int WireEncode(mindev::encoding::Encoder& encoder) override ;

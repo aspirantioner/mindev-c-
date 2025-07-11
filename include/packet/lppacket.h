@@ -7,34 +7,27 @@
 #include "mindev/include/encoding/block.h"
 
 namespace mindev::packet{
-    class LpPacket{
+    class LpPacket:public mindev::encoding::IEncodingAble{
 private:
     std::vector<char>  rawPayload; //LpPacket转成CPacket，再解码出来的payload
 public:
     mindev::component::LpPacketHeader lpPacketHeader;
     mindev::component::Payload payload;
-    std::vector<char>& GetRawPayload(){
-    return this->rawPayload;
-};
+    inline std::vector<char>& GetRawPayload(){return this->rawPayload;};
     bool DecodeSelf();
     LpPacket(){};
-    LpPacket(const mindev::component::LpPacketHeader lpPacketHeader,const mindev::component::Payload payload);
+    LpPacket(const mindev::component::LpPacketHeader& lpPacketHeader,const mindev::component::Payload& payload){
+        this->lpPacketHeader=lpPacketHeader;
+        this->payload=payload;
+    }
     void SetId(long fragmentId);
-    long GetId(){
-    return this->lpPacketHeader.GetLpPacketFragmentId().GetId();
-    } ;
+    long GetId(){return this->lpPacketHeader.GetLpPacketFragmentId().GetId();};
     void SetFragmentNum(long fragmentNum);
-    long GetFragmentNum(){
-    return this->lpPacketHeader.GetLpPacketFragmentNum().GetFragmentNum();
-    };
+    inline long GetFragmentNum(){return this->lpPacketHeader.GetLpPacketFragmentNum().GetFragmentNum();};
     void SetFragmentSeq(long fragmentSeq);
-    long GetFragmentSeq(){
-    return this->lpPacketHeader.GetLpPacketFragmentSeq().GetFragmentSeq();
-};
+    inline long GetFragmentSeq(){return this->lpPacketHeader.GetLpPacketFragmentSeq().GetFragmentSeq();};
     void SetValue(const std::vector<char>& value);
-    std::vector<char>& GetValue(){
-    return this->payload.GetValue();
-};
+    inline std::vector<char>& GetValue(){return this->payload.GetValue();};
     /**
      * 将 LpPacket 线速编码为一个 TLV
      *
@@ -52,7 +45,7 @@ public:
      * @throws ComponentException
      * @throws PacketException
      */
-    bool WireDecode(mindev::component::Block& block);
+    bool WireDecode(mindev::encoding::Block& block);
 
     };
 }

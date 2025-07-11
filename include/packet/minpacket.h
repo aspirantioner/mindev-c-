@@ -20,7 +20,7 @@ class MINPacket :public mindev::encoding::IEncodingAble,public IMINPacket{
         int WireEncode(mindev::encoding::Encoder& encoder) override;
         bool WireDecode(mindev::encoding::Block& block) override;
         inline bool IsPacketValid() {return mindev::encoding::TLV::IsValidPacketType(this->packetType);};
-        MINPacket(){};
+        MINPacket(){this->packetType=mindev::encoding::VlInt(mindev::encoding::TLV::TlvInvalid);};
         std::optional<mindev::encoding::VlInt> GetPacketType();
 };
 }

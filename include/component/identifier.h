@@ -2,8 +2,8 @@
 #define IDENTIFIER_H_
 
 #include "identifiercomponentcontainer.h"
-// #include "mindev/include/component/controlparameters.h"
 #include "mindev/include/component/tlvcomponentbase.h"
+#include "mindev/include/mgmt/controlparameters.h"
 
 namespace mindev::component{
     class ControlParameters;
@@ -40,7 +40,7 @@ public:
     inline void Append(const IdentifierComponent& component){
         this->components.AddElement(component);
     }
-    bool AppendCommandParameters(ControlParameters& parameters);
+    bool AppendCommandParameters(mindev::mgmt::ControlParameters& parameters);
     bool AppendVersionNumber(long versionNumber);
     bool AppendFragmentNumber(long fragmentNumber);
 private:

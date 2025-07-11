@@ -27,11 +27,6 @@ namespace mindev::encoding{
             inline VlInt& GetLength(){return length;};
             inline void SetLength(const VlInt& length){this->length = length;};
             inline std::vector<char>& GetRaw() {return this->raw;};
-//             static inline std::vector<char>& GetRaw(std::optional<Block>& block){if(block.has_value()){
-//                 return block.value().GetRaw();
-//             }
-//                 return std::vector<char>();
-//             }
             std::optional<SizeT> GetSize() ;
             inline ElementContainer& GetSubElements(){return this->elements;};
             inline std::optional<Block> GetElement(const VlInt& tlvType){return this->elements.GetFirstBlockByType(const_cast<VlInt&>(tlvType));};

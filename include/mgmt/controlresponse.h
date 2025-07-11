@@ -8,21 +8,21 @@
 
 namespace mindev::mgmt {
     class ControlResponse{
-        // 请求成功
-        static const int ControlResponseCodeSuccess=200;
-        // 请求到元数据，实际数据较大，已经分片，需要发起多个请求拉取分片
-        static const int ControlResponseCodeContinue=201;
-        // 请求错误，包含错误信息
-        static const int ControlResponseCodeCommonError=400;
-    
-        // Data 域格式
-        // string类型
-        inline static const std::string ControlResponseTypeString = "string";
-        // 元数据类型
-        inline static const std::string ControlResponseTypeMeta   = "meta";
-        // 字节数组类型
-        inline static const std::string ControlResponseTypeBytes  = "bytes";
 public:
+    // 请求成功
+    static const int ControlResponseCodeSuccess=200;
+    // 请求到元数据，实际数据较大，已经分片，需要发起多个请求拉取分片
+    static const int ControlResponseCodeContinue=201;
+    // 请求错误，包含错误信息
+    static const int ControlResponseCodeCommonError=400;
+
+    // Data 域格式
+    // string类型
+    inline static const std::string ControlResponseTypeString = "string";
+    // 元数据类型
+    inline static const std::string ControlResponseTypeMeta   = "meta";
+    // 字节数组类型
+    inline static const std::string ControlResponseTypeBytes  = "bytes";
     std::string type;
     int code;
     std::string msg;

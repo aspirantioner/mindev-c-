@@ -1,7 +1,7 @@
 #include "mindev/include/packet/interest.h"
 #include "mindev/include/encoding/selfencodingbase.h"
 #include "mindev/include/encoding/tlv.h"
-#include "mindev/include/component/elementcontainer.h"
+#include "mindev/include/encoding/elementcontainer.h"
 #include "mindev/include/component/identifierwrapper.h"
 #include <optional>
 
@@ -23,40 +23,21 @@ namespace mindev::packet{
 
     std::optional<Interest> Interest::CreateInterestByMINPacket(const MINPacket& minPacket){
         Interest interest;
-        if(minPacket.packetType == mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINManagement)){
-            interest->isCommandInterest=true;
+        if(const_cast<MINPacket&>(minPacket).packetType == mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINManagement)){
+            interest.isCommandInterest=true;
         }
-        interest->minPacket.signatureField.SetSignatures(minPacket.signatureField.GetSignatures());
-        if(!interest->DoExtraDataFromMINPacket(minPacket)){
+        interest.minPacket.signatureField.SetSignatures(const_cast<MINPacket&>(minPacket).signatureField.GetSignatures());
+        if(!interest.DoExtraDataFromFields(const_cast<MINPacket&>(minPacket))){
             return std::nullopt;
         }
         return interest;
     }
 
-
-void Interest::SetNameByString(const std::string& name){
-    mindev::component::Identifier identifier(name);
-    this->name=identifier;
-}
-
-bool Interest::MatchesName(const mindev::component::Identifier& identifier){
-    return this->name==identifier;
-}
-
-bool Interest::MatchesData(const Data& data){
-    throw std::logic_error("implement me!");
-}
-
-bool Interest::MatchesInterest(Interest& interest){
-    throw std::logic_error("implement me!");
-}
-
-
 bool Interest::DoFillDataToFields(MINPacket& minPacket){
     //填充可变区
     minPacket.mutableField.mutableProtectField.ClearBlocks();
     //congestionMark
-    auto block =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->congestionMark);
+    auto block = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->congestionMark);
     if(block==std::nullopt){
         return false;
     }
@@ -65,28 +46,28 @@ bool Interest::DoFillDataToFields(MINPacket& minPacket){
     //填充可变非受保护区
     minPacket.mutableField.mutableDangerousField.ClearBlocks();
     //ttl
-    auto block2 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->ttl);
-    if(block2=std::nullopt){
+    auto block2 = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->ttl);
+    if(block2==std::nullopt){
         return false;
     }
     minPacket.mutableField.mutableDangerousField.AddBlock(*block2);
     //incomingLogicFaceId
-    if(this->incomingLogficFaceId.IsInitial()){
-        auto block3 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->incomingLogficFaceId);
+    if(this->incomingLogficFaceId.isInitial()){
+        auto block3 = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->incomingLogficFaceId);
         if(block3==std::nullopt){
             return false;
         }
         minPacket.mutableField.mutableDangerousField.AddBlock(*block3);
     }
     //填充只读区
-    minPacket.readonlyField.ClearBlocks();
+    minPacket.readOnlyField.ClearBlocks();
     //canBePrefix
     if(this->canBePrefix.GetCanBePrefix()){
         auto block4 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->canBePrefix);
         if(block4==std::nullopt){
             return false;
         }
-        minPacket.readonlyField.AddBlock(*block4);
+        minPacket.readOnlyField.AddBlock(*block4);
     }
     //mustBeRefresh
     if(this->mustBeRefresh.GetMustBeRefresh()){
@@ -94,10 +75,10 @@ bool Interest::DoFillDataToFields(MINPacket& minPacket){
         if(block5==std::nullopt){
             return false;
         }
-        minPacket.readonlyField.AddBlock(*block5);
+        minPacket.readOnlyField.AddBlock(*block5);
     }
     //interestLifeTime
-    if(!this->interestLifeTime.IsInitial()){
+    if(!this->interestLifeTime.isInitial()){
         //默认生存期是4s
         this->interestLifeTime.SetInterestLifeTime(4000);
     }
@@ -105,42 +86,42 @@ bool Interest::DoFillDataToFields(MINPacket& minPacket){
     if(block6==std::nullopt){
         return false;
     }
-    minPacket.readonlyField.AddBlock(*block6);
+    minPacket.readOnlyField.AddBlock(*block6);
     //nonce
-    if(!this->nonce.IsInitial()){
+    if(!this->nonce.isInitial()){
         //如果没有指定随机数，随机生成一个随机数
         this->nonce.RefreshNonce();
     }
-    auto block7 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->nonce);
+    auto block7 = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->nonce);
     if(block7==std::nullopt){
         return false;
     }
-    minPacket.readonlyField.AddBlock(*block7);
+    minPacket.readOnlyField.AddBlock(*block7);
     //hopLimit
-    if(this->hopLimit.IsInitial()){
-        auto block8 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->hopLimit);
+    if(this->hopLimit.isInitial()){
+        auto block8 = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->hopLimit);
         if(block8==std::nullopt){
             return false;
         }
-        minPacket.readonlyField.AddBlock(*block8);
+        minPacket.readOnlyField.AddBlock(*block8);
     }
     //nackHeader
-    if(this->nackHeader.IsInitial()){
-        auto block9 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->nackHeader);
+    if(this->nackHeader.isInitial()){
+        auto block9 = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->nackHeader);
         if(block9==std::nullopt){  
             return false;
-    }
-        minPacket.readonlyField.AddBlock(*block9);
+        }
+        minPacket.readOnlyField.AddBlock(*block9);
     }
     //payload
     auto block10 =mindev::encoding::SelfEncodingBase().SelfWireEncode(this->payload);
     if(block10==std::nullopt){
         return false;
     }
-    minPacket.readOnyField.AddBlock(*block10);
+    minPacket.readOnlyField.AddBlock(*block10);
     //填充标识区
-    minPacket.identifierField.ClearBlocks();
-    auto identifierWrapper=mindev::component::IdentifierWrapper().CreateContentInterestIdentifierByComponent(this->name.GetComponents());
+    minPacket.identifierField.ClearIdentifiers();
+    auto identifierWrapper= mindev::component::IdentifierWrapper::BuildIdentifierWrapper(this->name.GetComponents(),mindev::encoding::TLV::TlvIdentifierContentInterest);
     if(identifierWrapper==std::nullopt){
         return false;
     }
@@ -148,32 +129,34 @@ bool Interest::DoFillDataToFields(MINPacket& minPacket){
     return true;
 }
 bool Interest::FillDataToFields(){
-    return this->DoFillDataToMINPacket(this->minPacket);
+    return this->DoFillDataToFields(this->minPacket);
 }
 
-bool Interest::DoExtraDataFromFields(const MINPacket& minPacket){
+bool Interest::DoExtraDataFromFields(MINPacket& minPacket){
     //解析可变区
     auto block=minPacket.mutableField.mutableProtectField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvCongestionMark));
-    if(block){
+    if(block.has_value()){
         if(!this->congestionMark.WireDecode(*block)){
-        return false;
+            return false;
+        }
     }
-    }
+    
     block =minPacket.mutableField.mutableDangerousField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvTTL));
     if(block){
         if(!this->ttl.WireDecode(*block)){
-        return false;
-    }
+            return false;
+        }
     }
     
     block =minPacket.mutableField.mutableDangerousField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIncomingLogicFaceId));
     if(block){
         if(!this->incomingLogficFaceId.WireDecode(*block)){
-        return false;
+            return false;
+        }
     }
-    }
+    
     //解析只读区
-    for(auto elem:minpacket.readonlyField.GetBlocks().GetElements()){
+    for(auto elem:minPacket.readOnlyField.GetBlocks().GetElements()){
         auto type = bigint::_bigint_to<int>(elem.GetType().GetVlIntValue());
         switch(type){
             case mindev::encoding::TLV::TlvCanBePrefix:
@@ -216,40 +199,41 @@ bool Interest::DoExtraDataFromFields(const MINPacket& minPacket){
         }
     }
     //解析标识区
-    auto identifierWrapper=minPacket.identifierField.GetIdentifierByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifierContentInterest));
-    if(identifierWrapper==std::nullopt){
+    auto interestIdentifierWrapper=minPacket.identifierField.GetIdentifierByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifierContentInterest));
+    if(interestIdentifierWrapper==std::nullopt){
         return false;
     }
-    this->SetName(interestIdentifierWrapper->GetIdentifier());
+    this->SetName(interestIdentifierWrapper.value().get().GetIdentifier());
     return true;
     }
 
-    bool Interest::ExtraDataFromMINPacket(){
-        return this->DoExtraDataFromMINPacket(this->minPacket);
+    bool Interest::ExtraDataFromFields(){
+        return this->DoFillDataToFields(this->minPacket);
     }
 
     int Interest::WireEncode(mindev::encoding::Encoder& encoder){
         //首先将各属性填充到分区当中
-        if(!this->FillDataToMINPacket()){
-        return -1;
-    }
-    //指定包类型
-    if(this->isCommandInterest){
-        this->minPacket.packetType=mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINManagement);
-    }
-    else{
-        this->minPacket.packetType=mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINCommon);
-    }
-    return this->minPacket.WireEncode(encoder);
+        if(!this->FillDataToFields()){
+            return -1;
+        }
+        //指定包类型
+        if(this->isCommandInterest){
+            this->minPacket.packetType=mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINManagement);
+        }
+        else{
+            this->minPacket.packetType=mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINCommon);
+        }
+        return this->minPacket.WireEncode(encoder);
 }
 
 bool Interest::WireDecode(mindev::encoding::Block& block){
     if(!this->minPacket.WireDecode(block)){
         return false;
     }
-    if(this->minPacket.packetType.IsEqual(mindev::encoding::TLV::TlvPacketMINManagement)){
+    if(this->minPacket.packetType == mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINManagement)){
         this->isCommandInterest=true;
     }
+    return this->ExtraDataFromFields();
 }
 }
 

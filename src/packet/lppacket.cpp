@@ -1,29 +1,28 @@
 #include "mindev/include/packet/lppacket.h"
 #include <vector>
+#include "mindev/include/packet/cpacket.h"
 #include "mindev/include/packet/minpacket.h"
 #include "mindev/include/encoding/vlint.h"
 #include "mindev/include/encoding/tlv.h"
+
 namespace mindev::packet {
+
 bool LpPacket::DecodeSelf(){
     std::vector<char> payload=this->payload.GetValue();
-    mindev::encoding::Block block(payload,true);
-    MINPacket minPacket;
-    if(!minPacket.WireDecode(block)){
+    auto block = mindev::encoding::Block::CreateBlockByBuffer(payload,true);
+    if(!block.has_value()){
         return false;
     }
-    auto cPacket=CPacket().CreateCPacketbyMINPacket(minPacket);
+    MINPacket minPacket;
+    if(!minPacket.WireDecode(block.value())){
+        return false;
+    }
+    auto cpacket=CPacket().CreateCPacketByMINPacket(minPacket);
     if(!cpacket){
         return false;
     }
-    this->rawPayload=cpacket->payload.GetValue();
+    this->rawPayload=cpacket.value().payload.GetValue();
     return true;
-}
-
-LpPacket::LpPacket(){}
-
-LaPacket::LaPacket(const indev::component::LpPacketHeader& lpPacketHeader, const mindev::component::Payload& payload){
-    this->lpPacketHeader=lpPacketHeader;
-    this->payload=payload;
 }
 
 void LpPacket::SetId(long fragmentId){
@@ -83,7 +82,7 @@ int LpPacket::WireEncode(mindev::encoding::Encoder& encoder){
 bool LpPacket::WireDecode(mindev::encoding::Block& block){
     //检查Type是否正确
     mindev::encoding::VlInt vlInt1(mindev::encoding::TLV::TlvLpPacket);
-    if(!mindev::encoding::TLV.ExpectType(block.GetType(),vlInt1)){
+    if(!mindev::encoding::TLV::ExpectType(block.GetType(),vlInt1)){
         return false;
     }
     //解析子组件

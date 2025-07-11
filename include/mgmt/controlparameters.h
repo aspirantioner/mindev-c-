@@ -13,6 +13,11 @@
 #include "mindev/include/component/controlparameterurischeme.h"
 #include "mindev/include/component/controlparametermtu.h"
 #include "mindev/include/encoding/iencodingable.h"
+#include "mindev/include/packet/interest.h"
+
+namespace mindev::packet {
+    class Interest;
+};
 
 namespace mindev::mgmt{
     class ControlParameters:public mindev::encoding::IEncodingAble{
@@ -30,7 +35,7 @@ public:
     mindev::component::ControlParameterMtu controlParameterMtu;
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
-    bool Parse(Interest& interest);
+    bool Parse(mindev::packet::Interest& interest);
     };
 }
 

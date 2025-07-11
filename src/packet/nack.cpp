@@ -1,11 +1,12 @@
 #include "mindev/include/packet/nack.h"
+
 namespace mindev::packet{
     Nack::Nack(const Interest& interest,long reason){
         this->interest = interest;
         this->SetNackReason(reason);
     };
     std::optional<Nack> Nack::CreateNackByInterest(const Interest& interest){
-        if(!interest.nackHeader.IsInitial()){
+        if(!interest.nackHeader.isInitial()){
             //NackHeader 没有初始化
             return std::nullopt;
         }
@@ -15,7 +16,7 @@ namespace mindev::packet{
     std::optional<Nack> Nack::CreateNackByMINpacket(const MINPacket& minPacket){
         auto interest = Interest().CreateInterestByMINPacket(minPacket);
         if(!interest){
-            return nullopt;
+            return std::nullopt;
         }
         else{
             return this->CreateNackByInterest(*interest);

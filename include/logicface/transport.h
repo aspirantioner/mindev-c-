@@ -3,6 +3,7 @@
 
 #include "./linkservice.h"
 #include <string>
+
 namespace mindev::logicface {
     class Transport{
 public:

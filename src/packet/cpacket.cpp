@@ -2,7 +2,7 @@
 #include "mindev/include/encoding/vlint.h"
 #include "mindev/include/encoding/sizet.h"
 #include "mindev/include/encoding/selfencodingbase.h"
-#include "mindev_cpp/include/encoding/vlint.h"
+#include "mindev/include/encoding/vlint.h"
 
 namespace mindev::packet{
 CPacket::CPacket(const mindev::component::Identifier& srcIdentifier,const mindev::component::Identifier& dstIdentifier,const mindev::component::Payload& payload,const mindev::component::TTL& ttl) {
@@ -16,9 +16,9 @@ CPacket::CPacket(const mindev::component::Identifier& srcIdentifier,const mindev
  */
 bool CPacket::EncodeSelf() {
     mindev::encoding::Encoder encoder;
-    if(!encoder.EncoderReset(mindev::encoding::SizeT(Encoder::MaxPacketSize),mindev::encoding::SizeT(0))){
+    if(!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),mindev::encoding::SizeT(0))){
                 return false;
-            }
+    }
     int buflen=this->WireEncode(encoder);
     if(buflen<=0){
         return false;
@@ -29,19 +29,13 @@ bool CPacket::EncodeSelf() {
 
 std::optional<CPacket> CPacket::CreateCPacketByMINPacket(const MINPacket& minpacket) {
     CPacket cPacket;
-    cPacket.minPacket.singnatureField.SetSignatures(this->minPacket.signatureField.GetSignatures());
+    cPacket.minPacket.signatureField.SetSignatures(this->minPacket.signatureField.GetSignatures());
     if(!cPacket.DoExtraDataFromFields(minPacket)){
         return std::nullopt;
     }
     return cPacket;
 }
 
-std::string CPacket::ToUri() {
-    return this->dstIdentifier.ToUri();
-}
-std::vector<char>& CPacket::GetValue(){
-    return this->payload.GetValue();
-}
 bool CPacket::DoFillDataToFields(MINPacket& minPacket) {
     // 可变区 => 受保护区（无）
 
@@ -57,7 +51,7 @@ bool CPacket::DoFillDataToFields(MINPacket& minPacket) {
     // 首先清除所有的Block
     if (!((this->payload).GetValue().empty())){
         minPacket.readOnlyField.ClearBlocks();
-        auto block = mindev::encoding::SelfEncodingBase().selfWireEncode(this->payload);
+        auto block = mindev::encoding::SelfEncodingBase().SelfWireEncode(this->payload);
         if (block == std::nullopt) {    
             return false;
         }
@@ -78,34 +72,34 @@ bool CPacket::FillDataToFields(){
 
 bool CPacket::DoExtraDataFromFields(const MINPacket& minPacket) {
     // 提取 Payload
-    auto payloadBlock = minPacket.readOnlyField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvPayload));
-    if(!payloadBlock){
+    auto payloadBlock = const_cast<MINPacket&>(minPacket).readOnlyField.GetBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvPayload));
+    if(!payloadBlock.has_value()){
         return false;
     }
-    if (!this->payload.WireDecode(*payloadBlock)) {
+    if (!this->payload.WireDecode(payloadBlock.value().get())) {
         return false;
     };
     
     // 提取 TTL
-    auto ttlBlock = minPacket.mutableField.mutableDangerousField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvTTL));
-    if(ttlBlock==std::nullopt){
+    auto ttlBlock = const_cast<MINPacket&>(minPacket).mutableField.mutableDangerousField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvTTL));
+    if(!ttlBlock.has_value()){
         return false;
     }
-    if (!this->ttl.WireDecode(*ttlBlock)) {
+    if (!this->ttl.WireDecode(ttlBlock.value().get())) {
         return false;
     };
 
     // 提取标识
-    auto srcIdentifierWrapper = minPacket.identifierField.GetIdentifier(0);
-    if(!srcIdentifierWrapper){
-        rereturn false;
-    }
-    auto dstIdentifierWrapper = minPacket.identifierField.GetIdentifier(1);
-    if(!dstIdentifierWrapper){
+    auto srcIdentifierWrapper = const_cast<MINPacket&>(minPacket).identifierField.GetIdentifier(0);
+    if(!srcIdentifierWrapper.has_value()){
         return false;
     }
-    this->srcIdentifier=srcIdentifierWrapper->GetIdentifier();
-    this->dstIdentifier=dstIdentifierWrapper->GetIdentifier();
+    auto dstIdentifierWrapper = const_cast<MINPacket&>(minPacket).identifierField.GetIdentifier(1);
+    if(!dstIdentifierWrapper.has_value()){
+        return false;
+    }
+    this->srcIdentifier=srcIdentifierWrapper.value().get().GetIdentifier();
+    this->dstIdentifier=dstIdentifierWrapper.value().get().GetIdentifier();
     return true;
 };
 bool CPacket::ExtraDataFromFields(){
@@ -118,7 +112,7 @@ int CPacket::WireEncode(mindev::encoding::Encoder& encoder) {
     }
     //指定包类型
     this->minPacket.packetType=mindev::encoding::VlInt(mindev::encoding::TLV::TlvPacketMINCommon);
-    return this->minpacket.WireEncode(encoder);
+    return this->minPacket.WireEncode(encoder);
 }
 bool CPacket::WireDecode(mindev::encoding::Block& block) {
     if(!this->minPacket.WireDecode(block)){

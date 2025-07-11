@@ -1,7 +1,8 @@
-
 #ifndef PACKETTYPEHELPER_H_
 #define PACKETTYPEHELPER_H_
+
 #include "minpacket.h"
+
 namespace mindev::packet{
     class PacketTypeHelper{
 public:

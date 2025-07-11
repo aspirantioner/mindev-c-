@@ -15,8 +15,8 @@
 //				   ...
 //             }
 //
-#ifndef _NACK_H
-#define _NACK_H
+#ifndef NACK_H_
+#define NACK_H_
 #include "mindev/include/encoding/iencodingable.h"
 #include "interest.h"
 #include "minpacket.h"
@@ -67,9 +67,6 @@ public:
      */
     bool WireDecode(mindev::encoding::Block& block) override;
 };
-
-
-
 
 }
 
