@@ -7,7 +7,7 @@
 namespace mindev::mgmt{
 class LogicFaceBuilderInterface{
 public:
-    virtual std::optional<mindev::logicface::LogicFace> LogicFaceBuilder()=0;
+    virtual std::optional<mindev::logicface::LogicFace> LogicFaceBuilder(){return std::nullopt;};
 };
 }
 

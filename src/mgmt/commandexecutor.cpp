@@ -7,30 +7,15 @@
 #include "mindev/include/encoding/tlv.h"
 #include "mindev/include/component/nackheader.h"
 #include <iostream>
+
 namespace mindev::mgmt {
 std::optional<ControlResponse> CommandExecutor::OnReceiveFirstMetaData(const mindev::packet::Data &data) {
     ControlResponse controlResponse;
-    auto jsondata = nlohmann::json::parse(data.payload.GetValue());
-    if (jsondata.contains("type") && jsondata["type"].is_string()) {
-        controlResponse.type = jsondata["type"].get<std::string>();
-    } else {
+    
+    if (!controlResponse.UnmarshalJSON(data.payload.GetValue())) {
         return std::nullopt;
     }
-    if (jsondata.contains("code") && jsondata["code"].is_number_integer()) {
-        controlResponse.code = jsondata["code"].get<int>();
-    } else {
-        return std::nullopt;
-    }
-    if (jsondata.contains("msg") && jsondata["msg"].is_string()) {
-        controlResponse.msg = jsondata["msg"].get<std::string>();
-    } else {
-        return std::nullopt;
-    }
-    if (jsondata.contains("data") && jsondata["data"].is_object()) {
-        controlResponse.data = jsondata["data"].get<nlohmann::json>();
-    } else {
-        return std::nullopt;
-    }
+
     switch (controlResponse.code) {
     case ControlResponse::ControlResponseCodeSuccess:
         // 请求成功 直接返回结果
@@ -43,15 +28,15 @@ std::optional<ControlResponse> CommandExecutor::OnReceiveFirstMetaData(const min
         // todo
         std::vector<char> bytesBuilder;
         ControlResponseMeta metaData = controlResponse.GetMeta();
-        int length = static_cast<int>(metaData.sliceNum);
+        int length = static_cast<int>(metaData.SliceNum);
         // 逐一串行的请求所有的分片，并整合返回的数据
         for (int i = 0; i < length; i++) {
-            std::optional<mindev::packet::Interest> tempInterest = this->NewCommandInterest();
-            mindev::component::Identifier tempIdentifier = tempInterest->GetName();
-            tempIdentifier.AppendVersionNumber(metaData.version);
+            auto tempInterest = this->NewCommandInterest();
+            mindev::component::Identifier tempIdentifier = tempInterest.GetName();
+            tempIdentifier.AppendVersionNumber(metaData.Version);
             tempIdentifier.AppendFragmentNumber(i);
-            tempInterest->ttl.SetTtl(this->ttl);
-            tempInterest->interestLifeTime.SetInterestLifeTime(this->interestLifeTime);
+            tempInterest.ttl.SetTtl(this->ttl);
+            tempInterest.interestLifeTime.SetInterestLifeTime(this->interestLifeTime);
             // 将兴趣包发出
             if (!this->logicFace.SendInterest(tempInterest)) {
                 controlResponse.code = ControlResponse::ControlResponseCodeCommonError;
@@ -89,10 +74,9 @@ std::optional<ControlResponse> CommandExecutor::OnReceiveFirstMetaData(const min
     }
     return controlResponse;
 }
-std::optional<mindev::packet::Interest> CommandExecutor::NewCommandInterest() {
+mindev::packet::Interest CommandExecutor::NewCommandInterest() {
     mindev::packet::Interest interest;
-    if(!this->command){return std::nullopt;}
-    mindev::component::Identifier identifier(this->BuildPrefix(this->command));
+    mindev::component::Identifier identifier = mindev::component::Identifier::BuildIdentifierByString(this->BuildPrefix(this->command));
     interest.SetName(identifier);
     interest.ttl.SetTtl(this->ttl);
     interest.interestLifeTime.SetInterestLifeTime(this->interestLifeTime);
@@ -103,7 +87,7 @@ std::optional<mindev::packet::Interest> CommandExecutor::NewCommandInterest() {
     std::string str1(value.begin(), value.end());
     std::cout << "CommandExecutor-构造的兴趣包的签名字段: " << str1 << std::endl;
     mindev::encoding::Encoder encoder;
-    if (!encoder.encoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
                               mindev::encoding::SizeT(0))) {
         std::cout << "fucking test";
     }

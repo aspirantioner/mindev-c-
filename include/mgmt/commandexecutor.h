@@ -1,15 +1,17 @@
 #ifndef COMMANDEXECTUOR_H_
 #define COMMANDEXECTUOR_H_
+
 #include "mindev/include/logicface/logicface.h"
+#include "mindev/include/mgmt/mircontroller.h"
+#include "mindev/include/mgmt/icontrolcommand.h"
 #include "mindev/include/security/keychain.h"
 #include "mindev/include/packet/interest.h"
 #include "mindev/include/mgmt/controlresponse.h"
 #include "mindev/include/packet/data.h"
-#include "mindev/include/common/json.hpp"
 #include <optional>
-#include <memory>
+
 namespace mindev::mgmt{
-class IControlCommand;
+
 class CommandExecutor{
 private:
     /**
@@ -27,7 +29,7 @@ public:
     //	2. 如果想通过控制管理命令做远程管理，需要显示设置这个值，将其设置为一个较大值，这样才能将命令兴趣包转发到多跳路由器上
     static const int defaultTTL=64;
     // 要执行的命令
-    std::shared_ptr<IControlCommand> command;
+    IControlCommand command;
     //命令兴趣包的生存周期
     long interestLifeTime;
     long ttl;
@@ -39,7 +41,7 @@ public:
      * @param command
      * @param logicFace
      */
-    inline void Init(std::shared_ptr<IControlCommand> command,mindev::logicface::LogicFace logicFace){this->command=command;this->interestLifeTime=CommandExecutor::defaultInterestLifetime;this->ttl=CommandExecutor::defaultTTL;this->logicFace= logicFace;this->autoShutdown=false;};
+    inline void Init(const IControlCommand& command,const mindev::logicface::LogicFace& logicFace){this->command=command;this->interestLifeTime=CommandExecutor::defaultInterestLifetime;this->ttl=CommandExecutor::defaultTTL;this->logicFace= logicFace;this->autoShutdown=false;};
     /**
      * GetKeyChain 获取用于签名的秘钥链
      * @return
@@ -90,7 +92,7 @@ public:
      * @return
      * @throws MgmtException
      */
-    std::optional<mindev::packet::Interest> NewCommandInterest();
+    mindev::packet::Interest NewCommandInterest();
     /**
      * Start 开始执行命令
      * // @Description:
@@ -103,7 +105,7 @@ public:
      * @param command
      * @return
      */
-    inline std::optional<std::string> BuildPrefix(const std::shared_ptr<IControlCommand>& command){if(!command){return std::nullopt;}return command->GetTopPrefix()+"/"+command->GetModuleName()+"/"+command->GetAction();}
+    inline std::string BuildPrefix(IControlCommand& command){return command.GetTopPrefix()+"/"+command.GetModuleName()+"/"+command.GetAction();}
     
     
     

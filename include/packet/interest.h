@@ -54,6 +54,7 @@
 #include "mindev/include/component/controlparameters.h"
 #include <string>
 #include <optional>
+
 namespace mindev::packet{
     class Interest:public InteractWithField,public mindev::encoding::IEncodingAble{
 public:
