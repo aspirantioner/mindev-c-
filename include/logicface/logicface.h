@@ -3,6 +3,7 @@
 
 #include "./logicface_counters.h"
 #include "./itransport.h"
+#include "./linkservice.h"
 #include <memory>
 #include <sys/types.h>
 
@@ -23,11 +24,21 @@ public:
     LogicFaceType type;
     long expire_time;
     bool state;
-    LogicFaceCounters::ptr logicFaceCounters;
+    LogicFaceCounters logicFaceCounters;
     ITransport::ptr Transport;
-    std::shared_ptr<LinkService> linkService;
-    bool initWithTcp(std::string ip,u_short port);
-    bool initWithUdp(std::string ip,u_short port);
+    LinkService::ptr linkService;
+    bool InitWithTcp(const std::string& ip,u_short port);
+    bool InitWithUdp(const std::string& ip,u_short port);
+    inline bool ShutDown(){
+        if(this->state){
+           this->Transport->Close();
+           this->state=false;
+//            this.executorService.shutdown();
+//            this.ITransport.close();
+        }
+        return true;
+    }
+
     };
 }
 

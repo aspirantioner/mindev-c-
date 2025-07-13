@@ -12,7 +12,7 @@ public:
     std::string remoteAddr;
     std::string localUri;
     std::string remoteUri;
-    LinkService::ptr linkservice;
+    std::weak_ptr<LinkService> linkService;
     std::optional<mindev::packet::LpPacket> ParseByteArrayToLpPacket(std::vector<char>& buf);
     std::vector<char> EncodeLpPacketToByteArray(mindev::packet::LpPacket& lpPacket);
     

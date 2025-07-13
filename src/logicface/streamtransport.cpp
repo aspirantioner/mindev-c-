@@ -1,4 +1,5 @@
 #include "mindev/include/logicface/streamtransport.h"
+#include "mindev/include/logicface/logicface.h"
 #include <bits/alltypes.h>
 
 namespace mindev::logicface {
@@ -9,8 +10,11 @@ namespace mindev::logicface {
         }
         int writeLen = 0;
         while(writeLen < encodeBuf.size()){
-            auto writeRet = this->m_scoket_channel.Write(encodeBuf,writeLen);
+            auto writeRet = this->m_scoket_channel->Write(encodeBuf,writeLen);
             if(writeRet<0){
+                if(auto tmp = this->linkService.lock()){
+                    tmp->logicFace.get().ShutDown();
+                }
                 return false;
             }
             writeLen+=writeRet;
@@ -25,9 +29,12 @@ namespace mindev::logicface {
         if(bigint::_bigint_to<int>(pktType.GetVlIntValue()) != mindev::encoding::TLV::TlvLpPacket){
             return std::make_pair<long, mindev::packet::LpPacket>(0,mindev::packet::LpPacket());
         }
-        if(buflen<this->linkservice->lpPacketHeadSize){
-            return std::make_pair<long, mindev::packet::LpPacket>(0,mindev::packet::LpPacket());
+        if(auto tmp = this->linkService.lock()){
+            if(buflen<tmp->lpPacketHeadSize){
+                return std::make_pair<long, mindev::packet::LpPacket>(0,mindev::packet::LpPacket());
+            }    
         }
+        
         int pktTypeLen = pktType.GetSize();
         int pktLen =bigint::_bigint_to<int>(mindev::encoding::TLV::ReadVarNumber(buf, mindev::encoding::VlInt(pktTypeLen)).GetVlIntValue());
         int totalPktLen = pktTypeLen+mindev::encoding::VlInt(pktLen).GetSize()+pktLen;
@@ -57,7 +64,7 @@ namespace mindev::logicface {
                 return lpPacket;
             }
             std::vector<char> recv_vec(this->recBuf.size()-this->recvLen,0);
-            auto recvRet = this->m_scoket_channel.Read(recv_vec);
+            auto recvRet = this->m_scoket_channel->Read(recv_vec);
             if(recvRet<0){
                 return std::nullopt;
             }
@@ -74,7 +81,7 @@ namespace mindev::logicface {
         timeout.tv_sec = duration / 1000;
         timeout.tv_usec = (duration % 1000)*1000;
         
-        if(setsockopt(this->m_scoket_channel.GetFd(), SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0){
+        if(setsockopt(this->m_scoket_channel->GetFd(), SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0){
             return false;
         }    
 
