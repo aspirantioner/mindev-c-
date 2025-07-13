@@ -22,7 +22,8 @@ namespace mindev::vmsconnection::tcpnet{
                 OH_LOG_INFO(LOG_APP,"conn %{public}s closed!",m_romote_addr->ToString().c_str());
                 close(m_fd);
             }
-            inline int Read(std::vector<uint8_t>& read_buffer){
+            template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
+            inline int Read(std::vector<T>& read_buffer){
                 static struct timeval timeout{.tv_sec=2,.tv_usec=0};
                 static int read_error_count = 3;
                 int read_count = 0;
@@ -42,20 +43,24 @@ namespace mindev::vmsconnection::tcpnet{
                 OH_LOG_INFO(LOG_APP,"buffer len is %{public}d ,read len is %{public}d",int(read_buffer.size()),len);
                 return len;
             }
-            inline int Read(std::vector<uint8_t>& read_buffer,int need_read_len){
+            template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
+            inline int Read(std::vector<T>& read_buffer,int need_read_len){
                 assert(read_buffer.size()>=need_read_len);
                 return read(m_fd,read_buffer.data(),need_read_len);
             }
-            inline int Write(std::vector<uint8_t>& write_buffer){
+            template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
+            inline int Write(std::vector<T>& write_buffer){
                 auto len = write(m_fd,write_buffer.data(),write_buffer.size());
                 OH_LOG_INFO(LOG_APP,"buffer len is %{public}d ,write len is %{public}d",int(write_buffer.size()),len);
                 return len;
             }
-            inline int Write(std::vector<uint8_t>& write_buffer,int write_len){
+            template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
+            inline int Write(std::vector<T>& write_buffer,int write_len){
                 assert(write_len<=write_buffer.size());
                 return write(m_fd,write_buffer.data(),write_len);
             }
             inline bool GetState(){return m_state;}
+            inline int GetFd(){return this->m_fd;}
         private:
             NetAddress::ptr  m_romote_addr;
             int m_fd;

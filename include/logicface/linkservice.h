@@ -5,20 +5,24 @@
 #include <memory>
 #include <vector>
 
-class LogicFace;
+
 namespace mindev::logicface{
-    const int LpPacketHeaderMaxSize = 1000;
+    class LogicFace;
+    
     class LinkService{
 public:
     typedef std::shared_ptr<LinkService> ptr; 
-    ITransport iTransport;
-    std::shared_ptr<LogicFace> logicFace;
+    std::weak_ptr<ITransport> iTransport;
+    std::reference_wrapper<mindev::logicface::LogicFace> logicFace;
     int mtu;
     int lpPacketHeadSize;
     long lpPacketId;
     std::vector<char> cpacketBytes;
-    void init(int mtu);
-    void calculateLpPacketHeadSize();
+    LinkService(std::reference_wrapper<mindev::logicface::LogicFace> val):logicFace(val){}
+    bool Init(int mtu);
+private:
+    bool CalculateLpPacketHeadSize();
+    static const int LpPacketHeaderMaxSize = 1000;
     };
     
 }
