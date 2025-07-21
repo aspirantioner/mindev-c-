@@ -1,0 +1,16 @@
+#ifndef PUBLICKEYINTERFACE_H_
+#define PUBLICKEYINTERFACE_H_
+
+#include <vector>
+namespace mindev::minsecurity::crypto {
+    class PrivateKeyInterface {
+public:
+    virtual std::vector<char> GetBytes(){return std::vector<char>();}
+    virtual bool SetBytes(const std::vector<char>& bytes){return true;}
+    virtual std::vector<char> Decrypt(const std::vector<char>& cipher){return std::vector<char>();}
+    virtual std::vector<char> Sign(const std::vector<char>& content){return std::vector<char>();}
+    };
+}
+
+
+#endif

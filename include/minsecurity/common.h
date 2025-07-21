@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace mindev::security {
+namespace mindev::minsecurity {
 class Common {
 public:
     // Algorithm Names
