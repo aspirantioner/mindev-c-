@@ -41,6 +41,91 @@ bool LinkService::Init(int mtu) {
     this->cpacketBytes = encoder.GetBuffer();
     return true;
 }
+std::optional<mindev::packet::MINPacket> LinkService::ReceivePacket() {
+    if (auto locked = transport.lock()) {
+        std::optional<mindev::packet::LpPacket> lpPacket = locked->Receive();
+        mindev::packet::MINPacket minPacket = this->GetMINPacketFromLpPacket(lpPacket.value());
+        return minPacket;
+    }
+    return std::nullopt;
+}
+std::optional<mindev::packet::LpPacket> LinkService::ReceiveQuickPacket() {
+    if (auto locked = this->transport.lock()) { // 增加条件判断
+        std::cout << "远程地址：" << locked->GetRemoteUir() << std::endl;
+        std::cout << "本地地址：" << locked->GetLocalUir() << std::endl;
+        return locked->Receive();
+    }
+    return std::nullopt; // 弱引用失效时返回空值
+}
+bool LinkService::SendInterest(const mindev::packet::Interest &interest) {
+    mindev::encoding::Encoder encoder;
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+                              mindev::encoding::SizeT(0))) {
+        return false;
+    }
+    int bufLen = const_cast<mindev::packet::Interest &>(interest).WireEncode(encoder);
+    std::vector<char> buf = encoder.GetBuffer();
+    return this->SendByteBuffer(buf, bufLen);
+}
+bool LinkService::SendData(const mindev::packet::Data &data) {
+    mindev::encoding::Encoder encoder;
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+                              mindev::encoding::SizeT(0))) {
+        return false;
+    }
+    int bufLen = const_cast<mindev::packet::Data &>(data).WireEncode(encoder);
+    std::vector<char> buf = encoder.GetBuffer();
+    return this->SendByteBuffer(buf, bufLen);
+}
+bool LinkService::SendCPacket(const mindev::packet::CPacket &cPacket) {
+    mindev::encoding::Encoder encoder;
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+                              mindev::encoding::SizeT(0))) {
+        return false;
+    }
+    int bufLen = const_cast<mindev::encoding::CPacket &>(cPacket).WireEncode(encoder);
+    std::vector<char> buf = encoder.GetBuffer();
+    return this->SendByteBuffer(buf, bufLen);
+}
+
+bool LinkService::SendQuickCPacket(const mindev::packet::CPacket &cPacket) {
+    if (auto locked = this->transport.lock()) {
+        std::optional<mindev::packet::LpPacket> lpPacket = this->GetLpPacketFromCPacket(cPacket);
+        if (lpPacket.has_value()) {
+            return locked->Send(lpPacket.value());
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+
+bool LinkService::SendQuickCPacketV3(const std::vector<char>& encodedBytes) {
+    if (auto locked = this->transport.lock()) {
+        std::optional<mindev::packet::LpPacket> lpPacket = this->GetLpPacketFromQuickCPacket(encodedBytes);
+        if (lpPacket.has_value()) {
+            std::cout << "发送MIN包！！！" << std::endl;
+            std::cout << "本地发送方地址：" << locked->GetLocalUri()<< std::endl;
+            std::cout << "远端接收方地址：" << locked->GetRemoteUri()<< std::endl;
+            return locked->Send(lpPacket.value());
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+
+bool LinkService::SendMINPacket(const mindev::packet::MINPacket &minPacket){
+    mindev::encoding::Encoder encoder;
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+                              mindev::encoding::SizeT(0))) {
+        return false;
+    }
+    int bufLen=const_cast<mindev::packet::MINPacket &>(minPacket).WireEncode(encoder);
+    std::vector<char> buf =encoder.GetBuffer();
+    return this->SendByteBuffer(buf,bufLen);
+}
+
 bool LinkService::CalculateLpPacketHeadSize() {
     mindev::packet::LpPacket lppacket;
     lppacket.lpPacketHeader.SetLpPacketFragmentId(mindev::component::LpPacketFragmentId(LONG_MAX));
@@ -54,11 +139,10 @@ bool LinkService::CalculateLpPacketHeadSize() {
     }
     this->lpPacketHeadSize = lppacket.WireEncode(encoder);
     this->lpPacketHeadSize -= mindev::encoding::Encoder::MaxPacketSize;
-    return false;
+    return true;
 }
-std::optional<mindev::packet::MINPacket>
-LinkService::GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket) {
-    std::vector<char> payloaod = lpPacket.payload.Getvalue();
+std::optional<mindev::packet::MINPacket> LinkService::GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket) {
+    std::vector<char> payload = lpPacket.payload.GetValue();
     mindev::encoding::Block block(payload, true);
     mindev::packet::MINPacket minPacket;
     if (!minPacket.WireDecode(block)) {
@@ -71,7 +155,8 @@ bool LinkService::SendFragment(const std::vector<char> &buf, int bufLen, long fr
     if (bufLen < 0 || bufLen > buf.size()) {
         return false; // 或抛出异常
     }
-    if (!this->transport) {
+    auto locked=this->transport.lock();
+    if (!locked) {
         return false;
     }
     mindev::packet::LpPacket lpPacket;
@@ -80,7 +165,7 @@ bool LinkService::SendFragment(const std::vector<char> &buf, int bufLen, long fr
     lpPacket.SetFragmentSeq(fragmentSeq);
     std::vector<char> nbuf(buf.begin(), buf.begin() + bufLen);
     lpPacket.SetValue(nbuf);
-    return this->transport->Send(lpPacket);
+    return locked->Send(lpPacket);
 }
 bool LinkService::SendByteBuffer(const std::vector<char> &buf, int bufLen) {
     int fragmentLen = this->mtu - this->lpPacketHeadSize - 10;
@@ -104,9 +189,8 @@ bool LinkService::SendByteBuffer(const std::vector<char> &buf, int bufLen) {
     this->lpPacketId++;
     return true;
 }
-mindev::packet::LpPacket &LinkService::GetLpPacketFromQuickCPacket(const std::vector<char> &encodedBytes) {
+std::optional<mindev::packet::LpPacket> LinkService::GetLpPacketFromQuickCPacket(const std::vector<char> &encodedBytes) {
     mindev::packet::LpPacket lpPacket;
-    ;
     lpPacket.SetId(this->lpPacketId);
     lpPacket.SetFragmentNum(1);
     lpPacket.SetFragmentSeq(0);
@@ -117,7 +201,7 @@ mindev::packet::LpPacket &LinkService::GetLpPacketFromQuickCPacket(const std::ve
 std::optional<mindev::packet::LpPacket> LinkService::GetLpPacketFromCPacket(const mindev::packet::CPacket &cPacket) {
     // 1.CPacket => byte[]
     mindev::encoding::Encoder encoder;
-    if (!encoder.EncoderRest(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
                              mindev::encoding::SizeT(0))) {
         return std::nullopt;
     }

@@ -41,6 +41,7 @@ public:
     ITransport::ptr transport;
     LinkService::ptr linkService;
     mindev::security::KeyChain keyChain;// 用于注册前缀时进行签名
+    LogicFace(){}
     bool InitWithTcp(const std::string& ip,u_short port);
     bool InitWithUdp(const std::string& ip,u_short port);
     /**
@@ -136,7 +137,7 @@ public:
             int packetType=bigint::_bigint_to<int>(minPacket->GetPacketType().value().GetVlIntValue());
             if(packetType==mindev::encoding::TLV::TlvIdentifierContentData){
                 std::optional<mindev::packet::Data> data =mindev::packet::Data().CreateDataByMINPacket(minPacket.value());
-                return interest;
+                return data;
             }
         }
     }
@@ -165,7 +166,7 @@ public:
      * @return
      * @throws LogicFaceException
      */
-    bool SendQuickCPacketV3(const std::vector<char> encodedBytes){return this->linkService->SendQuickCPacketV3(encodedBytes);}
+    bool SendQuickCPacketV3(const std::vector<char>& encodedBytes){return this->linkService->SendQuickCPacketV3(encodedBytes);}
     /**
      * 发送一个兴趣包
      * @param interest

@@ -17,25 +17,25 @@ class LogicFace;
 class LinkService {
 public:
     typedef std::shared_ptr<LinkService> ptr;
-    std::weak_ptr<ITransport> iTransport;
+    std::weak_ptr<ITransport> transport;
     std::reference_wrapper<mindev::logicface::LogicFace> logicFace;
     int mtu;
     int lpPacketHeadSize;
     long lpPacketId;
     std::vector<char> cpacketBytes;
+    LinkService(){}
     LinkService(std::reference_wrapper<mindev::logicface::LogicFace> val) : logicFace(val) {}
     /**
      * 初始化linkService
      * @param mtu
-     * @throws LogicFaceException
      */
     bool Init(int mtu);
     /**
      * 收到lpPacket包的处理函数，该函数被相关联的 transport 的 receive 函数调用
      * @return
      */
-    mindev::packet::MINPacket ReceivePacket();
-    mindev::packet::LpPacket ReceiveQuickPacket();
+    std::optional<mindev::packet::MINPacket> ReceivePacket();
+    std::optional<mindev::packet::LpPacket> ReceiveQuickPacket();
     /**
      * 发送一个兴趣包
      * @param interest
@@ -68,7 +68,7 @@ public:
      * @return
      * @throws LogicFaceException
      */
-    bool SendQuickCPacketV3(const std::vector<char> encodedBytes);
+    bool SendQuickCPacketV3(const std::vector<char>& encodedBytes);
     /**
      * 发送一个MIN网络包
      * @param minPacket
@@ -92,7 +92,7 @@ private:
      * @param lpPacket
      * @return
      */
-    mindev::packet::MINPacket &GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket);
+    std::optional<mindev::packet::MINPacket> GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket);
     /**
      * 发送一个lp包分片
      * @param buf 分片的数据
@@ -110,7 +110,7 @@ private:
      * @return
      */
     bool SendByteBuffer(const std::vector<char> &buf, int bufLen);
-    mindev::packet::LpPacket &GetLpPacketFromQuickCPacket(const std::vector<char> &encodedBytes);
+    std::optional<mindev::packet::LpPacket> GetLpPacketFromQuickCPacket(const std::vector<char> &encodedBytes);
     std::optional<mindev::packet::LpPacket> GetLpPacketFromCPacket(const mindev::packet::CPacket &cPacket);
 };
 } // namespace mindev::logicface
