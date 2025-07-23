@@ -2,39 +2,50 @@
 #include "mindev/include/logicface/tcptransport.h"
 #include "mindev/include/logicface/udptransport.h"
 #include "mindev/include/vmsconnection/tcpnet/socket_channel.h"
-#include "mindev/include/logicface/tcptransport.h"
 
 namespace mindev::logicface{
-    bool LogicFace::initWithTcp(std::string ip,u_short port){
+    bool LogicFace::InitWithTcp(const std::string& ip,u_short port){
         auto channel = std::make_shared<mindev::vmsconnection::tcpnet::SocketChannel>(std::make_shared<mindev::vmsconnection::tcpnet::IPAddress>(ip,port));
         if(!channel->Connect()){
             return false;
         }
         auto ptr = new TcpTransport();
-        if(!ptr->init(channel)){
+        if(!ptr->Init(channel)){
             delete ptr;
             return false;
         };
-        this->Transport = std::shared_ptr<TcpTransport>(ptr);
-        this->linkService = std::make_shared<LinkService>();
-        this->linkService->init(DefaultMtuSize);
+
+        this->linkService = std::make_shared<LinkService>(std::ref(*this));
+        if(!this->linkService->Init(DefaultMtuSize)){
+            return false;
+        };
+        ptr->linkService = this->linkService;
+        this->transport = std::shared_ptr<TcpTransport>(ptr);
+        this->linkService->iTransport = this->transport;
         this->type = LogicFaceType::TCP;
+        this->state = true;
         return true;
     }
-    bool LogicFace::initWithUdp(std::string ip,u_short port){
+    bool LogicFace::InitWithUdp(const std::string& ip,u_short port){
         auto channel = std::make_shared<mindev::vmsconnection::tcpnet::SocketChannel>(std::make_shared<mindev::vmsconnection::tcpnet::IPAddress>(ip,port));
 //         if(!channel->Connect()){
 //             return false;
 //         }
         auto ptr = new UdpTransport();
-        if(!ptr->init(channel)){
+        if(!ptr->Init(channel)){
             delete ptr;
             return false;
         };
-        this->Transport = std::shared_ptr<UdpTransport>(ptr);
-        this->linkService = std::make_shared<LinkService>();
-        this->linkService->init(DefaultMtuSize);
+
+        this->linkService = std::make_shared<LinkService>(std::ref(*this));
+        if(!this->linkService->Init(DefaultMtuSize)){
+            return false;
+        };
+        ptr->linkService = this->linkService;
+        this->transport = std::shared_ptr<UdpTransport>(ptr);
+        this->linkService->transport = this->transport;
         this->type = LogicFaceType::UDP;
+        this->state = true;
         return true;
     }
 };

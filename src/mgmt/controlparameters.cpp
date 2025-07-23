@@ -2,6 +2,7 @@
 #include "mindev/include/component/identifier.h"
 #include "mindev/include/component/identifiercomponentcontainer.h"
 #include "mindev/include/encoding/elementcontainer.h"
+#include "mindev/include/packet/interest.h"
 
 namespace mindev::mgmt{
     int ControlParameters::WireEncode(mindev::encoding::Encoder& encoder){

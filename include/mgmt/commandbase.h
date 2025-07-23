@@ -1,7 +1,7 @@
 #ifndef COMMANDBASE_H_
 #define COMMANDBASE_H_
 
-#include "icontrolcommand.h"
+#include "./icontrolcommand.h"
 #include "mindev/include/packet/interest.h"
 
 namespace mindev::mgmt {

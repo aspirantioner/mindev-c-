@@ -18,8 +18,24 @@ namespace mindev::mgmt {
         } else {
             return false;
         }
-        if (data.contains("data") && data["data"].is_object()) {
-            this->data = data["data"].get<nlohmann::json>();
+        if (data.contains("data")) {
+            if(data["data"].is_string()){
+                this->data = data["data"].get<std::string>();
+            }else if(data["data"].is_array()){
+                this->data = data["data"].get<std::vector<char>>();
+            }else if(data["data"].is_object()){
+                if(data["data"].contains("Version") && data["data"].contains("SliceNum")  && data["data"]["Version"].is_number_integer() && data["data"]["SliceNum"].is_number_integer()){
+                    ControlResponseMeta meta;
+                    meta.Version = data["data"]["Version"].get<long>();
+                    meta.SliceNum = data["data"]["Version"].get<long>();
+                    this->data = meta;
+                }
+                else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
         } else {
             return false;
         }

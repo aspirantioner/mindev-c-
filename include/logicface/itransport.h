@@ -1,20 +1,21 @@
 #ifndef ITRANSPORT_H_
 #define ITRANSPORT_H_
 
+#include "mindev/include/packet/lppacket.h"
 #include <string>
 
 namespace mindev::logicface{
     class ITransport{
 public:
         typedef std::shared_ptr<ITransport> ptr;
-        virtual void close(){};
-        virtual bool send(){return true;};
-        virtual void receive(){};
-        virtual std::string getRemoteUri() {return "";};
-        virtual std::string getLocalUri() {return "";};
-        virtual std::string getRemoteAddr() {return "";};
-        virtual std::string getLocalAddr() {return "";};
-        virtual bool setReadTimeout(long duration) {return true;};
+        virtual void Close(){};
+        virtual bool Send(mindev::packet::LpPacket lpPacket){return true;};
+        virtual std::optional<mindev::packet::LpPacket> Receive(){};
+        virtual std::string GetRemoteUri() {return "";};
+        virtual std::string GetLocalUri() {return "";};
+        virtual std::string GetRemoteAddr() {return "";};
+        virtual std::string GetLocalAddr() {return "";};
+        virtual bool SetReadTimeout(long duration) {return true;};
     };
 }
 

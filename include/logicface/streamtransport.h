@@ -12,6 +12,13 @@ public:
     mindev::vmsconnection::tcpnet::SocketChannel::ptr m_scoket_channel;
     std::vector<char> recBuf;
     long recvLen;
+    void Close(){this->m_scoket_channel->Close();}
+    bool Send(mindev::packet::LpPacket& lpPacket);
+    std::optional<mindev::packet::LpPacket> Receive();
+    bool SetReadTimeout(long duration);
+private:
+    std::pair<long,mindev::packet::LpPacket> ReadPktAndDeal(const std::vector<char>& buf,long buflen);
+    mindev::packet::LpPacket DoReceive();
     };
 }
 
