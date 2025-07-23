@@ -29,7 +29,7 @@ public:
             };
             return res;
         }else if constexpr(std::is_same_v<std::decay_t<decltype(value)>, SignatureAlgorithm>){
-            if(val.GetSignatureAlgorithm()!=mindev::security::Common::SignatureAlgorithm::SM3withSM2){
+            if(val.GetSignatureAlgorithm()!=mindev::minsecurity::Common::SignatureAlgorithm::SM3withSM2){
                 return std::nullopt;
             }
             res.value = val;
