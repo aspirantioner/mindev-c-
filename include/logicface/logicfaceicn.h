@@ -2,7 +2,7 @@
 #define LOGICFACEICN_H_
 
 namespace mindev::logicface{
-class LogicFaceICN:public logicFace{
+class LogicFaceICN:public LogicFace{
     
 };
 }

@@ -44,15 +44,15 @@ bool LinkService::Init(int mtu) {
 std::optional<mindev::packet::MINPacket> LinkService::ReceivePacket() {
     if (auto locked = transport.lock()) {
         std::optional<mindev::packet::LpPacket> lpPacket = locked->Receive();
-        mindev::packet::MINPacket minPacket = this->GetMINPacketFromLpPacket(lpPacket.value());
+        auto minPacket = this->GetMINPacketFromLpPacket(lpPacket.value());
         return minPacket;
     }
     return std::nullopt;
 }
 std::optional<mindev::packet::LpPacket> LinkService::ReceiveQuickPacket() {
     if (auto locked = this->transport.lock()) { // 增加条件判断
-        std::cout << "远程地址：" << locked->GetRemoteUir() << std::endl;
-        std::cout << "本地地址：" << locked->GetLocalUir() << std::endl;
+//         std::cout << "远程地址：" << locked->GetRemoteUir() << std::endl;
+//         std::cout << "本地地址：" << locked->GetLocalUir() << std::endl;
         return locked->Receive();
     }
     return std::nullopt; // 弱引用失效时返回空值
@@ -64,6 +64,9 @@ bool LinkService::SendInterest(const mindev::packet::Interest &interest) {
         return false;
     }
     int bufLen = const_cast<mindev::packet::Interest &>(interest).WireEncode(encoder);
+    if(bufLen == -1){
+        return false;
+    }
     std::vector<char> buf = encoder.GetBuffer();
     return this->SendByteBuffer(buf, bufLen);
 }
@@ -74,16 +77,22 @@ bool LinkService::SendData(const mindev::packet::Data &data) {
         return false;
     }
     int bufLen = const_cast<mindev::packet::Data &>(data).WireEncode(encoder);
+    if(bufLen == -1){
+        return false;
+    }
     std::vector<char> buf = encoder.GetBuffer();
     return this->SendByteBuffer(buf, bufLen);
 }
-bool LinkService::SendCPacket(const mindev::packet::CPacket &cPacket) {
+bool LinkService::SendCPacket(const mindev::packet::CPacket &cpacket) {
     mindev::encoding::Encoder encoder;
     if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
                               mindev::encoding::SizeT(0))) {
         return false;
     }
-    int bufLen = const_cast<mindev::encoding::CPacket &>(cPacket).WireEncode(encoder);
+    int bufLen = const_cast<mindev::packet::CPacket &>(cpacket).WireEncode(encoder);
+    if(bufLen == -1){
+        return false;
+    }
     std::vector<char> buf = encoder.GetBuffer();
     return this->SendByteBuffer(buf, bufLen);
 }
@@ -104,9 +113,9 @@ bool LinkService::SendQuickCPacketV3(const std::vector<char>& encodedBytes) {
     if (auto locked = this->transport.lock()) {
         std::optional<mindev::packet::LpPacket> lpPacket = this->GetLpPacketFromQuickCPacket(encodedBytes);
         if (lpPacket.has_value()) {
-            std::cout << "发送MIN包！！！" << std::endl;
-            std::cout << "本地发送方地址：" << locked->GetLocalUri()<< std::endl;
-            std::cout << "远端接收方地址：" << locked->GetRemoteUri()<< std::endl;
+//             std::cout << "发送MIN包！！！" << std::endl;
+//             std::cout << "本地发送方地址：" << locked->GetLocalUri()<< std::endl;
+//             std::cout << "远端接收方地址：" << locked->GetRemoteUri()<< std::endl;
             return locked->Send(lpPacket.value());
         } else {
             return false;
@@ -122,6 +131,9 @@ bool LinkService::SendMINPacket(const mindev::packet::MINPacket &minPacket){
         return false;
     }
     int bufLen=const_cast<mindev::packet::MINPacket &>(minPacket).WireEncode(encoder);
+    if(bufLen == -1){
+        return false;
+    }
     std::vector<char> buf =encoder.GetBuffer();
     return this->SendByteBuffer(buf,bufLen);
 }
@@ -138,14 +150,20 @@ bool LinkService::CalculateLpPacketHeadSize() {
         return false;
     }
     this->lpPacketHeadSize = lppacket.WireEncode(encoder);
+    if(this->lpPacketHeadSize == -1){
+        return false;
+    }
     this->lpPacketHeadSize -= mindev::encoding::Encoder::MaxPacketSize;
     return true;
 }
 std::optional<mindev::packet::MINPacket> LinkService::GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket) {
-    std::vector<char> payload = lpPacket.payload.GetValue();
-    mindev::encoding::Block block(payload, true);
+    std::vector<char> payload =const_cast<mindev::packet::LpPacket&>(lpPacket).payload.GetValue();
+    auto block = mindev::encoding::Block::CreateBlockByBuffer(payload, true);
+    if(!block.has_value()){
+        return std::nullopt;
+    }
     mindev::packet::MINPacket minPacket;
-    if (!minPacket.WireDecode(block)) {
+    if (!minPacket.WireDecode(block.value())) {
         return std::nullopt;
     }
     return minPacket;
@@ -206,6 +224,9 @@ std::optional<mindev::packet::LpPacket> LinkService::GetLpPacketFromCPacket(cons
         return std::nullopt;
     }
     int bufLen = const_cast<mindev::packet::CPacket &>(cPacket).WireEncode(encoder);
+    if(bufLen == -1){
+        return std::nullopt;
+    }
     std::vector<char> buf = encoder.GetBuffer();
     // 2.byte[] => LpPacket
     mindev::packet::LpPacket lpPacket;

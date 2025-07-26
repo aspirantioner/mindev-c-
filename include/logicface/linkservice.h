@@ -8,6 +8,7 @@
 #include "mindev/include/packet/lppacket.h"
 #include "mindev/include/packet/data.h"
 #include "mindev/include/packet/interest.h"
+#include "mindev/include/packet/cpacket.h"
 #include <iostream>
 
 
@@ -23,7 +24,6 @@ public:
     int lpPacketHeadSize;
     long lpPacketId;
     std::vector<char> cpacketBytes;
-    LinkService(){}
     LinkService(std::reference_wrapper<mindev::logicface::LogicFace> val) : logicFace(val) {}
     /**
      * 初始化linkService
@@ -113,5 +113,5 @@ private:
     std::optional<mindev::packet::LpPacket> GetLpPacketFromQuickCPacket(const std::vector<char> &encodedBytes);
     std::optional<mindev::packet::LpPacket> GetLpPacketFromCPacket(const mindev::packet::CPacket &cPacket);
 };
-} // namespace mindev::logicface
+}
 #endif
