@@ -6,6 +6,9 @@
 #include <cstring>
 #include <stdexcept>
 #include <type_traits>
+#include <string>
+#include <iomanip>
+#include <sstream>
 
 namespace byteutils {
 
@@ -45,6 +48,19 @@ std::vector<char> FromValue(T value, bool little_endian = true) {
         }
     }
     return bytes;
+}
+
+std::string VectorToHex(const std::vector<char>& data,bool need_space = false) {
+    std::ostringstream oss;
+    oss << std::uppercase << std::hex << std::setfill('0');
+    for (size_t i = 0; i < data.size(); ++i) {
+        oss << std::setw(2) << (static_cast<unsigned int>(static_cast<unsigned char>(data[i])));
+        if(need_space){
+            if (i != data.size() - 1)
+                oss << " "; // 每个字节之间加空格
+        }
+    }
+    return oss.str();
 }
 }
 

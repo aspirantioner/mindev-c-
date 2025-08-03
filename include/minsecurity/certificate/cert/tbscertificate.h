@@ -1,26 +1,23 @@
-#ifndef CERTIFICATE_H_
-#define CERTIFICATE_H_
+#ifndef TBSCERTIFICATE_H_
+#define TBSCERTIFICATE_H_
 
-#include "mindev/include/minsecurity/crypto/publickeyinterface.h"
 #include "mindev/include/common/byteutils.h"
 #include <vector>
 #include <string>
 
 namespace mindev::minsecurity::certificate::cert {
-    class Certificate {
+    class TbsCertificate {
 public:
-    Certificate(){}
-    Certificate(int version, long serialNumber,
-                       const mindev::minsecurity::crypto::PublicKeyInterface& publicKey,
-                       const std::vector<char>& signature, int signatureAlgorithm,
+    TbsCertificate(){}
+    TbsCertificate(int version, long serialNumber,
+                       const std::vector<char>& publicKey, int signatureAlgorithm,
                        int publicKeyAlgorithm,
-                       const std::string& issueTo,const std::string& issuer,
+                       const std::string& issueTo, const std::string& issuer,
                        long notBefore, long notAfter,
                        int keyUsage, bool isCA, long timestamp) {
         this->version = version;
         this->serialNumber = serialNumber;
         this->publicKey = publicKey;
-        this->signature = signature;
         this->signatureAlgorithm = signatureAlgorithm;
         this->publicKeyAlgorithm = publicKeyAlgorithm;
         this->issueTo = issueTo;
@@ -32,7 +29,7 @@ public:
         this->timestamp = timestamp;
     }
 
-    int GetVersion() const{
+    int GetVersion() {
         return version;
     }
 
@@ -40,7 +37,7 @@ public:
         this->version = version;
     }
 
-    long GetSerialNumber() const{
+    long GetSerialNumber() {
         return serialNumber;
     }
 
@@ -48,16 +45,7 @@ public:
         this->serialNumber = serialNumber;
     }
 
-
-    std::vector<char>& GetSignature() const{
-        return signature;
-    }
-
-    void SetSignature(const std::vector<char>& signature) {
-        this->signature = signature;
-    }
-
-    int GetSignatureAlgorithm() const{
+    int GetSignatureAlgorithm() {
         return signatureAlgorithm;
     }
 
@@ -65,7 +53,7 @@ public:
         this->signatureAlgorithm = signatureAlgorithm;
     }
 
-    int GetPublicKeyAlgorithm() const{
+    int GetPublicKeyAlgorithm() {
         return publicKeyAlgorithm;
     }
 
@@ -73,7 +61,7 @@ public:
         this->publicKeyAlgorithm = publicKeyAlgorithm;
     }
 
-    std::string getIssueTo() const{
+    std::string getIssueTo() {
         return issueTo;
     }
     
@@ -81,7 +69,7 @@ public:
         this->issueTo = issueTo;
     }
 
-    std::string GetIssuer() const{
+    std::string GetIssuer() {
         return issuer;
     }
 
@@ -89,7 +77,7 @@ public:
         this->issuer = issuer;
     }
     
-    long GetNotBefore() const{
+    long GetNotBefore() const {
         return notBefore;
     }
     
@@ -97,7 +85,7 @@ public:
         this->notBefore = notBefore;
     }
 
-    long GetNotAfter() const{
+    long GetNotAfter() const {
         return notAfter;
     }
 
@@ -105,7 +93,7 @@ public:
         this->notAfter = notAfter;
     }
 
-    int GetKeyUsage() const{
+    int GetKeyUsage() {
         return keyUsage;
     }
 
@@ -113,7 +101,7 @@ public:
         this->keyUsage = keyUsage;
     }
 
-    bool IsCA() const {
+    bool IsCA() {
         return isCA;
     }
 
@@ -121,7 +109,7 @@ public:
         isCA = CA;
     }
 
-    long GetTimestamp() const{
+    long GetTimestamp() {
         return timestamp;
     }
 
@@ -129,21 +117,20 @@ public:
         this->timestamp = timestamp;
     }
 
-    minsecurity::crypto::PublicKeyInterface& GetPublicKey() const{
+    std::vector<char>& GetPublicKey() {
         return publicKey;
     }
 
-    void SetPublicKey(const mindev::minsecurity::crypto::PublicKeyInterface& publicKey) {
+    void SetPublicKey(const std::vector<char>& publicKey) {
         this->publicKey = publicKey;
     }
 
     std::string ToString() {
         std::string ans = "";
-        return ans+"Certificate{" +
+        return ans+"TbsCertificate{" +
                 "version=" + std::to_string(version) +
                 ", serialNumber=" + std::to_string(serialNumber) +
-                ", publicKey=" + publicKey +
-                ", signature=" + (signature.size()!=0 ? byteutils::VectorToHex(signature) : "null") +
+                ", publicKey=" + (publicKey.size()==0?"":byteutils::VectorToHex(publicKey)) +
                 ", signatureAlgorithm=" + std::to_string(signatureAlgorithm) +
                 ", publicKeyAlgorithm=" + std::to_string(publicKeyAlgorithm) +
                 ", issueTo='" + issueTo + '\'' +
@@ -158,8 +145,7 @@ public:
 private:
     int version;
     long serialNumber;
-    mindev::minsecurity::crypto::PublicKeyInterface publicKey;
-    std::vector<char> signature;
+    std::vector<char> publicKey;
     int signatureAlgorithm;
     int publicKeyAlgorithm;
     std::string issueTo;
