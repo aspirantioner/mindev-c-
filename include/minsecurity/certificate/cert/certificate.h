@@ -49,7 +49,7 @@ public:
     }
 
 
-    std::vector<char>& GetSignature() const{
+    std::vector<char>& GetSignature() {
         return signature;
     }
 
@@ -129,7 +129,7 @@ public:
         this->timestamp = timestamp;
     }
 
-    minsecurity::crypto::PublicKeyInterface& GetPublicKey() const{
+    minsecurity::crypto::PublicKeyInterface& GetPublicKey() {
         return publicKey;
     }
 
@@ -142,7 +142,7 @@ public:
         return ans+"Certificate{" +
                 "version=" + std::to_string(version) +
                 ", serialNumber=" + std::to_string(serialNumber) +
-                ", publicKey=" + publicKey +
+                ", publicKey=" + byteutils::VectorToHex(publicKey.GetBytes()) +
                 ", signature=" + (signature.size()!=0 ? byteutils::VectorToHex(signature) : "null") +
                 ", signatureAlgorithm=" + std::to_string(signatureAlgorithm) +
                 ", publicKeyAlgorithm=" + std::to_string(publicKeyAlgorithm) +
