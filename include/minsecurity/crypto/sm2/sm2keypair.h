@@ -11,10 +11,9 @@ public:
         this->sm2privatekey = sm2privatekey;
     }
     static SM2KeyPair GenerateKeyPair(){
-        gm_bn_t k;
-        gm_point_t p;
-        gm_sm2_gen_keypair(k, &p);
-        return SM2KeyPair(SM2PublicKey(p),SM2PrivateKey(k));
+        auto sm2_key = std::make_shared<SM2_KEY>();
+        sm2_key_generate(sm2_key.get());
+        return SM2KeyPair(SM2PublicKey(sm2_key),SM2PrivateKey(sm2_key));
     }
     SM2PublicKey& GetSm2PublicKey(){
         return this->sm2publickey;

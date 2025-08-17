@@ -1,12 +1,13 @@
 #ifndef PRIVATEKEYINTERFACE_H_
 #define PRIVATEKEYINTERFACE_H_
 
+#include "thirdparty/GmSSL/include/gmssl/sm2.h"
 #include <vector>
 namespace mindev::minsecurity::crypto {
     class PublicKeyInterface {
 public:
     virtual std::vector<char> GetBytes(){return std::vector<char>();}
-    virtual bool SetBytes(const std::vector<char>& bytes){return true;}
+    virtual void SetSm2Key(std::shared_ptr<SM2_KEY> ptr){return;}
     virtual std::vector<char> Encrypt(const std::vector<char>& content){return std::vector<char>();}
     bool Verify(const std::vector<char>& content,const std::vector<char>& digest){return true;}
     };

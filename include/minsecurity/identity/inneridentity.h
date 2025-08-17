@@ -12,8 +12,7 @@ class InnerIdentity{
 public:
      InnerIdentity(const std::string& name,const mindev::minsecurity::identity::KeyParam& keyParam,
                     const std::vector<char>& prikey, const std::vector<char>& prikeyRawByte,
-                    const std::vector<char>& pubkey,const std::string passwd,const mindev::minsecurity::certificate::cert::Certificate& cert,
-                    bool isDefault) {
+                    const std::vector<char>& pubkey,const std::string passwd,const mindev::minsecurity::certificate::cert::Certificate& cert) {
         Name = name;
         KeyParam = keyParam;
         Prikey = prikey;
