@@ -129,7 +129,7 @@ public:
         this->timestamp = timestamp;
     }
 
-    minsecurity::crypto::PublicKeyInterface& GetPublicKey() {
+    const minsecurity::crypto::PublicKeyInterface& GetPublicKey() const{
         return publicKey;
     }
 

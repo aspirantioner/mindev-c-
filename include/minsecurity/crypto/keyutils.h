@@ -2,9 +2,11 @@
 #define KEYUTILS_H_
 
 #include "mindev/include/minsecurity/common.h"
+#include "mindev/include/minsecurity/crypto/hashalgo.h"
 #include "mindev/include/minsecurity/crypto/publickeyinterface.h"
 #include "mindev/include/minsecurity/crypto/sm2/sm2privatekey.h"
 #include "mindev/include/minsecurity/crypto/sm2/sm2publickey.h"
+#include <cstdint>
 #include <optional>
 #include <vector>
 namespace mindev::minsecurity::crypto {
@@ -26,8 +28,14 @@ public:
         }
         return std::nullopt;
     }
-    static std::vector<char> Get16BytePasswd(const std::vector<char>& passwd){
-        
+    static std::vector<uint8_t> Get16BytePasswd(std::vector<uint8_t>& passwd){
+        auto res = HashAlgo::Sm3(passwd);
+        if(res.size() == 32){
+            for(int i = 0;i<16;i++){
+                res[i] += res[i+16];
+            }
+        }
+        return std::vector<uint8_t>(res.begin(),res.begin()+16);
     }
     };
 }
