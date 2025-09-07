@@ -1,10 +1,11 @@
 #ifndef TBSCERTIFICATE_H_
 #define TBSCERTIFICATE_H_
 
+#include "mindev/include/common/json.hpp"
 #include "mindev/include/common/byteutils.h"
 #include <vector>
 #include <string>
-
+using json = nlohmann::json;
 namespace mindev::minsecurity::certificate::cert {
     class TbsCertificate {
 public:
@@ -29,7 +30,7 @@ public:
         this->timestamp = timestamp;
     }
 
-    int GetVersion() {
+    int GetVersion() const{
         return version;
     }
 
@@ -45,7 +46,7 @@ public:
         this->serialNumber = serialNumber;
     }
 
-    int GetSignatureAlgorithm() {
+    int GetSignatureAlgorithm() const{
         return signatureAlgorithm;
     }
 
@@ -142,6 +143,9 @@ public:
                 ", timestamp=" + std::to_string(timestamp) +
                 '}';
     }
+    
+    friend void to_json(json& j, TbsCertificate& cert);
+    friend void from_json(const json& j, TbsCertificate& cert);
 private:
     int version;
     long serialNumber;
@@ -156,6 +160,39 @@ private:
     bool isCA;
     long timestamp;
     };
+    // 序列化
+    inline void to_json(json& j, TbsCertificate& cert) {
+        j = json{
+            {"Version", cert.GetVersion()},
+            {"SerialNumber", cert.GetSerialNumber()},
+            {"PublicKey", cert.GetPublicKey()},
+            {"SignatureAlgorithm", cert.GetSignatureAlgorithm()},
+            {"PublicKeyAlgorithm", cert.GetPublicKeyAlgorithm()},
+            {"IssueTo", cert.getIssueTo()},
+            {"Issuer", cert.GetIssuer()},
+            {"NotBefore", cert.GetNotBefore()},
+            {"NotAfter", cert.GetNotAfter()},
+            {"KeyUsage", cert.GetKeyUsage()},
+            {"IsCA", cert.IsCA()},
+            {"Timestamp", cert.GetTimestamp()}
+        };
+    }
+
+    // 反序列化
+    inline  void from_json(const json& j, TbsCertificate& cert) {
+        j.at("Version").get_to(cert.version);
+        j.at("SerialNumber").get_to(cert.serialNumber);
+        j.at("PublicKey").get_to(cert.publicKey);
+        j.at("SignatureAlgorithm").get_to(cert.signatureAlgorithm);
+        j.at("PublicKeyAlgorithm").get_to(cert.publicKeyAlgorithm);
+        j.at("IssueTo").get_to(cert.issueTo);
+        j.at("Issuer").get_to(cert.issuer);
+        j.at("NotBefore").get_to(cert.notBefore);
+        j.at("NotAfter").get_to(cert.notAfter);
+        j.at("KeyUsage").get_to(cert.keyUsage);
+        j.at("IsCA").get_to(cert.isCA);
+        j.at("Timestamp").get_to(cert.timestamp);
+    }
 }
 
 

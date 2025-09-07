@@ -1,12 +1,13 @@
-#ifndef HASHALGO_H_
-#define HASHALGO_H_
+#ifndef SM4_H_
+#define SM4_H_
 
 #include "thirdparty/GmSSL/include/gmssl/error.h"
-#define ENABLE_SM4_ECB 1
 #include "thirdparty/GmSSL/include/gmssl/sm4.h"
 #include <cstdint>
 #include <optional>
 #include <vector>
+
+#define ENABLE_SM4_ECB 1
 namespace mindev::minsecurity::crypto {
     class SM4 {
 public:
@@ -120,6 +121,5 @@ public:
     };
     
 }
-
 
 #endif

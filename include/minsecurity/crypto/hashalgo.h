@@ -3,7 +3,6 @@
 
 #include "thirdparty/GmSSL/include/gmssl/sm3.h"
 #include <cstdint>
-#include <optional>
 #include <vector>
 namespace mindev::minsecurity::crypto {
     class HashAlgo {

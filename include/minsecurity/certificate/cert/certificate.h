@@ -35,6 +35,10 @@ public:
     int GetVersion() const{
         return version;
     }
+    
+    bool IsEmpty()const{
+        return version == -1;
+    }
 
     void SetVersion(int version) {
         this->version = version;
@@ -156,7 +160,7 @@ public:
                 '}';
     }
 private:
-    int version;
+    int version = -1;
     long serialNumber;
     mindev::minsecurity::crypto::PublicKeyInterface publicKey;
     std::vector<char> signature;

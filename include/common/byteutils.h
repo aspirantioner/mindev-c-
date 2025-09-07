@@ -9,6 +9,8 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include <random>
+#include <limits>
 
 namespace byteutils {
 
@@ -61,6 +63,44 @@ std::string VectorToHex(const std::vector<char>& data,bool need_space = false) {
         }
     }
     return oss.str();
+}
+
+template <typename T>
+std::vector<T> GenerateRandomVector(size_t length) {
+    static_assert(std::is_integral<T>::value, "T must be an integral type.");
+
+    static std::random_device rd;
+    static std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<uint64_t> dist(
+        std::numeric_limits<T>::min(),
+        std::numeric_limits<T>::max()
+    );
+
+    std::vector<T> result;
+    result.reserve(length);
+
+    for (size_t i = 0; i < length; ++i) {
+        result.push_back(static_cast<T>(dist(gen)));
+    }
+
+    return result;
+}
+
+// vector -> string
+template<typename T>
+std::string VectorToString(const std::vector<T>& vec) {
+    static_assert(std::is_same<T, uint8_t>::value || std::is_same<T, char>::value,
+                  "T must be uint8_t or char");
+    return std::string(reinterpret_cast<const char*>(vec.data()), vec.size());
+}
+
+// string -> vector
+template<typename T>
+std::vector<T> StringToVector(const std::string& str) {
+    static_assert(std::is_same<T, uint8_t>::value || std::is_same<T, char>::value,
+                  "T must be uint8_t or char");
+    const T* dataPtr = reinterpret_cast<const T*>(str.data());
+    return std::vector<T>(dataPtr, dataPtr + str.size());
 }
 }
 
