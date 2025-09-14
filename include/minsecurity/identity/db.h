@@ -100,7 +100,7 @@ class IdentityDatabase {
         }
     
         // 保存数据
-        bool Save(const std::string& filename) {
+        bool Save(const std::string& filename = user_identity_filename) {
             std::ofstream out(filename);
             if (!out.is_open()) return false;
             
@@ -147,13 +147,6 @@ class IdentityDatabase {
         bool Erase(const std::string& name) {
             return table_.erase(name) > 0;
         }
-    
-//         // 打印全部（for 测试）
-//         void print_all() const {
-//             for (const auto& [k, v] : table_) {
-//                 std::cout << "Name: " << v.name << ", pubkey: " << v.pubkey << "\n";
-//             }
-//         }
     
     private:
         TableType table_;

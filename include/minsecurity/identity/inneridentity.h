@@ -1,11 +1,12 @@
 #ifndef INNERIDENTITY_H_
 #define INNERIDENTITY_H_
 
+#include "mindev/include/common/json.hpp"
 #include "mindev/include/minsecurity/certificate/cert/certificate.h"
 #include "mindev/include/minsecurity/crypto/privatekeyinterface.h"
 #include "mindev/include/minsecurity/identity/keyparam.h"
 #include <string>
-
+using json = nlohmann::json;
 namespace mindev::minsecurity::identity {
 
 class InnerIdentity{
@@ -80,6 +81,8 @@ public:
                 ", PrikeyRawByte='" + byteutils::VectorToHex(PrikeyRawByte) + '\''+
                 '}';
     }
+    friend void to_json(json& j, const InnerIdentity& cert);
+    friend void from_json(const json& j, const InnerIdentity& cert);
 private:
     std::string Name;
     mindev::minsecurity::identity::KeyParam KeyParam;
@@ -89,6 +92,28 @@ private:
     std::string Passwd;
     mindev::minsecurity::certificate::cert::Certificate Cert;
 };
+
+inline void to_json(json& j, const InnerIdentity& inner) {
+    j = json{
+        {"Name", inner.Name},  
+        {"KeyParam", inner.KeyParam},
+        {"Prikey", inner.Prikey},
+        {"Pubkey",inner.Pubkey},
+        {"Passwd",inner.Passwd},
+        {"Cert",inner.Cert},
+        {"PrikeyRawByte",inner.PrikeyRawByte}
+    };
+}
+
+inline void from_json(const json& j,const InnerIdentity& inner) {
+    j.at("Name").get_to(inner.Name);
+    j.at("KeyParam").get_to(inner.KeyParam);
+    j.at("Prikey").get_to(inner.Prikey);
+    j.at("Pubkey").get_to(inner.Pubkey);
+    j.at("Passwd").get_to(inner.Passwd);
+    j.at("Cert").get_to(inner.Cert);
+    j.at("PrikeyRawByte").get_to(inner.PrikeyRawByte);
+}
 
 }
 #endif
