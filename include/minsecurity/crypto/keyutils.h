@@ -28,6 +28,24 @@ public:
         }
         return std::nullopt;
     }
+    static std::optional<PublicKeyInterface> UnMarshalPublicKey(std::shared_ptr<SM2_KEY> ptr,int algorithm,const std::vector<uint8_t>& public_key){
+        switch(algorithm){
+            case static_cast<int>(mindev::minsecurity::Common::PublicKeyAlgorithm::SM2):
+                mindev::minsecurity::crypto::sm2::SM2PublicKey sm2PublicKey(ptr);
+                sm2PublicKey.SetBytes(public_key);
+                return sm2PublicKey;
+        }
+        return std::nullopt;
+    }
+    static std::optional<PrivateKeyInterface> UnMarshalPrivateKey(std::shared_ptr<SM2_KEY> ptr,int algorithm,const std::vector<uint8_t>& private_key){
+        switch(algorithm){
+            case static_cast<int>(mindev::minsecurity::Common::PublicKeyAlgorithm::SM2):
+                mindev::minsecurity::crypto::sm2::SM2PrivateKey sm2PrivateKey(ptr);
+                sm2PrivateKey.SetBytes(private_key);
+                return sm2PrivateKey;
+        }
+        return std::nullopt;
+    }
     static std::vector<uint8_t> Get16BytePasswd(std::vector<uint8_t>& passwd){
         auto res = HashAlgo::Sm3(passwd);
         if(res.size() == 32){

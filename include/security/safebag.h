@@ -6,7 +6,7 @@
 namespace mindev::security {
 class SafeBag {
 public:
-    std::vector<uint8_t> GetValue() {
+    std::vector<uint8_t> GetValue() const{
         return value;
     }
     void SetValue(const std::vector<uint8_t> &value) {

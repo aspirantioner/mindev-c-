@@ -2,6 +2,8 @@
 #define SM2PRIVATEKEY_H_
 
 #include "mindev/include/minsecurity/crypto/privatekeyinterface.h"
+#include "thirdparty/GmSSL/include/gmssl/sm2_z256.h"
+#include <cstdint>
 
 namespace mindev::minsecurity::crypto::sm2 {
     class SM2PrivateKey:public mindev::minsecurity::crypto::PrivateKeyInterface{
@@ -26,6 +28,17 @@ public:
             }
         }
         return res;
+    }
+    bool SetBytes(std::vector<uint8_t>& key){
+        if(key.size()!=32){
+            return false;
+        }
+        sm2_z256_t r;
+        sm2_z256_from_bytes(r, key.data());
+        if(sm2_key_set_private_key(sm2_key.get(),r)!=1){
+            return false;
+        }
+        return true;
     }
 private:
     std::shared_ptr<SM2_KEY> sm2_key;

@@ -3,6 +3,8 @@
 
 #include "thirdparty/GmSSL/include/gmssl/sm2.h"
 #include "mindev/include/minsecurity/crypto/publickeyinterface.h"
+#include "thirdparty/GmSSL/include/gmssl/sm2_z256.h"
+#include <cstdint>
 
 namespace mindev::minsecurity::crypto::sm2 {
     class SM2PublicKey:public mindev::minsecurity::crypto::PublicKeyInterface{
@@ -28,6 +30,19 @@ public:
             res.insert(res.end(), bytes,bytes+64);
         }
         return res;
+    }
+    bool SetBytes(const std::vector<uint8_t>& key){
+        if(key.size()!=64){
+            return false;
+        }
+        SM2_Z256_POINT P;
+        if(sm2_z256_point_from_bytes(&P, key.data())!=1){
+            return false;
+        }
+        if(sm2_key_set_public_key(sm2_key.get(),&P)!=1){
+            return false;
+        }
+        return true;
     }
 private:
     std::shared_ptr<SM2_KEY> sm2_key;

@@ -129,6 +129,8 @@ public:
         res.signature_algo = KeyParam.SignatureAlgorithm;
         res.cert = certificate::cert::CertUtils::ToPem(Cert,"",mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB);
         res.prikey_raw_byte = byteutils::VectorToString(PrikeyRawByte);
+        res.pass = GetPasswd();
+        res.is_default = Isdefault();
         return res;
     }
     bool Lock(const std::string& passwd,int algo){
@@ -158,10 +160,10 @@ public:
                 }
                 auto sm4key = minsecurity::crypto::KeyUtils::Get16BytePasswd(passwd);
                 auto dec = minsecurity::crypto::SM4::DecryptECBPadding(sm4key,PrikeyRawByte);
-                
+                crypto::KeyUtils::UnMarshalPrivateKey(std::shared_ptr<SM2_KEY> ptr, int algorithm)
         }
     }
-    bool Verify(std::vector<char>& msg,std::vector<char>& digest){
+    bool Verify(const std::vector<char>& msg,const std::vector<char>& digest){
         if(msg.size() == 0 || digest.size() == 0){
             return false;
         }
@@ -176,7 +178,7 @@ public:
     std::vector<uint8_t> Encrypt(std::vector<uint8_t>& content){
         return (crypto::sm2::SM2PublicKey*)(&Pubkey)->Encrypt(content);
     }
-    std::vector<uint8_t> Dump(const std::string& passwd){
+    std::vector<uint8_t> Dump(const std::string& passwd)const{
         InnerIdentity inneridentity = IdentityUtil::ParseIdentityToInner(this);
         json j = inneridentity;
         if(passwd.size()>0){

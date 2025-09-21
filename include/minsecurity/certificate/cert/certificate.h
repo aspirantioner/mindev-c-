@@ -140,7 +140,9 @@ public:
     void SetPublicKey(const mindev::minsecurity::crypto::PublicKeyInterface& publicKey) {
         this->publicKey = publicKey;
     }
-
+    bool IsValid() const{
+        return GetPublicKey().GetBytes().size() != 0;
+    }
     std::string ToString() {
         std::string ans = "";
         return ans+"Certificate{" +

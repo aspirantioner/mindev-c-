@@ -3,15 +3,18 @@
 
 #include "mindev/include/minsecurity/certificate/cert/certutils.h"
 #include "mindev/include/minsecurity/common.h"
+#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
 #include "mindev/include/minsecurity/identity/identity.h"
 #include "mindev/include/minsecurity/identity/inneridentity.h"
+#include <cstdint>
 #include <optional>
 namespace mindev::minsecurity::identity {
 
     class IdentityUtil{
 public:
+    
     static std::optional<InnerIdentity> ParseIdentityToInner(Identity& identity){
-        if(identity.GetPubKey().GetBytes().size() == 0 || identity.GetPriKey().GetBytes().size() == 0 || identity.GetCert().GetPublicKey().GetBytes().size() == 0){
+        if(identity.GetPubKey().GetBytes().size() == 0 || identity.GetPriKey().GetBytes().size() == 0 || (haveUsedCert && !identity.GetCert().IsValid())){
             return std::nullopt;
         }
         InnerIdentity innerIdentity;
@@ -33,9 +36,32 @@ public:
         }
         identity.SetName(innerIdentity.GetName());
         identity.SetKeyParam(innerIdentity.GetKeyParam());
-        
+        auto sm2_pair = crypto::sm2::SM2KeyPair::GenerateKeyPair();
+        sm2_pair.GetSm2PublicKey().SetBytes(innerIdentity.GetPubKey());
+        sm2_pair.GetSm2PrivateKey().SetBytes(innerIdentity.GetPubKey());
+        identity.SetPubkey(sm2_pair.GetSm2PublicKey());
+        identity.SetPrikey(sm2_pair.GetSm2PrivateKey());
         identity.SetPasswd(innerIdentity.GetPasswd());
+        if constexpr(haveUsedCert){
+            certificate::cert::Certificate certificate = certificate::cert::CertUtils::FromPem(innerIdentity.GetCert(), innerIdentity.GetPasswd(), minsecurity::Common::SymmetricAlgorithm::SM4CBC);
+            identity.SetCert(certificate);
+        }
         identity.SetPrikeyRawByte(innerIdentity.GetPrikeyRawByte());
+        return identity;
+    }
+    static std::optional<Identity> FromIdentityInfo(const struct IdentityInfo& info){
+        Identity identity;
+        identity.SetName(info.name);
+        auto sm2_pair = crypto::sm2::SM2KeyPair::GenerateKeyPair();
+        sm2_pair.GetSm2PublicKey().SetBytes(byteutils::StringToVector<uint8_t>(info.pubkey));
+        sm2_pair.GetSm2PrivateKey().SetBytes(byteutils::StringToVector<uint8_t>(info.prikey));
+        identity.SetPubkey(sm2_pair.GetSm2PublicKey());
+        identity.SetPrikey(sm2_pair.GetSm2PrivateKey());
+        identity.SetKeyParam(KeyParam::KeyParam(info.pubkey_algo, info.signature_algo));
+        identity.SetDefault(info.is_default);
+        identity.SetPasswd(info.pass);
+        certificate::cert::Certificate certificate = certificate::cert::CertUtils::FromPem(info.cert, info.pass, minsecurity::Common::SymmetricAlgorithm::SM4CBC);
+        identity.SetCert(certificate);
         return identity;
     }
 private:
