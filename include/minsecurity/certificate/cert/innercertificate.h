@@ -3,6 +3,7 @@
 
 #include "mindev/include/common/byteutils.h"
 #include "mindev/include/minsecurity/certificate/cert/tbscertificate.h"
+#include <cstdint>
 #include <vector>
 #include <string>
 using json = nlohmann::json;
@@ -27,7 +28,7 @@ public:
         this->signatureAlgorithm = signatureAlgorithm;
     }
 
-    const std::vector<char>& GetSignatureValue() const{
+    std::vector<char> GetSignatureValue() const{
         return this->signatureValue;
     }
 
@@ -43,15 +44,15 @@ public:
                 ", signatureValue"+(signatureValue.size()==0?"null":byteutils::VectorToHex(signatureValue))+
                 "}";
     }
-    friend void to_json(json& j, const InnerCertificate& cert);
-    friend void from_json(const json& j, const InnerCertificate& cert);
+    friend void to_json(json& j,const InnerCertificate& cert);
+    friend void from_json(const json& j, InnerCertificate& cert);
 private:
     TbsCertificate tbsCertificate;
     int signatureAlgorithm;
     std::vector<char> signatureValue;
     };
     // InnerCertificate 序列化
-    inline void to_json(json& j, const InnerCertificate& inner) {
+    inline void to_json(json& j,const InnerCertificate& inner) {
         j = json{
             {"TBSCertificate", inner.tbsCertificate},   // 嵌套对象
             {"SignatureAlgorithm", inner.signatureAlgorithm},
@@ -60,10 +61,10 @@ private:
     }
     
     // InnerCertificate 反序列化
-    inline void from_json(const json& j,const InnerCertificate& inner) {
+    inline void from_json(const json& j,InnerCertificate& inner) {
         j.at("TBSCertificate").get_to(inner.tbsCertificate);
         j.at("SignatureAlgorithm").get_to(inner.signatureAlgorithm);
-        j.at("SignatureValue").get_to(inner.signatureValue);
+        j.at("SignatureValue").get_to<std::vector<char>>(inner.signatureValue);
     }
 }
 

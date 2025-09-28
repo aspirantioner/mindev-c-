@@ -10,7 +10,7 @@
 namespace mindev::component{
     class IdentifierWrapper:public TlvComponentBase,public mindev::encoding::IEncodingAble,public TemplateInit{
 private:
-    Identifier identifier = Identifier();
+    mindev::component::Identifier identifier = mindev::component::Identifier();
     mindev::encoding::VlInt tlvType = mindev::encoding::VlInt(mindev::encoding::TLV::TlvInvalid);
 public:
     inline mindev::encoding::VlInt GetTlvType(){

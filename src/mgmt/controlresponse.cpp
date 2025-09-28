@@ -19,7 +19,15 @@ namespace mindev::mgmt {
             return false;
         }
         if (data.contains("data") && data["data"].is_object()) {
-            this->data = data["data"].get<nlohmann::json>();
+            if(this->type == ControlResponseTypeString){
+                this->data = data["data"].get<std::string>();
+            }else if (this->type == ControlResponseTypeBytes){
+                this->data = data["data"].get<std::vector<char>>();
+            }else if(this->type == ControlResponseTypeMeta){
+                this->data = data["data"].get<ControlResponseMeta>();
+            }else{
+                return false;
+            }
         } else {
             return false;
         }

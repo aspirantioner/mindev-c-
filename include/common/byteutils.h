@@ -52,7 +52,8 @@ std::vector<char> FromValue(T value, bool little_endian = true) {
     return bytes;
 }
 
-std::string VectorToHex(const std::vector<char>& data,bool need_space = false) {
+template<typename T, typename = std::enable_if_t<std::is_same_v<T, uint8_t> || std::is_same_v<T, char>>>
+std::string VectorToHex(const std::vector<T>& data,bool need_space = false) {
     std::ostringstream oss;
     oss << std::uppercase << std::hex << std::setfill('0');
     for (size_t i = 0; i < data.size(); ++i) {
@@ -101,6 +102,20 @@ std::vector<T> StringToVector(const std::string& str) {
                   "T must be uint8_t or char");
     const T* dataPtr = reinterpret_cast<const T*>(str.data());
     return std::vector<T>(dataPtr, dataPtr + str.size());
+}
+
+// uint8_t -> char
+inline std::vector<char> Uint8ToChar(const std::vector<uint8_t>& src) {
+    std::vector<char> dst(src.size());
+    std::copy(src.begin(), src.end(), dst.begin());
+    return dst;
+}
+
+// char -> uint8_t
+inline std::vector<uint8_t> CharToUint8(const std::vector<char>& src) {
+    std::vector<uint8_t> dst(src.size());
+    std::copy(src.begin(), src.end(), dst.begin());
+    return dst;
 }
 }
 

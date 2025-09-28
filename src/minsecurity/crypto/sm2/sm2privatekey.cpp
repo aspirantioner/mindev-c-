@@ -6,7 +6,7 @@
 
 namespace mindev::minsecurity::crypto::sm2 {
 
-    std::vector<char> SM2PrivateKey::Decrypt(const std::vector<char>& cipher,Common::Sm2CipherMode cipher_mode = Common::Sm2CipherMode::C1C2C3){
+    std::vector<char> SM2PrivateKey::Decrypt(const std::vector<char>& cipher,Common::Sm2CipherMode cipher_mode){
         std::vector<char> res;
         if(cipher.size()<=97 || cipher.size()-97 > SM2_MAX_PLAINTEXT_SIZE){
             return res;
@@ -25,7 +25,7 @@ namespace mindev::minsecurity::crypto::sm2 {
             memcpy(ciphertext.hash,cipher.data()+1+sizeof(ciphertext.point),sizeof(ciphertext.hash));
             memcpy(ciphertext.ciphertext,cipher.data()+1+sizeof(ciphertext.point)+sizeof(ciphertext.hash),ciphertext.ciphertext_size);
         }
-        if(sm2_do_decrypt(this->sm2_key.get(),ciphertext, res.data(), &outlen)!=1 || outlen != res.size()){
+        if(sm2_do_decrypt(this->sm2_key.get(),&ciphertext,reinterpret_cast<uint8_t*>(res.data()), &outlen)!=1 || outlen != res.size()){
             error_print();
             res.clear();
         }

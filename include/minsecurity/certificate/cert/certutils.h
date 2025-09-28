@@ -29,7 +29,7 @@ public:
         return std::vector<char>(j_str.begin(),j_str.end());
     }
     template<typename Object>
-    static Object DeSerialization(const std::vector<uint8_t> vec){
+    static Object DeSerialization(const std::vector<uint8_t>& vec){
         auto j = json::parse(vec.begin(),vec.end());
         return j.get<Object>();
     }
@@ -42,7 +42,7 @@ public:
         }
         return false;
     }
-    static void SignCert(const Certificate& certificate,const crypto::PrivateKeyInterface& privatekey){
+    static void SignCert(Certificate& certificate,const crypto::PrivateKeyInterface& privatekey){
         auto cert_vec = Serialization(CertUtils::ParseCertToInnerCert(certificate).GetTbsCertificate());
         switch (certificate.GetSignatureAlgorithm()){
             case (int)mindev::minsecurity::Common::SignatureAlgorithm::SM3withSM2:
@@ -75,19 +75,19 @@ public:
             return ret;
         }
         auto cert_vec = Serialization(ParseCertToInnerCert(certificate));
-        
+        std::vector<uint8_t> uint8_vec(cert_vec.begin(),cert_vec.end());
         if(passwd.size()>0){
             auto sm4key = crypto::KeyUtils::Get16BytePasswd(passwd);
             switch (symalgomode){
                 case (int)Common::SymmetricAlgorithm::SM4CBC:
-                    ret = mindev::minsecurity::crypto::SM4::EncryptCBCPadding(sm4key,byteutils::GenerateRandomVector<uint8_t>(SM4_BLOCK_SIZE),cert_vec);
+                    ret = byteutils::VectorToString( mindev::minsecurity::crypto::SM4::EncryptCBCPadding(sm4key,byteutils::GenerateRandomVector<uint8_t>(SM4_BLOCK_SIZE),uint8_vec));
                     break;
                 case (int)Common::SymmetricAlgorithm::SM4ECB:
-                    ret = mindev::minsecurity::crypto::SM4::EncryptECBPadding(sm4key,cert_vec);
+                    ret = byteutils::VectorToString( mindev::minsecurity::crypto::SM4::EncryptECBPadding(sm4key,uint8_vec));
                     break;
             };
         }else{
-            ret = byteutils::VectorToString(cert_vec); 
+            ret = byteutils::VectorToString(cert_vec);  
         }
         return Base64::Encode(ret);
     }
@@ -110,7 +110,7 @@ public:
                     break;
             };
         }
-        return DeSerialization<Certificate>(cert_vec);
+        return ParseInnerCertToCert(DeSerialization<InnerCertificate>(cert_vec));
     }
     };
 }

@@ -53,7 +53,7 @@ public:
     }
 
 
-    std::vector<char>& GetSignature() {
+    std::vector<char> GetSignature() const{
         return signature;
     }
 

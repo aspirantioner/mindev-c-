@@ -38,7 +38,7 @@ public:
         this->version = version;
     }
 
-    long GetSerialNumber() {
+    long GetSerialNumber() const{
         return serialNumber;
     }
 
@@ -54,7 +54,7 @@ public:
         this->signatureAlgorithm = signatureAlgorithm;
     }
 
-    int GetPublicKeyAlgorithm() {
+    int GetPublicKeyAlgorithm() const{
         return publicKeyAlgorithm;
     }
 
@@ -62,7 +62,7 @@ public:
         this->publicKeyAlgorithm = publicKeyAlgorithm;
     }
 
-    std::string getIssueTo() {
+    std::string getIssueTo() const{
         return issueTo;
     }
     
@@ -70,7 +70,7 @@ public:
         this->issueTo = issueTo;
     }
 
-    std::string GetIssuer() {
+    std::string GetIssuer() const{
         return issuer;
     }
 
@@ -94,7 +94,7 @@ public:
         this->notAfter = notAfter;
     }
 
-    int GetKeyUsage() {
+    int GetKeyUsage() const{
         return keyUsage;
     }
 
@@ -102,7 +102,7 @@ public:
         this->keyUsage = keyUsage;
     }
 
-    bool IsCA() {
+    bool IsCA() const{
         return isCA;
     }
 
@@ -110,7 +110,7 @@ public:
         isCA = CA;
     }
 
-    long GetTimestamp() {
+    long GetTimestamp() const{
         return timestamp;
     }
 
@@ -118,7 +118,7 @@ public:
         this->timestamp = timestamp;
     }
 
-    std::vector<char>& GetPublicKey() {
+    std::vector<char> GetPublicKey() const{
         return publicKey;
     }
 
@@ -144,7 +144,7 @@ public:
                 '}';
     }
     
-    friend void to_json(json& j, TbsCertificate& cert);
+    friend void to_json(json& j,const TbsCertificate& cert);
     friend void from_json(const json& j, TbsCertificate& cert);
 private:
     int version;
@@ -161,7 +161,7 @@ private:
     long timestamp;
     };
     // 序列化
-    inline void to_json(json& j, TbsCertificate& cert) {
+    inline void to_json(json& j,const TbsCertificate& cert) {
         j = json{
             {"Version", cert.GetVersion()},
             {"SerialNumber", cert.GetSerialNumber()},

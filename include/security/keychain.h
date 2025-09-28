@@ -95,7 +95,6 @@ public:
             return;
         }
         auto identity = minsecurity::identity::Identity::Load(safebag.GetValue(), passwd);
-        if()
     }
     private:
         std::vector<char> GetIdentifierAndReadOnlyValueFromPacket(const mindev::packet::MINPacket& packet){

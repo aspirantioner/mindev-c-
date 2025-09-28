@@ -1,4 +1,5 @@
 #include "mindev/include/minsecurity/certificate/cert/certutils.h"
+#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
 
 namespace mindev::minsecurity::certificate::cert {
     InnerCertificate CertUtils::ParseCertToInnerCert(const Certificate &certificate){
@@ -27,7 +28,11 @@ namespace mindev::minsecurity::certificate::cert {
         auto tbscertificate = innercert.GetTbsCertificate();
         certificate.SetVersion(tbscertificate.GetVersion());
         certificate.SetSerialNumber(tbscertificate.GetSerialNumber());
-        certificate.SetPublicKey(tbscertificate.GetPublicKey().GetBytes());
+        
+        
+        auto sm2_pair = crypto::sm2::SM2KeyPair::GenerateKeyPair();
+        sm2_pair.GetSm2PublicKey().SetBytes(byteutils::CharToUint8(tbscertificate.GetPublicKey()));
+        certificate.SetPublicKey(sm2_pair.GetSm2PublicKey());
         certificate.SetSignatureAlgorithm(tbscertificate.GetSignatureAlgorithm());
         certificate.SetPublicKeyAlgorithm(tbscertificate.GetPublicKeyAlgorithm());
         certificate.SetIssueTo(tbscertificate.getIssueTo());

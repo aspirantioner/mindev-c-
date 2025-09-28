@@ -134,7 +134,7 @@ public:
      * @param parameters
      * @return
      */
-    bool AppendCommandParameters(const mindev::mgmt::ControlParameters& parameters){return this->name.AppendCommandParameters(parameters);};
+    bool AppendCommandParameters(mindev::mgmt::ControlParameters& parameters){return this->name.AppendCommandParameters(parameters);};
     /**
      * AppendVersionNumber 在名字后面添加一个版本号
      * @param versionNumber

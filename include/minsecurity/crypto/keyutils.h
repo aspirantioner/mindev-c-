@@ -37,16 +37,16 @@ public:
         }
         return std::nullopt;
     }
-    static std::optional<PrivateKeyInterface> UnMarshalPrivateKey(std::shared_ptr<SM2_KEY> ptr,int algorithm,const std::vector<uint8_t>& private_key){
-        switch(algorithm){
-            case static_cast<int>(mindev::minsecurity::Common::PublicKeyAlgorithm::SM2):
-                mindev::minsecurity::crypto::sm2::SM2PrivateKey sm2PrivateKey(ptr);
-                sm2PrivateKey.SetBytes(private_key);
-                return sm2PrivateKey;
-        }
-        return std::nullopt;
-    }
-    static std::vector<uint8_t> Get16BytePasswd(std::vector<uint8_t>& passwd){
+//     static std::optional<PrivateKeyInterface> UnMarshalPrivateKey(std::shared_ptr<SM2_KEY> ptr,int algorithm,const std::vector<uint8_t>& private_key){
+//         switch(algorithm){
+//             case static_cast<int>(mindev::minsecurity::Common::PublicKeyAlgorithm::SM2):
+//                 mindev::minsecurity::crypto::sm2::SM2PrivateKey sm2PrivateKey(ptr);
+//                 sm2PrivateKey.SetBytes(private_key);
+//                 return sm2PrivateKey;
+//         }
+//         return std::nullopt;
+//     }
+    static std::vector<uint8_t> Get16BytePasswd(const std::vector<uint8_t>& passwd){
         auto res = HashAlgo::Sm3(passwd);
         if(res.size() == 32){
             for(int i = 0;i<16;i++){

@@ -6,10 +6,10 @@
 namespace mindev::minsecurity::crypto {
     class PublicKeyInterface {
 public:
-    virtual std::vector<char> GetBytes(){return std::vector<char>();}
+    virtual std::vector<char> GetBytes()const{return std::vector<char>();}
     virtual void SetSm2Key(std::shared_ptr<SM2_KEY> ptr){return;}
     virtual std::vector<char> Encrypt(const std::vector<char>& content){return std::vector<char>();}
-    bool Verify(const std::vector<char>& content,const std::vector<char>& digest){return true;}
+    bool Verify(const std::vector<char>& content,const std::vector<char>& digest)const{return true;}
     };
 }
 

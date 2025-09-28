@@ -7,7 +7,7 @@
 namespace mindev::minsecurity::crypto {
     class HashAlgo {
 public:
-    static std::vector<uint8_t> Sm3(std::vector<uint8_t>& content){
+    static std::vector<uint8_t> Sm3(const std::vector<uint8_t>& content){
         std::vector<uint8_t> res;
         res.resize(32,0);
         SM3_CTX sm3_ctx;
