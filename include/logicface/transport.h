@@ -5,6 +5,7 @@
 #include "mindev/include/packet/lppacket.h"
 
 #include <string>
+
 namespace mindev::logicface {
     class Transport{
 public:

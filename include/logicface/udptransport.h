@@ -12,7 +12,7 @@ public:
         mindev::vmsconnection::tcpnet::SocketChannel::ptr m_scoket_channel;
         std::vector<char> recBuf;
         long recvLen;
-        bool init(mindev::vmsconnection::tcpnet::SocketChannel::ptr channel){
+        bool Init(mindev::vmsconnection::tcpnet::SocketChannel::ptr channel){
             m_scoket_channel = channel;
             this->recBuf.resize(recvBufLen);
             this->recvLen = 0;

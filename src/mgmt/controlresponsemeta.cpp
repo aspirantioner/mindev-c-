@@ -6,8 +6,8 @@ namespace mindev::mgmt{
         ControlResponse response;
         response.code=ControlResponse::ControlResponseCodeContinue;
         ControlResponseMeta meta;
-        meta.version=version;
-        meta.sliceNum=sliceNum;
+        meta.Version=version;
+        meta.SliceNum=sliceNum;
         response.SetMeta(meta);
         return response;
     }

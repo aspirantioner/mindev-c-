@@ -9,9 +9,9 @@ namespace mindev::mgmt {
     class ControlResponseMeta{
 public:
     //版本号
-    long version;
+    long Version;
     //总的分片数
-    long sliceNum;
+    long SliceNum;
     /**
      * CreateMetaDataControlResponse 创建一个表示元数据的返回响应
      * @param version

@@ -15,7 +15,7 @@ public:
     long DropInterestN; // 从本接口流入后被丢弃的兴趣包的个数
     long InDataN;       // 从本接口流入的数据包的个数
     long OutDataN;      // 从本接口流出的数据包的个数
-    long DropDataN;     // 从本接口流入后被丢弃的数据包的个数
+    long DropDataN;     // 从本接口流入后被丢弃的数据包的个数 
     long InNackN;       // 从本接口流入的Nack包的个数
     long OutNackN;      // 从本接口流出的Nack包的个数
     long DropNackN;     // 从本接口流入后被丢弃的Nack包的个数
