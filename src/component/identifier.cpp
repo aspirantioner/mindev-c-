@@ -5,6 +5,7 @@
 #include "mindev/include/encoding/elementcontainer.h"
 #include "mindev/include/encoding/selfencodingbase.h"
 #include "mindev/include/component/controlparameters.h"
+#include "mindev/include/mgmt/controlparameters.h"
 #include <optional>
 
 using namespace mindev::encoding;

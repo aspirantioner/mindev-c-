@@ -2,7 +2,7 @@
 #define CONTROLRESPONSEMETA_H_
 
 #include <optional>
-
+#include "mindev/include/common/json.hpp"
 //一个表示管理控制命令的元数据结构
 namespace mindev::mgmt {
     class ControlResponse;
@@ -22,6 +22,8 @@ public:
     
     
     };
+    // json 序列化支持
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ControlResponseMeta,version,sliceNum);
 }
 
 

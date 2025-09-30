@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace mindev::security {
+namespace mindev::minsecurity {
 class Common {
 public:
     // Algorithm Names
@@ -20,7 +20,13 @@ public:
     enum class PublicKeyAlgorithm {
         SM2 = 0
     };
-
+    
+    //SM2 CipherText Mode
+    enum class Sm2CipherMode{
+        C1C2C3 = 0,
+        C1C3C2 = 1
+    };
+    
     // SignatureAlgorithm
     enum class SignatureAlgorithm {
         SM3withSM2 = 0

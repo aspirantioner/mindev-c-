@@ -1,10 +1,11 @@
 #ifndef ICONTROLCOMMAND_H_
 #define ICONTROLCOMMAND_H_
 
+#include "identifier.h"
 #include <string>
-#include "./controlparameters.h"
 
 namespace mindev::mgmt{
+    class ControlParameters;
     class IControlCommand{
 public:
     virtual std::string& GetTopPrefix(){auto tmp = std::string("");return tmp;};

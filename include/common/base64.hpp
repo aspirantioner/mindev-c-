@@ -1,14 +1,16 @@
 #ifndef BASE64_H_
 #define BASE64_H_
 #include <string>
-namespace mindev::vmsconnection::common{
+namespace mindev{
     class Base64{
     public:
         
         static inline bool is_base64(unsigned char c) {
           return (isalnum(c) || (c == '+') || (c == '/'));
         }
-         
+        static inline std::string Encode(const std::string& text){
+            return Encode(reinterpret_cast<unsigned char const*>(text.c_str()), text.size());
+        }
         static inline std::string Encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
           std::string ret;
           int i = 0;

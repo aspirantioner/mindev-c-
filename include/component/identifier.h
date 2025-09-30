@@ -1,12 +1,15 @@
 #ifndef IDENTIFIER_H_
 #define IDENTIFIER_H_
 
-#include "identifiercomponentcontainer.h"
+#include "mindev/include/component/identifiercomponentcontainer.h"
 #include "mindev/include/component/tlvcomponentbase.h"
-#include "mindev/include/mgmt/controlparameters.h"
+
+namespace mindev::mgmt {
+    class ControlParameters;
+}
 
 namespace mindev::component{
-    class ControlParameters;
+    
     class Identifier:public mindev::encoding::IEncodingAble,public TlvComponentBase{
 public:
     typedef std::shared_ptr<Identifier> ptr;
