@@ -44,18 +44,18 @@ public:
         }else if constexpr(N == 2){
             auto&& [tlvType,varType] = std::forward_as_tuple(std::forward<Args>(args)...);
         
-            if constexpr(std::is_same_v<std::decay_t<decltype(tlvType)>, SignatureAlgorithm> && std::is_same_v<std::decay_t<decltype(tlvType)>, KeyLocator>){
+            if constexpr(std::is_same_v<std::decay_t<decltype(tlvType)>, SignatureAlgorithm> && std::is_same_v<std::decay_t<decltype(varType)>, KeyLocator>){
                 auto val = BuildSignatureType(tlvType);
                 if(!val.has_value()){
                     return std::nullopt;
                 }
                 res.signatureType = val.value();     
                 
-                val = BuildKeyLocator(varType.GetIdentifier);
-                if(!val.has_value()){
+                auto val1 = BuildKeyLocator(varType.GetIdentifier());
+                if(!val1.has_value()){
                     return std::nullopt;
                 }
-                res.keyLocator = val.value();  
+                res.keyLocator = val1.value();  
                 
                 return res;
             }else{
@@ -67,6 +67,8 @@ public:
     }
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
+    inline KeyLocator GetKeyLactor()const{return keyLocator;}
+    inline SignatureType GetSignatureType()const{return signatureType;}
 private:
     SignatureType signatureType;
     KeyLocator keyLocator;

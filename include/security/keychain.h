@@ -1,11 +1,14 @@
 #ifndef KEYCHAIN_H_
 #define KEYCHAIN_H_
 
+#include "identity/identityutil.h"
 #include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
 #include "mindev/include/minsecurity/identity/db.h"
 #include "mindev/include/minsecurity/identity/identity.h"
+#include "mindev/include/minsecurity/identity/identityutil.h"
 #include "mindev/include/minsecurity/identity/keyparam.h"
 #include "mindev/include/packet/cpacket.h"
+#include "mindev/include/packet/interest.h"
 #include "mindev/include/packet/minpacket.h"
 #include "mindev/include/security/safebag.h"
 #include "selfencodingbase.h"
@@ -31,7 +34,11 @@ public:
             identity_db.Save();
             cur_identity = new_identity;
         }else{
-            cur_identity = *ptr;
+            auto identity = mindev::minsecurity::identity::IdentityUtil::FromIdentityInfo(*ptr);
+            if(!identity.has_value()){
+                return false;
+            }
+            cur_identity = identity.value();    
         }
         return true;
     }
@@ -51,7 +58,7 @@ public:
         CheckIdentifyCanUseToSign(cur_identity);
         auto rawdata = GetIdentifierAndReadOnlyValueFromPacket(packet);
         auto sign_res = cur_identity.Sign(rawdata);
-        packet.signatureField.AddSignature(sign_res);
+        packet.signatureField.AddSignature(mindev::component::Signature(cur_identity,sign_res));
     }
     template<typename T>
     typename std::enable_if<std::is_same<T, mindev::packet::CPacket>::value || std::is_same<T, mindev::packet::Interest>::value ||std::is_same<T, mindev::packet::Data>::value,void>::type
@@ -60,14 +67,14 @@ public:
         Sign(packet.minPacket);
     }
     std::vector<uint8_t> SignBytes(const std::vector<uint8_t>& data){
-        return this->cur_identity.Sign(data);
+        return this->cur_identity.Sign(byteutils::Uint8ToChar(data));
     }
     bool VerifyBytes(const std::vector<char>& data,const std::vector<char>& digest){
         return this->cur_identity.Verify(data,digest);
     }
     bool Verify(packet::MINPacket& minPacket){
-        component::Signature signature = minPacket.signatureField.getSignature(0);
-        std::string identityname = signature.GetSigInfo().getKeyLocator().GetIdentifier().ToUriTemp();
+        component::Signature signature = minPacket.signatureField.GetSignature(0);
+        std::string identityname = signature.GetSigInfo().GetKeyLactor().GetIdentifier().ToUriTemp();
         auto identity = GetIdentityByName(identityname);
         if(!identity.has_value()){
             return false;
@@ -97,7 +104,7 @@ public:
         auto identity = minsecurity::identity::Identity::Load(safebag.GetValue(), passwd);
     }
     private:
-        std::vector<char> GetIdentifierAndReadOnlyValueFromPacket(const mindev::packet::MINPacket& packet){
+        std::vector<char> GetIdentifierAndReadOnlyValueFromPacket(mindev::packet::MINPacket& packet){
             std::vector<char> rawdata;
             std::vector<char> iblock_value;
             std::vector<char> rblock_value;
@@ -105,16 +112,16 @@ public:
         
             auto iblock = mindev::encoding::SelfEncodingBase().SelfWireEncode(packet.identifierField);
             if(iblock.has_value()){
-                iblock_value = iblock.GetValue();
+                iblock_value = iblock.value().GetValue();
                 //total_length += iblock_value.size();
             }
             
             auto rblock = mindev::encoding::SelfEncodingBase().SelfWireEncode(packet.readOnlyField);
             if(rblock.has_value()){
-                rblock_value = rblock.GetValue();
+                rblock_value = rblock.value().GetValue();
                 //total_length += rblock_value.size();
             }
-            rawdata = iblock;
+            rawdata = iblock_value;
             rawdata.insert(rawdata.end(), rblock_value.begin(),rblock_value.end());
             return rawdata;
         }

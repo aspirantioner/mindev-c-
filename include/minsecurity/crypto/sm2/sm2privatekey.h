@@ -17,7 +17,7 @@ public:
     void SetSm2key(std::shared_ptr<SM2_KEY> ptr){this->sm2_key = ptr;}
     std::vector<char> Decrypt(const std::vector<char>& cipher,Common::Sm2CipherMode cipher_mode = Common::Sm2CipherMode::C1C2C3);
     std::vector<char> Sign(const std::vector<char>& content);
-    std::vector<char> GetBytes(){
+    std::vector<char> GetBytes()const{
         if(this->sm2_key.get()==nullptr){
             return std::vector<char>();
         }
@@ -30,7 +30,7 @@ public:
         }
         return res;
     }
-    bool SetBytes(std::vector<uint8_t>& key){
+    bool SetBytes(const std::vector<uint8_t>& key){
         if(key.size()!=32){
             return false;
         }

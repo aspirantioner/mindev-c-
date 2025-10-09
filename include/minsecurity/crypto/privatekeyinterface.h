@@ -6,7 +6,7 @@
 namespace mindev::minsecurity::crypto {
     class PrivateKeyInterface {
 public:
-    virtual std::vector<char> GetBytes(){return std::vector<char>();}
+    virtual std::vector<char> GetBytes()const{return std::vector<char>();}
     virtual void SetSm2key(std::shared_ptr<SM2_KEY> ptr){return;}
     //virtual bool SetBytes(const std::vector<char>& bytes){return true;}
     virtual std::vector<char> Decrypt(const std::vector<char>& cipher){return std::vector<char>();}

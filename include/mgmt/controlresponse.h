@@ -3,7 +3,6 @@
 
 #include <string>
 #include <variant>
-#include "mindev/include/common/json.hpp"
 #include "mindev/include/mgmt/controlresponsemeta.h"
 
 namespace mindev::mgmt {

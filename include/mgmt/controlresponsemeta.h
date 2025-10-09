@@ -23,7 +23,7 @@ public:
     
     };
     // json 序列化支持
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ControlResponseMeta,version,sliceNum);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ControlResponseMeta,Version,SliceNum);
 }
 
 

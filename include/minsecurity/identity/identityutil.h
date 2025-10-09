@@ -1,6 +1,7 @@
 #ifndef IDENTITYUTIL_H_
 #define IDENTITYUTIL_H_
 
+#include "identity/db.h"
 #include "mindev/include/minsecurity/certificate/cert/certutils.h"
 #include "mindev/include/minsecurity/common.h"
 #include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
@@ -13,7 +14,7 @@ namespace mindev::minsecurity::identity {
     class IdentityUtil{
 public:
     
-    static std::optional<InnerIdentity> ParseIdentityToInner(Identity& identity){
+    static std::optional<InnerIdentity> ParseIdentityToInner(const mindev::minsecurity::identity::Identity& identity){
         if(identity.GetPubKey().GetBytes().size() == 0 || identity.GetPriKey().GetBytes().size() == 0 || (haveUsedCert && !identity.GetCert().IsValid())){
             return std::nullopt;
         }
@@ -24,7 +25,7 @@ public:
         innerIdentity.SetPubkey(identity.GetPubKey().GetBytes());
         innerIdentity.SetPasswd(identity.GetPasswd());
         if constexpr (haveUsedCert){
-            innerIdentity.SetCert(mindev::minsecurity::certificate::cert::CertUtils::ToPem(identity.GetCert(),identity.GetPasswd(),mindev::minsecurity::Common::SymmetricAlgorithm::SM4CBC));
+            innerIdentity.SetCert(mindev::minsecurity::certificate::cert::CertUtils::ToPem(identity.GetCert(),byteutils::StringToVector<uint8_t>(identity.GetPasswd()),(int)mindev::minsecurity::Common::SymmetricAlgorithm::SM4CBC));
         }
         innerIdentity.SetPrikeyRawByte(identity.GetPrikeyRawByte());
         return innerIdentity;
@@ -37,13 +38,13 @@ public:
         identity.SetName(innerIdentity.GetName());
         identity.SetKeyParam(innerIdentity.GetKeyParam());
         auto sm2_pair = crypto::sm2::SM2KeyPair::GenerateKeyPair();
-        sm2_pair.GetSm2PublicKey().SetBytes(innerIdentity.GetPubKey());
-        sm2_pair.GetSm2PrivateKey().SetBytes(innerIdentity.GetPubKey());
+        sm2_pair.GetSm2PublicKey().SetBytes(byteutils::CharToUint8(innerIdentity.GetPubKey()));
+        sm2_pair.GetSm2PrivateKey().SetBytes(byteutils::CharToUint8(innerIdentity.GetPriKey()));
         identity.SetPubkey(sm2_pair.GetSm2PublicKey());
         identity.SetPrikey(sm2_pair.GetSm2PrivateKey());
         identity.SetPasswd(innerIdentity.GetPasswd());
         if constexpr(haveUsedCert){
-            certificate::cert::Certificate certificate = certificate::cert::CertUtils::FromPem(innerIdentity.GetCert(), innerIdentity.GetPasswd(), minsecurity::Common::SymmetricAlgorithm::SM4CBC);
+            certificate::cert::Certificate certificate = certificate::cert::CertUtils::FromPem(innerIdentity.GetCert(),byteutils::StringToVector<uint8_t>(innerIdentity.GetPasswd()),(int)minsecurity::Common::SymmetricAlgorithm::SM4CBC);
             identity.SetCert(certificate);
         }
         identity.SetPrikeyRawByte(innerIdentity.GetPrikeyRawByte());
@@ -57,10 +58,10 @@ public:
         sm2_pair.GetSm2PrivateKey().SetBytes(byteutils::StringToVector<uint8_t>(info.prikey));
         identity.SetPubkey(sm2_pair.GetSm2PublicKey());
         identity.SetPrikey(sm2_pair.GetSm2PrivateKey());
-        identity.SetKeyParam(KeyParam::KeyParam(info.pubkey_algo, info.signature_algo));
+        identity.SetKeyParam(mindev::minsecurity::identity::KeyParam(info.pubkey_algo, info.signature_algo));
         identity.SetDefault(info.is_default);
         identity.SetPasswd(info.pass);
-        certificate::cert::Certificate certificate = certificate::cert::CertUtils::FromPem(info.cert, info.pass, minsecurity::Common::SymmetricAlgorithm::SM4CBC);
+        certificate::cert::Certificate certificate = certificate::cert::CertUtils::FromPem(info.cert,byteutils::StringToVector<uint8_t>(info.pass), (int)minsecurity::Common::SymmetricAlgorithm::SM4CBC);
         identity.SetCert(certificate);
         return identity;
     }

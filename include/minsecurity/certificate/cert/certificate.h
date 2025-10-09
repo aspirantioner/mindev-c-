@@ -143,7 +143,7 @@ public:
     bool IsValid() const{
         return GetPublicKey().GetBytes().size() != 0;
     }
-    std::string ToString() {
+    std::string ToString() const{
         std::string ans = "";
         return ans+"Certificate{" +
                 "version=" + std::to_string(version) +

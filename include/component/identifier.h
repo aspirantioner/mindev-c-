@@ -19,7 +19,7 @@ public:
     static std::optional<Identifier> BuildIdentifierByComponents(const IdentifierComponentContainer& container);
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;
-    inline IdentifierComponentContainer& GetComponents(){return this->components;};
+    inline IdentifierComponentContainer GetComponents()const{return this->components;};
     inline std::optional<std::reference_wrapper<IdentifierComponent>> Get(int index){return this->GetComponents().GetElement(index);}
     std::string ToUri();
     std::string ToUriTemp();

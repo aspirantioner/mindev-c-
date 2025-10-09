@@ -3,7 +3,6 @@
 
 #include "mindev/include/common/json.hpp"
 #include "mindev/include/minsecurity/certificate/cert/certificate.h"
-#include "mindev/include/minsecurity/crypto/privatekeyinterface.h"
 #include "mindev/include/minsecurity/identity/keyparam.h"
 #include <string>
 using json = nlohmann::json;
@@ -13,7 +12,7 @@ class InnerIdentity{
 public:
      InnerIdentity(const std::string& name,const mindev::minsecurity::identity::KeyParam& keyParam,
                     const std::vector<char>& prikey, const std::vector<char>& prikeyRawByte,
-                    const std::vector<char>& pubkey,const std::string passwd,const mindev::minsecurity::certificate::cert::Certificate& cert) {
+                    const std::vector<char>& pubkey,const std::string passwd,const std::string& cert) {
         Name = name;
         KeyParam = keyParam;
         Prikey = prikey;
@@ -62,10 +61,10 @@ public:
     void SetPasswd(const std::string& passwd){
         Passwd = passwd;
     }
-    mindev::minsecurity::certificate::cert::Certificate GetCert(){
+    std::string  GetCert(){
         return Cert;
     }
-    void SetCert(const mindev::minsecurity::certificate::cert::Certificate& cert){
+    void SetCert(const std::string& cert){
         Cert = cert;
     }
     std::string ToString() {
@@ -77,12 +76,12 @@ public:
                 ", Prikey=" + (Prikey.size() == 0 ? "null" : byteutils::VectorToHex(Prikey)) +
                 ", Pubkey=" + (Pubkey.size() == 0 ? "null" : byteutils::VectorToHex(Pubkey)) +
                 ", Passwd='" + Passwd + '\'' +
-                ", Cert='" + Cert.ToString() + '\'' +
+                ", Cert='" + Cert + '\'' +
                 ", PrikeyRawByte='" + byteutils::VectorToHex(PrikeyRawByte) + '\''+
                 '}';
     }
     friend void to_json(json& j, const InnerIdentity& cert);
-    friend void from_json(const json& j, const InnerIdentity& cert);
+    friend void from_json(const json& j, InnerIdentity& cert);
 private:
     std::string Name;
     mindev::minsecurity::identity::KeyParam KeyParam;
@@ -90,11 +89,11 @@ private:
     std::vector<char> PrikeyRawByte;
     std::vector<char> Pubkey;
     std::string Passwd;
-    mindev::minsecurity::certificate::cert::Certificate Cert;
+    std::string Cert;
 };
 
 inline void to_json(json& j, const InnerIdentity& inner) {
-    j = json{
+    j = json {
         {"Name", inner.Name},  
         {"KeyParam", inner.KeyParam},
         {"Prikey", inner.Prikey},
@@ -105,7 +104,7 @@ inline void to_json(json& j, const InnerIdentity& inner) {
     };
 }
 
-inline void from_json(const json& j,const InnerIdentity& inner) {
+inline void from_json(const json& j,InnerIdentity& inner) {
     j.at("Name").get_to(inner.Name);
     j.at("KeyParam").get_to(inner.KeyParam);
     j.at("Prikey").get_to(inner.Prikey);
