@@ -18,7 +18,7 @@ public:
      * GetTopPrefix 获取顶级前缀
      * @return
      */
-    inline std::string& GetTopPrefix(){return this->topPrefix;}
+    inline std::string GetTopPrefix(){return this->topPrefix;}
     /**
      * SetTopPrefix 设置顶级前缀
      * @param topPrefix
@@ -28,7 +28,7 @@ public:
      * GetModuleName 获取模块名称
      * @return
      */
-    inline std::string& GetModuleName(){return this->moduleName;}
+    inline std::string GetModuleName(){return this->moduleName;}
     /**
      * SetModuleName 设置模块名称
      * @param moduleName
@@ -38,7 +38,7 @@ public:
      * GetAction 获取命令动作
      * @return
      */
-    inline std::string& GetAction(){return this->action;}
+    inline std::string GetAction(){return this->action;}
     /**
      * SetAction 设置命令动作
      * @param action
@@ -48,7 +48,7 @@ public:
      * GetParameters 获取管理命令前缀
      * @return
      */
-    inline ControlParameters& GetParameters(){return this->parameters;}
+    inline ControlParameters GetParameters(){return this->parameters;}
     /**
      * SetParameters 设置管理命令前缀
      * @param parameters

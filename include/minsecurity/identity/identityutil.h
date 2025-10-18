@@ -1,10 +1,10 @@
 #ifndef IDENTITYUTIL_H_
 #define IDENTITYUTIL_H_
 
-#include "identity/db.h"
+#include "mindev/include/minsecurity/identity/db.h"
 #include "mindev/include/minsecurity/certificate/cert/certutils.h"
 #include "mindev/include/minsecurity/common.h"
-#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
+#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.hpp"
 #include "mindev/include/minsecurity/identity/identity.h"
 #include "mindev/include/minsecurity/identity/inneridentity.h"
 #include <cstdint>

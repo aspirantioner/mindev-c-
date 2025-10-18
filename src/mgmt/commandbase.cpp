@@ -1,5 +1,5 @@
 #include "mindev/include/mgmt/commandbase.h"
-
+#include "mindev/include/encoding/encoder.h"
 namespace mindev::mgmt{
 std::optional<mindev::packet::Interest> CommandBase::CreateCommandIdentifierInterest(const ControlParameters& parameters,const std::string& prefix){
         mindev::packet::Interest interest;

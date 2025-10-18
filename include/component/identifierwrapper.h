@@ -17,6 +17,7 @@ public:
         return this->tlvType;
     }
     inline  bool IsValid(){return mindev::encoding::TLV::IsValidIdentifierType(this->tlvType);};
+    IdentifierWrapper(){}
     template<typename... Args>
     IdentifierWrapper(Args... args){
         constexpr  size_t N = sizeof...(Args);
@@ -107,6 +108,7 @@ public:
         }else{
             static_assert(always_false<T>, "this type unsupport!");
         }
+        return res;
     }
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;

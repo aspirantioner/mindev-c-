@@ -1,8 +1,8 @@
 #ifndef KEYCHAIN_H_
 #define KEYCHAIN_H_
 
-#include "identity/identityutil.h"
-#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
+#include "mindev/include/minsecurity/identity/identityutil.h"
+#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.hpp"
 #include "mindev/include/minsecurity/identity/db.h"
 #include "mindev/include/minsecurity/identity/identity.h"
 #include "mindev/include/minsecurity/identity/identityutil.h"
@@ -11,7 +11,7 @@
 #include "mindev/include/packet/interest.h"
 #include "mindev/include/packet/minpacket.h"
 #include "mindev/include/security/safebag.h"
-#include "selfencodingbase.h"
+#include "mindev/include/encoding/selfencodingbase.h"
 #include <cstdint>
 #include <string>
 

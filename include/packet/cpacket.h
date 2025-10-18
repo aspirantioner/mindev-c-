@@ -75,7 +75,7 @@ namespace mindev::packet{
         /**
          * @Description: 获取pyload中的value
          */    
-        inline std::vector<char>& GetValue(){
+        inline std::vector<char> GetValue()const{
             return this->payload.GetValue();
         }
         /**

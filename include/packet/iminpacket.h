@@ -4,7 +4,8 @@
 namespace mindev::packet{
     class IMINPacket{
 public:
-    virtual bool IsPacketValid()=0;
+    virtual bool IsPacketValid(){return true;};
+     virtual ~IMINPacket(){};
     };
 }
 

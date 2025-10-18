@@ -6,7 +6,7 @@
 #include "mindev/include/security/keychain.h"
 #include "./logicfacebuilderinterface.h"
 #include "./icontrolcommand.h"
-#include "commandexecutor.h"
+#include "./commandexecutor.h"
 #include <optional>
 namespace mindev::mgmt{
 class MIRController{
@@ -28,7 +28,7 @@ public:
      * @param command
      * @return
      */
-    std::optional<CommandExecutor> PrepareCommandExecutor(IControlCommand& command);
+    std::optional<CommandExecutor> PrepareCommandExecutor(const IControlCommand& command);
 };
 
 }

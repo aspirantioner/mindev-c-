@@ -5,9 +5,13 @@
 #include "mindev/include/component/identifierwrapper.h"
 #include <optional>
 
+namespace mindev::component{
+    template<typename T>
+    IdentifierWrapper BuildIdentifierWrapper(T&& val,decltype(mindev::encoding::TLV::TlvInvalid) flag);
+};
 
 namespace mindev::packet{
-    Interest::Interest(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::InterestLifeTime& interestLifeTime,const mindev::component::CanBePrefix& canBePrefix,const mindev::component::MustBeRefresh& mustBeRefresh,const mindev::component::Nonce& nonce,const mindev::component::HopLimit& hopLimit,const mindev::component::NackHeader& nackHeader,const mindev::component::CongestionMark& congestionMark,const mindev::component::TTL& ttl,const mindev::component::IncomingLogficFaceId& incomingLogficFaceId){
+    Interest::Interest(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::InterestLifeTime& interestLifeTime,const mindev::component::CanBePrefix& canBePrefix,const mindev::component::MustBeRefresh& mustBeRefresh,const mindev::component::Nonce& nonce,const mindev::component::HopLimit& hopLimit,const mindev::component::NackHeader& nackHeader,const mindev::component::CongestionMark& congestionMark,const mindev::component::TTL& ttl,const mindev::component::IncomingLogicFaceId& incomingLogficFaceId){
         this->name=name;
         this->payload=payload;
         this->interestLifeTime=interestLifeTime;
@@ -121,11 +125,11 @@ bool Interest::DoFillDataToFields(MINPacket& minPacket){
     minPacket.readOnlyField.AddBlock(*block10);
     //填充标识区
     minPacket.identifierField.ClearIdentifiers();
-    auto identifierWrapper= mindev::component::IdentifierWrapper::BuildIdentifierWrapper(this->name.GetComponents(),mindev::encoding::TLV::TlvIdentifierContentInterest);
-    if(identifierWrapper==std::nullopt){
+    auto identifierWrapper= mindev::component::BuildIdentifierWrapper(this->name.GetComponents(),mindev::encoding::TLV::TlvIdentifierContentInterest);
+    if(!identifierWrapper.IsValid()){
         return false;
     }
-    minPacket.identifierField.AddIdentifier(*identifierWrapper);
+    minPacket.identifierField.AddIdentifier(identifierWrapper);
     return true;
 }
 bool Interest::FillDataToFields(){

@@ -27,7 +27,7 @@ public:
     void SetFragmentSeq(long fragmentSeq);
     inline long GetFragmentSeq(){return this->lpPacketHeader.GetLpPacketFragmentSeq().GetFragmentSeq();};
     void SetValue(const std::vector<char>& value);
-    inline std::vector<char>& GetValue(){return this->payload.GetValue();};
+    inline std::vector<char> GetValue()const{return this->payload.GetValue();};
     /**
      * 将 LpPacket 线速编码为一个 TLV
      *
@@ -36,7 +36,7 @@ public:
      * @throws ComponentException
      * @throws PacketException
      */
-    int WireEncode(mindev::encoding::Encoder& encoder);
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
     /**
      * 从 Block TLV 中解码出一个 LpPacket
      *
@@ -45,7 +45,7 @@ public:
      * @throws ComponentException
      * @throws PacketException
      */
-    bool WireDecode(mindev::encoding::Block& block);
+    bool WireDecode(mindev::encoding::Block& block) override ;
 
     };
 }

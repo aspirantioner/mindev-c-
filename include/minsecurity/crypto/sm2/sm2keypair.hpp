@@ -3,6 +3,15 @@
 
 #include "mindev/include/minsecurity/crypto/sm2/sm2privatekey.h"
 #include "mindev/include/minsecurity/crypto/sm2/sm2publickey.h"
+
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
+int sm2_key_generate(SM2_KEY *key);
+#ifdef __cplusplus
+}
+#endif
 namespace mindev::minsecurity::crypto::sm2 {
     class SM2KeyPair{
 public:

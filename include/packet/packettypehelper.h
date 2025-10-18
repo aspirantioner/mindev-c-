@@ -14,7 +14,7 @@ public:
         //todo:待实现
         return true;
     }
-    inline static bool isNack(const MINPacket& packet){
+    inline static bool IsNack(const MINPacket& packet){
         //todo:待实现
         return true;
     }

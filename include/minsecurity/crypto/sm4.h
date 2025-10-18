@@ -3,8 +3,16 @@
 
 #define ENABLE_SM4_ECB 1
 
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "thirdparty/GmSSL/include/gmssl/error.h"
 #include "thirdparty/GmSSL/include/gmssl/sm4.h"
+#ifdef __cplusplus
+}
+#endif
+
 #include <cstdint>
 #include <optional>
 #include <vector>

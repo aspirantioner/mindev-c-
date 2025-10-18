@@ -1,8 +1,17 @@
 #ifndef SM2PRIVATEKEY_H_
 #define SM2PRIVATEKEY_H_
 
-#include "mindev/include/minsecurity/crypto/privatekeyinterface.h"
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "thirdparty/GmSSL/include/gmssl/sm2.h"
 #include "thirdparty/GmSSL/include/gmssl/sm2_z256.h"
+#ifdef __cplusplus
+}
+#endif
+
+#include "mindev/include/minsecurity/crypto/privatekeyinterface.h"
 #include <cstdint>
 #include "mindev/include/minsecurity/common.h"
 

@@ -63,7 +63,7 @@ public:
      * @param timeout 超时时间，以  毫秒  为单位
      * @return
      */
-    bool RegisterIdentifier(const mindev::component::Identifier& identifier,long timeout,std::shared_ptr<IRegisterPrefixHelper> helper){return helper->RegisterPrefix(identifier,*this,this->keyChain);}
+    //bool RegisterIdentifier(const mindev::component::Identifier& identifier,long timeout,std::shared_ptr<IRegisterPrefixHelper> helper){return helper->RegisterPrefix(identifier,*this,this->keyChain);}
     /**
      * 从 LogicFace 中接收一个网络包
      * @param timeout 读超时时间， 毫秒为单位， 小于 0 表示不超时

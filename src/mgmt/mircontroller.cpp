@@ -9,7 +9,7 @@ MIRController MIRController::CreateMIRController(const LogicFaceBuilderInterface
     mirController.keyChain=keyChain;
     return mirController;
 }
-std::optional<CommandExecutor> MIRController::PrepareCommandExecutor(IControlCommand& command){
+std::optional<CommandExecutor> MIRController::PrepareCommandExecutor(const IControlCommand& command){
     auto logicFace=this->logicFaceBuilderInterface.LogicFaceBuilder();
     if(!logicFace.has_value()){ 
         return std::nullopt;

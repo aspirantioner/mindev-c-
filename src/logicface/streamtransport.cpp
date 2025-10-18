@@ -64,7 +64,7 @@ namespace mindev::logicface {
                 return lpPacket;
             }
             std::vector<char> recv_vec(this->recBuf.size()-this->recvLen,0);
-            auto recvRet = this->m_scoket_channel->Read(recv_vec);
+            auto recvRet = this->m_scoket_channel->Read<char>(recv_vec);
             if(recvRet<0){
                 return std::nullopt;
             }

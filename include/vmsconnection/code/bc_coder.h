@@ -46,14 +46,14 @@ namespace mindev::vmsconnection::code{
                 decode_msg.clear();\
                 goto end;\
             }
-                ERROR_DO(channel->Read(decode_msg)!=decode_msg.size());
+                ERROR_DO(channel->Read<uint8_t>(decode_msg)!=decode_msg.size());
                 OH_LOG_INFO(LOG_APP,"read magic number ok!");
                 ERROR_DO(BCCoder::ToLittleEndian(decode_msg)!=BCCoder::magic_number);
                 OH_LOG_INFO(LOG_APP,"verify magic number %{public}d ok!",magic_number);
-                ERROR_DO(channel->Read(decode_msg)!=decode_msg.size());
+                ERROR_DO(channel->Read<uint8_t>(decode_msg)!=decode_msg.size());
                 raw_msg_length = BCCoder::ToLittleEndian(decode_msg);
                 decode_msg.resize(raw_msg_length);
-                ERROR_DO(channel->Read(decode_msg)!=raw_msg_length);
+                ERROR_DO(channel->Read<uint8_t>(decode_msg)!=raw_msg_length);
                 OH_LOG_INFO(LOG_APP,"read msg len %{public}d is ok!",raw_msg_length);
             end:
                 return decode_msg;

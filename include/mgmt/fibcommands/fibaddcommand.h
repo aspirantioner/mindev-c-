@@ -1,6 +1,6 @@
 #ifndef FIBADDCOMMAND_H_
 #define FIBADDCOMMAND_H_
-#include "commandbase.h"
+#include "mindev/include/mgmt/commandbase.h"
 #include <string>
 #include "mindev/include/mgmt/controlparameters.h"
 namespace mindev::mgmt::fibcommands{

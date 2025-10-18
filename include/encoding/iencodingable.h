@@ -9,7 +9,7 @@ namespace mindev::encoding {
 public:
         virtual int WireEncode(Encoder& encoder){return 0;}
         virtual bool WireDecode(Block& block){return true;}
-        virtual ~IEncodingAble() = default;
+        virtual ~IEncodingAble() {};
     };
 }
 

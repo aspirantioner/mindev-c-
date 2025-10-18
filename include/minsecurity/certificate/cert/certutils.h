@@ -1,7 +1,7 @@
 #ifndef CERTUTILS_H_
 #define CERTUTILS_H_
 
-#include "base64.hpp"
+#include "mindev/include/common/base64.hpp"
 #include "mindev/include/common/json.hpp"
 #include "mindev/include/minsecurity/certificate/cert/certificate.h"
 #include "mindev/include/minsecurity/certificate/cert/innercertificate.h"

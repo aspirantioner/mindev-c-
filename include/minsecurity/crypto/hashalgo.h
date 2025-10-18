@@ -1,7 +1,15 @@
 #ifndef HASHALGO_H_
 #define HASHALGO_H_
 
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "thirdparty/GmSSL/include/gmssl/sm3.h"
+#ifdef __cplusplus
+}
+#endif
+
 #include <cstdint>
 #include <vector>
 namespace mindev::minsecurity::crypto {
@@ -14,6 +22,7 @@ public:
         sm3_init(&sm3_ctx);
         sm3_update(&sm3_ctx, content.data(), content.size());
         sm3_finish(&sm3_ctx, res.data());
+        return res;
     }
     };
 }

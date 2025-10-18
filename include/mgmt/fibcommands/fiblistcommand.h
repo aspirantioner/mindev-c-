@@ -1,6 +1,6 @@
 #ifndef FIBLISTCOMMAND_H_
 #define FIBLISTCOMMAND_H_
-#include "commandbase.h"
+#include "mindev/include/mgmt/commandbase.h"
 #include <string>
 namespace mindev::mgmt::fibcommands{
 class FibListCommand:public mindev::mgmt::CommandBase{

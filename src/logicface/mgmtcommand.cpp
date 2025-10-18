@@ -11,13 +11,13 @@ namespace mindev::logicface {
 std::optional<mindev::packet::Interest>
 MgmtCommand::CreateRegisterIdentifierInterest(const mindev::component::Identifier &identifier) {
     // /min-mir/mgmt/localhop/<模块名称>/<命令>/<参数>/[版本号]/[分片号]
-    mindev::packet::Interest;
+    mindev::packet::Interest interest;
     mindev::component::IdentifierComponentContainer componentContainer;
-    componentContainer.AddElement(mindev::component::IdentifierComponent("min-mir"));
-    componentContainer.AddElement(mindev::component::IdentifierComponent("mgmt"));
-    componentContainer.AddElement(mindev::component::IdentifierComponent("localhop"));
-    componentContainer.AddElement(mindev::component::IdentifierComponent("fib-mgmt"));
-    componentContainer.AddElement(mindev::component::IdentifierComponent("add-next-hop"));
+    componentContainer.AddElement(mindev::component::IdentifierComponent(std::string("min-mir")));
+    componentContainer.AddElement(mindev::component::IdentifierComponent(std::string("mgmt")));
+    componentContainer.AddElement(mindev::component::IdentifierComponent(std::string("localhop")));
+    componentContainer.AddElement(mindev::component::IdentifierComponent(std::string("fib-mgmt")));
+    componentContainer.AddElement(mindev::component::IdentifierComponent(std::string("add-next-hop")));
     mindev::mgmt::ControlParameters controlParameters;
     controlParameters.controlParameterPrefix.SetPrefix(identifier);
     controlParameters.controlParameterCost.SetCost(25);
@@ -31,8 +31,11 @@ MgmtCommand::CreateRegisterIdentifierInterest(const mindev::component::Identifie
     }
     std::vector<char> controlParametersbuf = encoder.GetBuffer();
     componentContainer.AddElement(mindev::component::IdentifierComponent(controlParametersbuf));
-    mindev::component::Identifier commandIdentifier(componentContainer);
-    interest.SetName(commandIdentifier);
+    auto commandIdentifier = component::Identifier::BuildIdentifierByComponents(componentContainer);
+    if(!commandIdentifier.has_value()){
+        return std::nullopt;
+    }
+    interest.SetName(commandIdentifier.value());
     return interest;
 }
 } // namespace mindev::logicface

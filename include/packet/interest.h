@@ -159,28 +159,28 @@ public:
      * @return
      * @throws PacketException
      */
-    bool FillDataToFields();
+    bool FillDataToFields() override ;
     /**
      * 从 MINPacket 的分区中提取出 Interest 的各项属性
      *
      * @return
      */
     bool DoExtraDataFromFields(MINPacket& minPacket);
-    bool ExtraDataFromFields(); 
+    bool ExtraDataFromFields() override ; 
     /**
      * 将 Interest 线速编码为一个 TLV
      *
      * @param encoder
      * @return
      */
-    int WireEncode(mindev::encoding::Encoder& encoder);
+    int WireEncode(mindev::encoding::Encoder& encoder) override ;
     /**
      * 从 TLV Block 中解码出一个 Interest
      *
      * @param block
      * @return
      */
-    bool WireDecode(mindev::encoding::Block& block);
+    bool WireDecode(mindev::encoding::Block& block) override ;
 };
 }
     

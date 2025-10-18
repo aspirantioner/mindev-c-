@@ -114,4 +114,6 @@ namespace mindev::packet{
         }
         return true;
     }
+    bool MINPacket::IsPacketValid(){return mindev::encoding::TLV::IsValidPacketType(this->packetType);}
+    
 }

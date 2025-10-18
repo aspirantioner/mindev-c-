@@ -21,7 +21,7 @@ namespace mindev::logicface{
         };
         ptr->linkService = this->linkService;
         this->transport = std::shared_ptr<TcpTransport>(ptr);
-        this->linkService->iTransport = this->transport;
+        this->linkService->transport = this->transport;
         this->type = LogicFaceType::TCP;
         this->state = true;
         return true;

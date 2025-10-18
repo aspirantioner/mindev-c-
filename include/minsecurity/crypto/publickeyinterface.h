@@ -1,7 +1,16 @@
 #ifndef PRIVATEKEYINTERFACE_H_
 #define PRIVATEKEYINTERFACE_H_
 
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "thirdparty/GmSSL/include/gmssl/sm2.h"
+#ifdef __cplusplus
+}
+#endif
+
+// #include "thirdparty/GmSSL/include/gmssl/sm2.h"
 #include <vector>
 namespace mindev::minsecurity::crypto {
     class PublicKeyInterface {

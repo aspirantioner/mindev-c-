@@ -2,7 +2,6 @@
 #define COMMANDEXECTUOR_H_
 
 #include "mindev/include/logicface/logicface.h"
-#include "mindev/include/mgmt/mircontroller.h"
 #include "mindev/include/mgmt/icontrolcommand.h"
 #include "mindev/include/security/keychain.h"
 #include "mindev/include/packet/interest.h"
@@ -46,7 +45,7 @@ public:
      * GetKeyChain 获取用于签名的秘钥链
      * @return
      */
-    inline mindev::security::KeyChain& GetKeyChain(){return this->keyChain;}
+    inline mindev::security::KeyChain GetKeyChain()const{return this->keyChain;}
     /**
      * SetKeyChain 设置用于签名的秘钥链
      * @param keyChain
@@ -56,7 +55,7 @@ public:
      * GetInterestLifeTime 获取命令兴趣包的生存期
      * @return
      */
-    inline long GetInterestLifeTime(){return this->interestLifeTime;}
+    inline long GetInterestLifeTime()const{return this->interestLifeTime;}
     /**
      * SetInterestLifeTime 设置命令兴趣包的生存期
      * @param interestLifeTime
@@ -66,7 +65,7 @@ public:
      * GetTtl 获取命令兴趣包的 TTL
      * @return
      */
-    inline long GetTtl(){return this->ttl;}
+    inline long GetTtl()const{return this->ttl;}
     /**
      * SetTtl 设置命令兴趣包的 TTL
      * @param ttl
@@ -76,7 +75,7 @@ public:
      * GetAutoShutdown 获取当前命令执行器是否在命令执行完成后自动关闭
      * @return
      */
-    inline bool IsAutoShutdown(){return this->autoShutdown;}
+    inline bool IsAutoShutdown()const{return this->autoShutdown;}
     /**
      * SetAutoShutdown 设置当前命令执行器是否在命令执行完成后自动关闭
      * @param autoShutdown
@@ -86,7 +85,7 @@ public:
      * Shutdown 命令请求结束之后，如果想要关闭使用的 LogicFace，需要调用本函数关闭LogicFace
      * @return
      */
-    inline bool Shutdown(){return this->logicFace.Shutdown();}
+    inline bool Shutdown(){return this->logicFace.ShutDown();}
     /**
      * newCommandInterest 根据请求命令构造对应的命令兴趣包
      * @return

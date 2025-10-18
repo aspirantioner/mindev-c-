@@ -15,7 +15,7 @@ public:
     inline bool BuildPayloadBlock(mindev::encoding::Block& block){
         return this->WireDecode(block);
     } 
-    inline std::vector<char>& GetValue(){return this->value;}
+    inline std::vector<char> GetValue()const{return this->value;}
     inline void SetValue(const std::vector<char>& value){this->value = value;this->doInitial();}
     int WireEncode(mindev::encoding::Encoder& encoder) override ;
     bool WireDecode(mindev::encoding::Block& block) override ;

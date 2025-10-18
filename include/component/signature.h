@@ -1,7 +1,7 @@
 #ifndef SIGNATURE_H_
 #define SIGNATURE_H_
 
-#include "identity/identity.h"
+#include "mindev/include/minsecurity/identity/identity.h"
 #include "signatureinfo.h"
 #include "signaturevalue.h"
 #include <cstdint>

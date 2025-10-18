@@ -1,14 +1,13 @@
 #ifndef IDENTITY_H_
 #define IDENTITY_H_
 
-#include "identity/db.h"
-#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
+#include "mindev/include/minsecurity/identity/db.h"
+#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.hpp"
 #include "mindev/include/minsecurity/certificate/cert/certificate.h"
 #include "mindev/include/minsecurity/certificate/cert/certutils.h"
 #include "mindev/include/minsecurity/common.h"
 #include "mindev/include/minsecurity/crypto/keyutils.h"
 #include "mindev/include/minsecurity/crypto/privatekeyinterface.h"
-#include "mindev/include/minsecurity/crypto/sm4.h"
 #include "mindev/include/minsecurity/identity/inneridentity.h"
 #include "mindev/include/minsecurity/identity/keyparam.h"
 #include <cstdint>
@@ -194,7 +193,7 @@ public:
 //         }
 //         return byteutils::StringToVector<uint8_t>(Base64::Encode(j.dump()));
 //     }
-    static Identity Load(const std::vector<uint8_t>& serialbyte,const std::string& passwd);
+    static std::optional<Identity> Load(const std::vector<uint8_t>& serialbyte,const std::string& passwd);
 //     {
 //         auto json_str = Base64::Decode(byteutils::VectorToString(serialbyte));
 //         if(passwd.size()>0){

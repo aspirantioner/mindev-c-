@@ -4,7 +4,10 @@
 #include "mindev/include/encoding/elementcontainer.h"
 #include "mindev/include/component/identifierwrapper.h"
 
-
+namespace mindev::component{
+    template<typename T>
+    IdentifierWrapper BuildIdentifierWrapper(T&& val,decltype(mindev::encoding::TLV::TlvInvalid) flag);
+};
 namespace mindev::packet{
     Data::Data(const mindev::component::Identifier& name,const mindev::component::Payload& payload,const mindev::component::FreshnessPeriod& freshnessPeriod,const mindev::component::NoCache& noCache,const mindev::component::CongestionMark congestionMark,const mindev::component::TTL& ttl){
         this->name=name;
@@ -27,7 +30,7 @@ namespace mindev::packet{
     }
 
     void Data::SetNameByString(const std::string& name){
-        auto tmp = mindev::component::Identifier::BuildIdentifierByString(name);
+        auto tmp = component::Identifier::BuildIdentifierByString(name);
         if(tmp.has_value()){
             this->name = tmp.value();
         }
@@ -97,11 +100,11 @@ namespace mindev::packet{
         //// 填充标识区
         /////////////////////////////////////////////////////////////
         minPacket.identifierField.ClearIdentifiers();
-        auto identifierWrapper= mindev::component::IdentifierWrapper::BuildIdentifierWrapper(this->name.GetComponents(),mindev::encoding::TLV::TlvIdentifierContentInterest);
-        if(identifierWrapper==std::nullopt){
+        auto identifierWrapper= component::BuildIdentifierWrapper<mindev::component::IdentifierComponentContainer>(this->name.GetComponents(),mindev::encoding::TLV::TlvIdentifierContentInterest);
+        if(!identifierWrapper.IsValid()){
             return false;
         }
-        minPacket.identifierField.AddIdentifier(*identifierWrapper);
+        minPacket.identifierField.AddIdentifier(identifierWrapper);
         return true;
     }
     /**

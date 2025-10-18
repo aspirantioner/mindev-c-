@@ -1,5 +1,5 @@
 #include "mindev/include/minsecurity/certificate/cert/certutils.h"
-#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.h"
+#include "mindev/include/minsecurity/crypto/sm2/sm2keypair.hpp"
 
 namespace mindev::minsecurity::certificate::cert {
     InnerCertificate CertUtils::ParseCertToInnerCert(const Certificate &certificate){
@@ -42,5 +42,7 @@ namespace mindev::minsecurity::certificate::cert {
         certificate.SetKeyUsage(tbscertificate.GetKeyUsage());
         certificate.SetCA(tbscertificate.IsCA());
         certificate.SetTimestamp(tbscertificate.GetTimestamp());
+        
+        return certificate;
     }
 }

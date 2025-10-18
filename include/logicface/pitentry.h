@@ -6,7 +6,7 @@
 #include "mindev/include/logicface/callbackinterface/ontimeoutinterface.h"
 #include <memory>
 namespace mindev::logicface{
-class PendingPacket{
+class PitEntry{
 public:
     mindev::packet::Interest interest;
     long expireTime;

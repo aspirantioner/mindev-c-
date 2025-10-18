@@ -6,13 +6,14 @@
 #include "mindev/include/encoding/vlint.h"
 #include "mindev/include/encoding/tlv.h"
 #include "mindev/include/component/nackheader.h"
+#include "mindev/include/packet/nack.h"
 #include <iostream>
 
 namespace mindev::mgmt {
 std::optional<ControlResponse> CommandExecutor::OnReceiveFirstMetaData(const mindev::packet::Data &data) {
     ControlResponse controlResponse;
     
-    if (!controlResponse.UnmarshalJSON(data.payload.GetValue())) {
+    if (!controlResponse.UnmarshalJSON(byteutils::VectorToString(data.payload.GetValue()))) {
         return std::nullopt;
     }
 
@@ -76,12 +77,14 @@ std::optional<ControlResponse> CommandExecutor::OnReceiveFirstMetaData(const min
 }
 mindev::packet::Interest CommandExecutor::NewCommandInterest() {
     mindev::packet::Interest interest;
-    mindev::component::Identifier identifier = mindev::component::Identifier::BuildIdentifierByString(this->BuildPrefix(this->command));
-    interest.SetName(identifier);
+    auto identifier = mindev::component::Identifier::BuildIdentifierByString(this->BuildPrefix(this->command));
+    if(identifier.has_value()){
+        interest.SetName(identifier.value());
+    }
     interest.ttl.SetTtl(this->ttl);
     interest.interestLifeTime.SetInterestLifeTime(this->interestLifeTime);
     interest.isCommandInterest = true;
-    this->keyChain.SignInterest(interest);
+    this->keyChain.Sign(interest);
     // 测试字段----------------
     std::vector<char> value = interest.minPacket.signatureField.GetSignature(0).GetSigValue().GetValue();
     std::string str1(value.begin(), value.end());
@@ -105,18 +108,19 @@ std::optional<ControlResponse> CommandExecutor::Start() {
         return std::nullopt;
     }
     // 如果存在管理命令参数，则将其添加到命令兴趣包的名字当中
-    if (!this->command->GetParameters().empty()) {
-        if (!commandInterest->AppendCommandParameters(this->command->GetParameters())) {
+    //if (!this->command.GetParameters().empty()) {
+        auto param = this->command.GetParameters();
+        if (!commandInterest->AppendCommandParameters(param)) {
             return std::nullopt;
         }
-    }
+    //}
     ControlResponse controlResponse;
     // 打印输出
-    std::vector<char> raw1 = mindev::encoding::SelfEncodingBase().SelfWireEncode(commandInterest)->GetRaw();
+    std::vector<char> raw1 = mindev::encoding::SelfEncodingBase().SelfWireEncode(commandInterest.value())->GetRaw();
     std::string str1(raw1.begin(), raw1.end());
     std::cout << "旧的输出【最最终形态】: " << str1 << std::endl;
     mindev::encoding::Encoder encoder;
-    if (!encoder.encoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
                               mindev::encoding::SizeT(0))) {
         std::cout << "fucking test";
     }

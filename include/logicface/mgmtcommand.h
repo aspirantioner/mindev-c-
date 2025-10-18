@@ -11,7 +11,7 @@ public:
      * @param identifier
      * @return
      */
-    static mindev::packet::Interest CreateRegisterIdentifierInterest(const mindev::component::Identifier& identifier);
+    static std::optional<mindev::packet::Interest> CreateRegisterIdentifierInterest(const mindev::component::Identifier& identifier);
 };
 }
 #endif

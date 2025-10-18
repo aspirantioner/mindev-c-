@@ -95,11 +95,14 @@ namespace mindev{
           return ret;
         }
     private:
-        static const std::string base64_chars;
+        inline static const std::string base64_chars = 
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
     };
-    const std::string Base64::base64_chars = 
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
+//     const std::string Base64::base64_chars = 
+//     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+//     "abcdefghijklmnopqrstuvwxyz"
+//     "0123456789+/";
 }
 #endif

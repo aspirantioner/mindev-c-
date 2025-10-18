@@ -4,7 +4,7 @@
 #include <chrono>
 
 namespace timeutils {
-    long long GetCurrentTime(){
+    static long long GetCurrentTime(){
         // 获取当前时间点
         auto now = std::chrono::system_clock::now();
     

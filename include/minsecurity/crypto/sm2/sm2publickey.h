@@ -1,9 +1,17 @@
 #ifndef SM2PUBLICKEY_H_
 #define SM2PUBLICKEY_H_
 
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "thirdparty/GmSSL/include/gmssl/sm2.h"
-#include "mindev/include/minsecurity/crypto/publickeyinterface.h"
 #include "thirdparty/GmSSL/include/gmssl/sm2_z256.h"
+#ifdef __cplusplus
+}
+#endif
+
+#include "mindev/include/minsecurity/crypto/publickeyinterface.h"
 #include <cstdint>
 #include "mindev/include/minsecurity/common.h"
 

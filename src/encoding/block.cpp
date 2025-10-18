@@ -16,14 +16,14 @@ namespace mindev::encoding {
             return std::nullopt;
         }
         Block res;
-        if(res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)==-1){
+        if(!res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)){
             return std::nullopt;
         }
         return res;
     }
     std::optional<Block> Block::CreateBlockByTypeLengthBuffer(VlInt& tlvType,VlInt& tlvLength, std::vector<char> &buffer, bool verifyLength){
         Block res;
-        if(res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)==-1){
+        if(!res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)){
             return std::nullopt;
         }
         return res;

@@ -13,9 +13,9 @@ namespace mindev::packet{
         Nack nack(interest,interest.nackHeader.GetNackReason());
         return nack;
     }
-    std::optional<Nack> Nack::CreateNackByMINpacket(const MINPacket& minPacket){
+    std::optional<Nack> Nack::CreateNackByMINPacket(const MINPacket& minPacket){
         auto interest = Interest().CreateInterestByMINPacket(minPacket);
-        if(!interest){
+        if(!interest.has_value()){
             return std::nullopt;
         }
         else{
