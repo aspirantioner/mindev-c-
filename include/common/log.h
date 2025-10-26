@@ -4,7 +4,7 @@
 #include <hilog/log.h>
 
 #undef LOG_TAG
-#ifndef LOG_TAG
 #define LOG_TAG "testtag"
-#endif
+#undef LOG_DOMAIN
+#define LOG_DOMAIN 0x0007
 #endif

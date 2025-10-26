@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <cerrno>
 
 using json = nlohmann::json;
 namespace mindev::minsecurity::identity {
@@ -63,25 +64,45 @@ class IdentityDatabase {
         using TableType = std::unordered_map<std::string, IdentityInfo>;
         
         // 加载数据
-        bool Load(const std::string& filename,const std::string& passwd) {
+        int Load(const std::string& passwd,const std::string& filename = user_identity_filename) {
             std::ifstream pass_in(passwd_digest_filename);
-            if(!pass_in.is_open()) return false;
-            std::ostringstream buf;
-            buf << pass_in.rdbuf();
-            passwd_digest.clear();
-            passwd_digest.assign(buf.str().begin(), buf.str().end());
-            if(passwd_digest.size()!=32){
-                return false;
-            }
             std::vector<uint8_t> passwd_vec(passwd.begin(),passwd.end());
             auto digest_res = mindev::minsecurity::crypto::HashAlgo::Sm3(passwd_vec);
-//             passwd_vec.clear();
-//             passwd_vec.assign(passwd_digest.begin(), passwd_digest.end());
+            if(!pass_in.is_open()){
+                if(errno == ENOENT){
+                    std::ofstream pass_out(passwd_digest_filename, std::ios::binary);
+                    if (pass_out.is_open()) {
+                        pass_out.write(reinterpret_cast<const char*>(digest_res.data()), digest_res.size());
+                        pass_out.close();
+                    } else {
+                        return errno;
+                    }
+                }
+                else{
+                    return errno;
+                }
+            }else{
+                std::ostringstream buf;
+                buf << pass_in.rdbuf();
+                passwd_digest.clear();
+                passwd_digest.assign(buf.str().begin(), buf.str().end());
+            }
+            if(passwd_digest.size()!=32){
+                return -1;
+            }
+
             if(passwd_digest.size() != digest_res.size() || std::equal(passwd_digest.begin(), passwd_digest.end(), digest_res.begin())){
-                return false;            
+                return -1;            
             };
             std::ifstream in(filename);
-            if (!in.is_open()) return false;
+            if (!in.is_open()){
+                if(errno == ENOENT){
+                    return 0;
+                }else{
+                    return errno;
+                }
+            } 
+        
             std::ostringstream enc_buf;
             enc_buf << in.rdbuf();
             std::string enc_str = enc_buf.str();
@@ -96,13 +117,13 @@ class IdentityDatabase {
             auto plain_text = mindev::Base64::Decode(base64_str);
             json j = nlohmann::json::parse(plain_text.c_str());
             table_ = j.get<TableType>();
-            return true;
+            return 0;
         }
     
         // 保存数据
-        bool Save(const std::string& filename = user_identity_filename) {
+        int Save(const std::string& filename = user_identity_filename) {
             std::ofstream out(filename);
-            if (!out.is_open()) return false;
+            if (!out.is_open()) return errno;
             
             json j = table_;
             auto plain_text = j.dump(4);
@@ -116,7 +137,7 @@ class IdentityDatabase {
             std::vector<uint8_t> data_vec(plain_text.begin(),plain_text.end());
             auto enc_vec = mindev::minsecurity::crypto::SM4::EncryptCBCPadding(digest, digest, data_vec);
             out.write(reinterpret_cast<const char*>(enc_vec.data()), enc_vec.size());
-            return true;
+            return 0;
         }
     
         // 增

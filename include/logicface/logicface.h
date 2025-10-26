@@ -44,16 +44,17 @@ public:
     LogicFace(){}
     bool InitWithTcp(const std::string& ip,u_short port);
     bool InitWithUdp(const std::string& ip,u_short port);
+    std::optional<LogicFace> InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix);
     /**
      * GetKeyChain 获取用于注册前缀时签名的秘钥链
      * @return
      */
-    mindev::security::KeyChain& GetKeyChain(){return this->keyChain;}
+    inline mindev::security::KeyChain GetKeyChain()const{return this->keyChain;}
     /**
      * SetKeyChain 设置用于注册前缀时签名的秘钥链
      * @param keyChain
      */
-    void SetKeyChain(const mindev::security::KeyChain& keyChain){this->keyChain=keyChain;}
+    inline void SetKeyChain(const mindev::security::KeyChain& keyChain){this->keyChain=keyChain;}
     /**
      * 在MIR中注册一个标识，路由指向本客户端
      * //				（1） 构造一个命令兴趣包， 通过l.SendInterest(interest) 把兴趣包发出去；

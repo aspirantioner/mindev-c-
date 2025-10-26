@@ -48,4 +48,14 @@ namespace mindev::logicface{
         this->state = true;
         return true;
     }
+    std::optional<LogicFace> LogicFace::InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix){
+        LogicFace face;
+        if(!face.InitWithTcp(ip, port)){
+            return std::nullopt;
+        }
+        if(use_prefix){
+            
+        }
+        return face;
+    }
 };
