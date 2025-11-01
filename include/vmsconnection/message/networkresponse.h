@@ -11,6 +11,22 @@ public:
     json header;
     std::vector<uint8_t> data;
     std::string errormsg;
+    friend void to_json(json& j, const NetworkResponse& response);
+    friend void from_json(const json& j, NetworkResponse& response);
     };
+    void to_json(json& j, const NetworkResponse& response){
+        j = json {
+            {"Code", response.code},  
+            {"Header", response.header},
+            {"Data", response.data},
+            {"ErrorMsg",response.errormsg}
+        };
+    }
+    void from_json(const json& j, NetworkResponse& response){
+        j.at("Code").get_to(response.code);
+        j.at("Header").get_to(response.header);
+        j.at("Data").get_to(response.data);
+        j.at("ErrorMsg").get_to(response.errormsg);
+    }
 }
 #endif

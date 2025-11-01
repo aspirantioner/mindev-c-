@@ -44,7 +44,7 @@ public:
     LogicFace(){}
     bool InitWithTcp(const std::string& ip,u_short port);
     bool InitWithUdp(const std::string& ip,u_short port);
-    std::optional<LogicFace> InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix);
+    static std::optional<LogicFace> InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix,const mindev::security::KeyChain& keyChain);
     /**
      * GetKeyChain 获取用于注册前缀时签名的秘钥链
      * @return
@@ -137,7 +137,7 @@ public:
             }
             int packetType=bigint::_bigint_to<int>(minPacket->GetPacketType().value().GetVlIntValue());
             if(packetType==mindev::encoding::TLV::TlvIdentifierContentData){
-                std::optional<mindev::packet::Data> data =mindev::packet::Data().CreateDataByMINPacket(minPacket.value());
+                std::optional<mindev::packet::Data> data = mindev::packet::Data().CreateDataByMINPacket(minPacket.value());
                 return data;
             }
         }

@@ -2,6 +2,7 @@
 #define  DB_H_
 
 #include "mindev/include/common/json.hpp"
+#include "mindev/include/common/log.h"
 #include "mindev/include/minsecurity/crypto/hashalgo.h"
 #include "mindev/include/minsecurity/crypto/keyutils.h"
 #include "mindev/include/minsecurity/crypto/sm4.h"
@@ -62,25 +63,29 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(IdentityInfo,
 class IdentityDatabase {
     public:
         using TableType = std::unordered_map<std::string, IdentityInfo>;
-        
         // 加载数据
-        int Load(const std::string& passwd,const std::string& filename = user_identity_filename) {
+        int Load(const std::string& passwd,const std::string& passwd_digest_filename,const std::string& user_identity_filename) {
             std::ifstream pass_in(passwd_digest_filename);
             std::vector<uint8_t> passwd_vec(passwd.begin(),passwd.end());
             auto digest_res = mindev::minsecurity::crypto::HashAlgo::Sm3(passwd_vec);
             if(!pass_in.is_open()){
                 if(errno == ENOENT){
+                    OH_LOG_INFO(LOG_APP,"passwd digest file %{public}s not exist!",passwd_digest_filename.c_str());
                     std::ofstream pass_out(passwd_digest_filename, std::ios::binary);
                     if (pass_out.is_open()) {
                         pass_out.write(reinterpret_cast<const char*>(digest_res.data()), digest_res.size());
                         pass_out.close();
                     } else {
+                        OH_LOG_ERROR(LOG_APP,"passwd digest file %{public}s create failed!",passwd_digest_filename.c_str());
                         return errno;
                     }
                 }
                 else{
+                    OH_LOG_ERROR(LOG_APP,"passwd digest file %{public}s open failed!",passwd_digest_filename.c_str());
                     return errno;
                 }
+                passwd_digest = digest_res;
+                return 0;
             }else{
                 std::ostringstream buf;
                 buf << pass_in.rdbuf();
@@ -88,17 +93,20 @@ class IdentityDatabase {
                 passwd_digest.assign(buf.str().begin(), buf.str().end());
             }
             if(passwd_digest.size()!=32){
+                OH_LOG_ERROR(LOG_APP,"passwd digest length error!");
                 return -1;
             }
 
             if(passwd_digest.size() != digest_res.size() || std::equal(passwd_digest.begin(), passwd_digest.end(), digest_res.begin())){
+                OH_LOG_ERROR(LOG_APP,"passwd digest verify failed!");
                 return -1;            
             };
-            std::ifstream in(filename);
+            std::ifstream in(user_identity_filename);
             if (!in.is_open()){
                 if(errno == ENOENT){
                     return 0;
                 }else{
+                    OH_LOG_ERROR(LOG_APP,"user identity file %{public}s open failed!",user_identity_filename.c_str());
                     return errno;
                 }
             } 
@@ -121,9 +129,12 @@ class IdentityDatabase {
         }
     
         // 保存数据
-        int Save(const std::string& filename = user_identity_filename) {
-            std::ofstream out(filename);
-            if (!out.is_open()) return errno;
+        int Save(const std::string& user_identity_filename) {
+            std::ofstream out(user_identity_filename,std::ios_base::trunc);
+            if (!out.is_open()){
+                OH_LOG_ERROR(LOG_APP,"user identity file %{public}s open failed!",user_identity_filename.c_str());
+                return errno;
+            } 
             
             json j = table_;
             auto plain_text = j.dump(4);
@@ -171,8 +182,8 @@ class IdentityDatabase {
     
     private:
         TableType table_;
-        inline const static std::string user_identity_filename = "user_identity.db";
-        inline const static std::string passwd_digest_filename = "passwd_digest.db";
+//         std::string user_identity_filename = "user_identity.db";
+//         std::string passwd_digest_filename = "passwd_digest.db";
         std::vector<uint8_t> passwd_digest;
 };
 }

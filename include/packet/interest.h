@@ -181,6 +181,30 @@ public:
      * @return
      */
     bool WireDecode(mindev::encoding::Block& block) override ;
+    static int GetSliceNumber(const std::vector<char>& buf){
+        auto len = BytesToLong(buf);
+        return (len-1)/packet_size+1;
+    }
+private:
+    static const int packet_size = 7000;
+    static long BytesToLong(const std::vector<char>& buf,bool is_bigend=true){
+        long res = 0;
+        if(buf.size()<4)return res;
+        if (is_bigend) {
+            // 大端序系统直接转换
+            res = (static_cast<uint64_t>(buf[0]) << 24) |
+                   (static_cast<uint64_t>(buf[1]) << 16) |
+                   (static_cast<uint64_t>(buf[2]) << 8) |
+                   (static_cast<uint64_t>(buf[3]));
+        } else {
+            // 小端序系统需要反转
+            res = (static_cast<uint64_t>(buf[3]) << 24) |
+                   (static_cast<uint64_t>(buf[2]) << 16) |
+                   (static_cast<uint64_t>(buf[1]) << 8) |
+                   (static_cast<uint64_t>(buf[0]));
+        }
+        return res;
+    }
 };
 }
     

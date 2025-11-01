@@ -2,7 +2,7 @@
 #include "mindev/include/logicface/tcptransport.h"
 #include "mindev/include/logicface/udptransport.h"
 #include "mindev/include/vmsconnection/tcpnet/socket_channel.h"
-
+#include "mindev/include/mgmt/registerprefixhelper.h"
 namespace mindev::logicface{
     bool LogicFace::InitWithTcp(const std::string& ip,u_short port){
         auto channel = std::make_shared<mindev::vmsconnection::tcpnet::SocketChannel>(std::make_shared<mindev::vmsconnection::tcpnet::IPAddress>(ip,port));
@@ -48,12 +48,22 @@ namespace mindev::logicface{
         this->state = true;
         return true;
     }
-    std::optional<LogicFace> LogicFace::InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix){
+    std::optional<LogicFace> LogicFace::InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix,const mindev::security::KeyChain& keyChain){
         LogicFace face;
         if(!face.InitWithTcp(ip, port)){
             return std::nullopt;
         }
         if(use_prefix){
+            std::string local_face_prefix = "/min/mir1/default/"+std::to_string(timeutils::GetCurrentTime());
+            face.SetKeyChain(keyChain);
+            mindev::mgmt::RegisterPrefixHelper registerhelper;
+            auto res = component::Identifier::BuildIdentifierByString(local_face_prefix);
+            if(!res.has_value()){
+                return std::nullopt;
+            }
+            if(!registerhelper.RegisterPrefix(res.value(), face, keyChain)){
+                return std::nullopt;
+            }
             
         }
         return face;

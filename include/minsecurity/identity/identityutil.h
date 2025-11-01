@@ -15,14 +15,14 @@ namespace mindev::minsecurity::identity {
 public:
     
     static std::optional<InnerIdentity> ParseIdentityToInner(const mindev::minsecurity::identity::Identity& identity){
-        if(identity.GetPubKey().GetBytes().size() == 0 || identity.GetPriKey().GetBytes().size() == 0 || (haveUsedCert && !identity.GetCert().IsValid())){
+        if(identity.GetPubKey()->GetBytes().size() == 0 || identity.GetPriKey()->GetBytes().size() == 0 || (haveUsedCert && !identity.GetCert().IsValid())){
             return std::nullopt;
         }
         InnerIdentity innerIdentity;
         innerIdentity.SetName(identity.GetName());
         innerIdentity.SetKeyParam(identity.GetKeyParam());
-        innerIdentity.SetPrikey(identity.GetPriKey().GetBytes());
-        innerIdentity.SetPubkey(identity.GetPubKey().GetBytes());
+        innerIdentity.SetPrikey(identity.GetPriKey()->GetBytes());
+        innerIdentity.SetPubkey(identity.GetPubKey()->GetBytes());
         innerIdentity.SetPasswd(identity.GetPasswd());
         if constexpr (haveUsedCert){
             innerIdentity.SetCert(mindev::minsecurity::certificate::cert::CertUtils::ToPem(identity.GetCert(),byteutils::StringToVector<uint8_t>(identity.GetPasswd()),(int)mindev::minsecurity::Common::SymmetricAlgorithm::SM4CBC));

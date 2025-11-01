@@ -26,7 +26,7 @@ public:
     void SetSm2key(std::shared_ptr<SM2_KEY> ptr){this->sm2_key = ptr;}
     std::vector<char> Encrypt(const std::vector<char>& content,mindev::minsecurity::Common::Sm2CipherMode cipher_mode = mindev::minsecurity::Common::Sm2CipherMode::C1C2C3);
     bool Verify(const std::vector<char>& content,const std::vector<char>& digest);
-    std::vector<char> GetBytes()const{
+    std::vector<char> GetBytes()const override{
         std::vector<char> res;
         if(this->sm2_key.get()==nullptr){
             return res;

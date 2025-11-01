@@ -10,11 +10,11 @@ extern "C" {
 }
 #endif
 
-// #include "thirdparty/GmSSL/include/gmssl/sm2.h"
 #include <vector>
 namespace mindev::minsecurity::crypto {
     class PrivateKeyInterface {
 public:
+    typedef std::shared_ptr<PrivateKeyInterface> ptr; 
     virtual std::vector<char> GetBytes()const{return std::vector<char>();}
     virtual void SetSm2key(std::shared_ptr<SM2_KEY> ptr){return;}
     //virtual bool SetBytes(const std::vector<char>& bytes){return true;}

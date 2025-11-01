@@ -4,8 +4,8 @@ namespace mindev::minsecurity::identity {
     IdentityInfo Identity::ToIdentityInfo(){
         IdentityInfo res;
         res.name = Name;
-        res.pubkey = byteutils::VectorToString(Pubkey.GetBytes());
-        res.prikey = byteutils::VectorToString(Prikey.GetBytes());
+        res.pubkey = byteutils::VectorToString(Pubkey.get()->GetBytes());
+        res.prikey = byteutils::VectorToString(Prikey.get()->GetBytes());
         res.pubkey_algo = KeyParam.PublicKeyAlgorithm;
         res.signature_algo = KeyParam.SignatureAlgorithm;
         res.cert = certificate::cert::CertUtils::ToPem(Cert,std::vector<uint8_t>(),(int)mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB);

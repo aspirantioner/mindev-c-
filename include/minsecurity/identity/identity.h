@@ -23,9 +23,9 @@ public:
                     bool isDefault) {
         Name = name;
         KeyParam = keyParam;
-        Prikey = prikey;
+        Prikey = std::make_shared<mindev::minsecurity::crypto::PrivateKeyInterface>(prikey);
         PrikeyRawByte = prikeyRawByte;
-        Pubkey = pubkey;
+        Pubkey = std::make_shared<mindev::minsecurity::crypto::PublicKeyInterface>(pubkey);
         Passwd = passwd;
         Cert = cert;
         IsDefault = isDefault;
@@ -42,20 +42,22 @@ public:
                     bool isDefault) {
         Name = name;
         KeyParam = keyParam;
-        Prikey = prikey;
-        Pubkey = pubkey;
+        Prikey = std::make_shared<mindev::minsecurity::crypto::PrivateKeyInterface>(prikey);
+        Pubkey = std::make_shared<mindev::minsecurity::crypto::PublicKeyInterface>(pubkey);
         Passwd = passwd;
         Cert = cert;
         IsDefault = isDefault;
+        auto pub_key = pubkey.GetBytes();
+        pub_key = Pubkey.get()->GetBytes();
     }
     
     Identity(){}
     
     inline bool IsLocked()const{
-        return PrikeyRawByte.size()!=0 ;
+        return PrikeyRawByte.size()!=0;
     }
     inline bool HasPrivateKey()const{
-        return Prikey.GetBytes().size()!=0 || PrikeyRawByte.size()!=0;
+        return Prikey.get()->GetBytes().size()!=0 || PrikeyRawByte.size()!=0;
     }
     std::string GetName() const{
         return Name;
@@ -69,11 +71,11 @@ public:
     void SetKeyParam(const mindev::minsecurity::identity::KeyParam& keyParam){
         KeyParam = keyParam;
     }
-    mindev::minsecurity::crypto::PrivateKeyInterface GetPriKey()const{
+    mindev::minsecurity::crypto::PrivateKeyInterface::ptr GetPriKey()const{
         return Prikey;
     }
     void SetPrikey(const mindev::minsecurity::crypto::PrivateKeyInterface& prikey){
-        Prikey = prikey;
+        Prikey = std::make_shared<mindev::minsecurity::crypto::PrivateKeyInterface>(prikey);
     }
     std::vector<char> GetPrikeyRawByte()const{
         return PrikeyRawByte;
@@ -81,11 +83,11 @@ public:
     void SetPrikeyRawByte(const std::vector<char>& prikeyRawByte){
         PrikeyRawByte = prikeyRawByte;
     }
-    mindev::minsecurity::crypto::PublicKeyInterface GetPubKey()const{
+    mindev::minsecurity::crypto::PublicKeyInterface::ptr GetPubKey()const{
         return Pubkey;
     }
     void SetPubkey(const mindev::minsecurity::crypto::PublicKeyInterface& pubkey){
-        Pubkey = pubkey;
+        Pubkey = std::make_shared<mindev::minsecurity::crypto::PublicKeyInterface>(pubkey);
     }
     std::string GetPasswd()const{
         return Passwd;
@@ -111,8 +113,8 @@ public:
                 "Name='" + Name + '\'' +
                 ", KeyParam.signAlgo=" + std::to_string(KeyParam.SignatureAlgorithm) +
                 ", KeyParam.pubAlgo=" + std::to_string(KeyParam.PublicKeyAlgorithm) +
-                ", Prikey=" + (Prikey.GetBytes().size() != 0 ? byteutils::VectorToHex(Prikey.GetBytes()) : "null") +
-                ", pubKey=" + (Pubkey.GetBytes().size() != 0 ? byteutils::VectorToHex(Pubkey.GetBytes()) : "null") +
+                ", Prikey=" + (Prikey.get()->GetBytes().size() != 0 ? byteutils::VectorToHex(Prikey.get()->GetBytes()) : "null") +
+                ", pubKey=" + (Pubkey.get()->GetBytes().size() != 0 ? byteutils::VectorToHex(Pubkey.get()->GetBytes()) : "null") +
                 ", PrikeyRawByte=" + (PrikeyRawByte.size() == 0 ? "null":byteutils::VectorToHex(PrikeyRawByte)) +
                 ", Passwd='" + Passwd + '\'' +
                 ", Cert=" + Cert.ToString() +
@@ -137,7 +139,7 @@ public:
         switch(algo){
             case (int)mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB:
                 auto passhash = crypto::KeyUtils::Get16BytePasswd(byteutils::StringToVector<uint8_t>(passwd));
-                auto prikey =byteutils::CharToUint8( Prikey.GetBytes());
+                auto prikey =byteutils::CharToUint8(Prikey.get()->GetBytes());
                 auto enckey = mindev::minsecurity::crypto::SM4::EncryptECBPadding(passhash,prikey);
                 PrikeyRawByte = byteutils::Uint8ToChar(enckey);
                 return true;
@@ -146,7 +148,7 @@ public:
     }
     std::vector<uint8_t> Sign(const std::vector<char>& content){
         if(KeyParam.PublicKeyAlgorithm == (int)Common::PublicKeyAlgorithm::SM2 && KeyParam.SignatureAlgorithm == (int)Common::SignatureAlgorithm::SM3withSM2){
-            return byteutils::CharToUint8(Prikey.Sign(content));
+            return byteutils::CharToUint8(Prikey.get()->Sign(content));
         }
         return std::vector<uint8_t>();
     }
@@ -161,7 +163,7 @@ public:
                 auto dec = minsecurity::crypto::SM4::DecryptECBPadding(sm4key,enc_data);
                 auto sm2_pair = crypto::sm2::SM2KeyPair::GenerateKeyPair();
                 sm2_pair.GetSm2PrivateKey().SetBytes(dec);
-                Prikey = sm2_pair.GetSm2PrivateKey();
+                Prikey = std::make_shared<mindev::minsecurity::crypto::PrivateKeyInterface>(sm2_pair.GetSm2PrivateKey());
                 PrikeyRawByte.clear();
                 return true;
         }
@@ -172,15 +174,15 @@ public:
             return false;
         }
         if(KeyParam.PublicKeyAlgorithm == (int)Common::PublicKeyAlgorithm::SM2 && KeyParam.SignatureAlgorithm == (int)Common::SignatureAlgorithm::SM3withSM2){
-            return (crypto::sm2::SM2PublicKey*)(&Pubkey)->Verify(msg,digest);
+            return Pubkey.get()->Verify(msg,digest);
         }
         return false;
     }
     std::vector<uint8_t> Decrypt(std::vector<char>& cipher){
-        return byteutils::CharToUint8(Prikey.Decrypt(cipher));
+        return byteutils::CharToUint8(Prikey.get()->Decrypt(cipher));
     }
     std::vector<uint8_t> Encrypt(std::vector<char>& content){
-        return byteutils::CharToUint8(Pubkey.Encrypt(content));
+        return byteutils::CharToUint8(Pubkey.get()->Encrypt(content));
     }
     std::vector<uint8_t> Dump(const std::string& passwd)const;
 //     {
@@ -207,9 +209,9 @@ public:
 private:
     std::string Name;
     mindev::minsecurity::identity::KeyParam KeyParam;
-    mindev::minsecurity::crypto::PrivateKeyInterface Prikey;
+    mindev::minsecurity::crypto::PrivateKeyInterface::ptr Prikey;
     std::vector<char> PrikeyRawByte;
-    mindev::minsecurity::crypto::PublicKeyInterface Pubkey;
+    mindev::minsecurity::crypto::PublicKeyInterface::ptr Pubkey;
     std::string Passwd;
     mindev::minsecurity::certificate::cert::Certificate Cert;
     bool IsDefault;
