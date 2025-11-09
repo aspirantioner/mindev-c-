@@ -184,6 +184,7 @@ public:
     std::vector<uint8_t> Encrypt(std::vector<char>& content){
         return byteutils::CharToUint8(Pubkey.get()->Encrypt(content));
     }
+    std::string DumpCert(const std::string& passwd);
     std::vector<uint8_t> Dump(const std::string& passwd)const;
 //     {
 //         InnerIdentity inneridentity = IdentityUtil::ParseIdentityToInner(this);

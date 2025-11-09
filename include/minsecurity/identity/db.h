@@ -65,6 +65,7 @@ class IdentityDatabase {
         using TableType = std::unordered_map<std::string, IdentityInfo>;
         // 加载数据
         int Load(const std::string& passwd,const std::string& passwd_digest_filename,const std::string& user_identity_filename) {
+            this->user_identity_filename = user_identity_filename;
             std::ifstream pass_in(passwd_digest_filename);
             std::vector<uint8_t> passwd_vec(passwd.begin(),passwd.end());
             auto digest_res = mindev::minsecurity::crypto::HashAlgo::Sm3(passwd_vec);
@@ -129,7 +130,10 @@ class IdentityDatabase {
         }
     
         // 保存数据
-        int Save(const std::string& user_identity_filename) {
+        int Save(std::string user_identity_filename="") {
+            if(user_identity_filename == ""){
+                user_identity_filename = this->user_identity_filename;
+            }
             std::ofstream out(user_identity_filename,std::ios_base::trunc);
             if (!out.is_open()){
                 OH_LOG_ERROR(LOG_APP,"user identity file %{public}s open failed!",user_identity_filename.c_str());
@@ -182,7 +186,7 @@ class IdentityDatabase {
     
     private:
         TableType table_;
-//         std::string user_identity_filename = "user_identity.db";
+        std::string user_identity_filename = "user_identity.db";
 //         std::string passwd_digest_filename = "passwd_digest.db";
         std::vector<uint8_t> passwd_digest;
 };

@@ -1,5 +1,6 @@
 #include "mindev/include/minsecurity/identity/identity.h"
 #include "mindev/include/minsecurity/identity/identityutil.h"
+#include <cstdint>
 namespace mindev::minsecurity::identity {
     IdentityInfo Identity::ToIdentityInfo(){
         IdentityInfo res;
@@ -36,5 +37,16 @@ namespace mindev::minsecurity::identity {
             return byteutils::StringToVector<uint8_t>(Base64::Encode(byteutils::VectorToString<uint8_t>(cipher)));
         }
         return byteutils::StringToVector<uint8_t>(Base64::Encode(j.dump()));
+    }
+
+    std::string Identity::DumpCert(const std::string& passwd){
+        std::string res = "";
+        if(!this->GetCert().IsValid()){
+            return res;
+        }
+        if(this->GetCert().GetIssuer()=="" && this->GetCert().GetSignature().size()==0){
+            return res;
+        }
+        return certificate::cert::CertUtils::ToPem(this->GetCert(),byteutils::StringToVector<uint8_t>(passwd) , (int)Common::SymmetricAlgorithm::SM4ECB);
     }
 }

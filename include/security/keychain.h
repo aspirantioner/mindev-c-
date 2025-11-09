@@ -21,6 +21,42 @@ public:
     inline int GetInitState()const{
         return init_state;
     }
+    inline bool IsInKeyChain(const std::string& username){
+        return identity_db.Find(username);
+    }
+    bool CreateIdentity(const std::string& username,const std::string& user_passwd=""){
+        if(GetInitState()!=0){
+            return false;
+        }
+        auto ptr = identity_db.Find(username);
+        if(ptr==nullptr){
+            auto sm2key_pair = minsecurity::crypto::sm2::SM2KeyPair::GenerateKeyPair();
+            auto pubkey = sm2key_pair.GetSm2PublicKey().GetBytes();
+            auto keyparam = mindev::minsecurity::identity::KeyParam((int)mindev::minsecurity::Common::PublicKeyAlgorithm::SM2,(int)mindev::minsecurity::Common::SignatureAlgorithm::SM3withSM2);
+            minsecurity::identity::Identity new_identity = minsecurity::identity::Identity(username,keyparam,sm2key_pair.GetSm2PrivateKey(),sm2key_pair.GetSm2PublicKey(),user_passwd,minsecurity::certificate::cert::Certificate(),false);
+            if(new_identity.GetPasswd().size()!=0){
+                OH_LOG_INFO(LOG_APP,"new user has passwd .");
+                if(!new_identity.Lock(new_identity.GetPasswd(),(int) mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB)){
+                    OH_LOG_ERROR(LOG_APP,"new user lock failed!");
+                    return false;
+                };
+            }
+            identity_db.Insert(new_identity.ToIdentityInfo());
+           
+            if( identity_db.Save()!=0){
+                OH_LOG_ERROR(LOG_APP,"keychain new identity save error!");
+                return false;
+            }
+            cur_identity = new_identity;
+        }else{
+            auto identity = mindev::minsecurity::identity::IdentityUtil::FromIdentityInfo(*ptr);
+            if(!identity.has_value()){
+                init_state = -1;
+            }
+            cur_identity = std::move(identity.value());    
+        }
+        return true;
+    }
     void Init(const std::string& passwd,const std::string& passwd_digest_filename,const std::string& user_identity_filename,const std::string& default_identity_name,const std::string& user_passwd=""){
         init_state = identity_db.Load(passwd,passwd_digest_filename,user_identity_filename);
         if(init_state!=0){
@@ -33,9 +69,9 @@ public:
             auto pubkey = sm2key_pair.GetSm2PublicKey().GetBytes();
             auto keyparam = mindev::minsecurity::identity::KeyParam((int)mindev::minsecurity::Common::PublicKeyAlgorithm::SM2,(int)mindev::minsecurity::Common::SignatureAlgorithm::SM3withSM2);
             minsecurity::identity::Identity new_identity = minsecurity::identity::Identity(default_identity_name,keyparam,sm2key_pair.GetSm2PrivateKey(),sm2key_pair.GetSm2PublicKey(),user_passwd,minsecurity::certificate::cert::Certificate(),false);
-            if(user_passwd.size()!=0){
+            if(new_identity.GetPasswd().size()!=0){
                 OH_LOG_INFO(LOG_APP,"new user has passwd .");
-                if(!new_identity.Lock(passwd,(int) mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB)){
+                if(!new_identity.Lock(new_identity.GetPasswd(),(int) mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB)){
                     init_state = -1;
                     OH_LOG_ERROR(LOG_APP,"new user lock failed!");
                     return;
@@ -144,7 +180,6 @@ public:
             return rawdata;
         }
         int privateKeyEncryptionAlgorithm = (int)minsecurity::Common::SymmetricAlgorithm::SM4ECB;
-//         inline static const std::string default_identity_name = "/localhost/operator";
         mindev::minsecurity::identity::IdentityDatabase identity_db;
         mindev::minsecurity::identity::Identity cur_identity;
         int init_state; 

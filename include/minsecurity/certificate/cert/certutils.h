@@ -68,7 +68,7 @@ public:
     }
     static std::string ToPem(const Certificate& certificate,const std::vector<uint8_t>& passwd,int symalgomode){
         std::string ret = "";
-        if(certificate.IsEmpty()){
+        if(certificate.IsEmpty() || !certificate.IsValid()){
             return ret;
         }
         if(certificate.GetSignature().size()==0){
