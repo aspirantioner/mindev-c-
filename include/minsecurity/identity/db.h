@@ -149,6 +149,7 @@ class IdentityDatabase {
                     digest[i] += digest[i+16];
                 }
             }
+            digest.resize(16);
             std::vector<uint8_t> data_vec(plain_text.begin(),plain_text.end());
             auto enc_vec = mindev::minsecurity::crypto::SM4::EncryptCBCPadding(digest, digest, data_vec);
             out.write(reinterpret_cast<const char*>(enc_vec.data()), enc_vec.size());

@@ -18,7 +18,7 @@ public:
     }
     friend void to_json(json& j, const LoginRequest& request);
     friend void from_json(const json& j, LoginRequest& request);
-    };
+    }; 
     void to_json(json& j, const LoginRequest& request){
         j = json {
             {"Name", request.name},  

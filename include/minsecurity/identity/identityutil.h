@@ -54,8 +54,8 @@ public:
         Identity identity;
         identity.SetName(info.name);
         auto sm2_pair = crypto::sm2::SM2KeyPair::GenerateKeyPair();
-        sm2_pair.GetSm2PublicKey().SetBytes(byteutils::StringToVector<uint8_t>(info.pubkey));
-        sm2_pair.GetSm2PrivateKey().SetBytes(byteutils::StringToVector<uint8_t>(info.prikey));
+        sm2_pair.GetSm2PublicKey().SetBytes(byteutils::StringToVector<uint8_t>(Base64::Decode(info.pubkey)));
+        sm2_pair.GetSm2PrivateKey().SetBytes(byteutils::StringToVector<uint8_t>(Base64::Decode(info.prikey)));
         identity.SetPubkey(sm2_pair.GetSm2PublicKey());
         identity.SetPrikey(sm2_pair.GetSm2PrivateKey());
         identity.SetKeyParam(mindev::minsecurity::identity::KeyParam(info.pubkey_algo, info.signature_algo));

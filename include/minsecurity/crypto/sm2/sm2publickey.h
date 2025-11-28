@@ -40,6 +40,7 @@ public:
         }
         return res;
     }
+    std::shared_ptr<SM2_KEY> GetSm2Key()const{return sm2_key;}
     bool SetBytes(const std::vector<uint8_t>& key){
         if(key.size()!=64){
             return false;

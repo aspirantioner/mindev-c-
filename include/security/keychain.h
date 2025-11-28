@@ -157,6 +157,27 @@ public:
         }
         auto identity = minsecurity::identity::Identity::Load(safebag.GetValue(), passwd);
     }
+    bool ImportVmsCert(const std::string& identity_name,const std::string& passwd){
+        auto cert=minsecurity::certificate::cert::CertUtils::FromPem(identity_name, byteutils::StringToVector<uint8_t>(passwd), int(minsecurity::Common::SymmetricAlgorithm::SM4ECB));
+        if(cert.IsValid()){
+            return false;
+        }  
+        auto ptr = identity_db.Find(identity_name);
+        if(ptr!=nullptr){
+            ptr->cert = minsecurity::certificate::cert::CertUtils::ToPem(cert,std::vector<uint8_t>(),(int)mindev::minsecurity::Common::SymmetricAlgorithm::SM4ECB);
+            identity_db.Update(*ptr);
+            identity_db.Save();
+        }else{
+            minsecurity::identity::Identity new_identity;
+            new_identity.SetName(cert.getIssueTo());
+            new_identity.SetCert(cert);
+            new_identity.SetKeyParam(minsecurity::identity::KeyParam(cert.GetPublicKeyAlgorithm(), cert.GetSignatureAlgorithm()));
+            new_identity.SetPubkey(cert.GetPublicKey());
+            identity_db.Update(new_identity.ToIdentityInfo());
+            identity_db.Save();
+        }
+        return true;
+    }
     private:
         std::vector<char> GetIdentifierAndReadOnlyValueFromPacket(mindev::packet::MINPacket& packet){
             std::vector<char> rawdata;
