@@ -26,6 +26,18 @@ public:
     void SetSm2key(std::shared_ptr<SM2_KEY> ptr){this->sm2_key = ptr;}
     std::vector<char> Encrypt(const std::vector<char>& content,mindev::minsecurity::Common::Sm2CipherMode cipher_mode = mindev::minsecurity::Common::Sm2CipherMode::C1C2C3);
     bool Verify(const std::vector<char>& content,const std::vector<char>& digest);
+    std::string GetHexString(bool prefix = true)const{
+        std::string res = "";
+        char hex[128];
+        if(sm2_z256_point_equ_hex(&(this->sm2_key.get()->public_key), hex)){
+            std::string key_str(hex,128);
+            if(prefix){
+                res += "04";
+            }
+            res += key_str;
+        };
+        return res;
+    }
     std::vector<char> GetBytes()const override{
         std::vector<char> res;
         if(this->sm2_key.get()==nullptr){

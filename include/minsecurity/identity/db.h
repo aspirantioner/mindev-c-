@@ -66,7 +66,7 @@ class IdentityDatabase {
         // 加载数据
         int Load(const std::string& passwd,const std::string& passwd_digest_filename,const std::string& user_identity_filename) {
             this->user_identity_filename = user_identity_filename;
-            std::ifstream pass_in(passwd_digest_filename);
+            std::ifstream pass_in(passwd_digest_filename,std::ios::binary);
             std::vector<uint8_t> passwd_vec(passwd.begin(),passwd.end());
             auto digest_res = mindev::minsecurity::crypto::HashAlgo::Sm3(passwd_vec);
             if(!pass_in.is_open()){
@@ -88,17 +88,15 @@ class IdentityDatabase {
                 passwd_digest = digest_res;
                 return 0;
             }else{
-                std::ostringstream buf;
-                buf << pass_in.rdbuf();
                 passwd_digest.clear();
-                passwd_digest.assign(buf.str().begin(), buf.str().end());
+                passwd_digest.assign(std::istreambuf_iterator<char>(pass_in),std::istreambuf_iterator<char>());
             }
             if(passwd_digest.size()!=32){
                 OH_LOG_ERROR(LOG_APP,"passwd digest length error!");
                 return -1;
             }
 
-            if(passwd_digest.size() != digest_res.size() || std::equal(passwd_digest.begin(), passwd_digest.end(), digest_res.begin())){
+            if(passwd_digest.size() != digest_res.size() || !std::equal(passwd_digest.begin(), passwd_digest.end(), digest_res.begin())){
                 OH_LOG_ERROR(LOG_APP,"passwd digest verify failed!");
                 return -1;            
             };
@@ -121,6 +119,7 @@ class IdentityDatabase {
                     digest_res[i] += digest_res[i+16];
                 }
             }
+            digest_res.resize(16);
             auto dec_vec = mindev::minsecurity::crypto::SM4::DecryptCBCPadding(digest_res,digest_res,enc_vec);
             std::string base64_str(dec_vec.begin(),dec_vec.end());
             auto plain_text = mindev::Base64::Decode(base64_str);

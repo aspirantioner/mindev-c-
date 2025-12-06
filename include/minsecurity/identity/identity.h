@@ -23,9 +23,11 @@ public:
                     bool isDefault) {
         Name = name;
         KeyParam = keyParam;
-        Prikey = std::make_shared<mindev::minsecurity::crypto::PrivateKeyInterface>(prikey);
+        Prikey = std::make_shared<mindev::minsecurity::crypto::sm2::SM2PrivateKey>(dynamic_cast<const mindev::minsecurity::crypto::sm2::SM2PrivateKey*>(&prikey)->GetSm2Key());
+        Pubkey = std::make_shared<mindev::minsecurity::crypto::sm2::SM2PublicKey>(dynamic_cast<const mindev::minsecurity::crypto::sm2::SM2PublicKey*>(&pubkey)->GetSm2Key());
+//         Prikey = std::make_shared<mindev::minsecurity::crypto::PrivateKeyInterface>(prikey);
         PrikeyRawByte = prikeyRawByte;
-        Pubkey = std::make_shared<mindev::minsecurity::crypto::PublicKeyInterface>(pubkey);
+//         Pubkey = std::make_shared<mindev::minsecurity::crypto::PublicKeyInterface>(pubkey);
         Passwd = passwd;
         Cert = cert;
         IsDefault = isDefault;

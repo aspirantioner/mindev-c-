@@ -39,6 +39,15 @@ public:
         }
         return res;
     }
+    std::string GetHexString()const{
+        std::string res = "";
+        char hex[64];
+        if(sm2_z256_equ_hex((this->sm2_key.get()->private_key), hex)){
+            std::string key_str(hex,64);
+            res += key_str;
+        };
+        return res;
+    }
     std::shared_ptr<SM2_KEY> GetSm2Key()const{return sm2_key;}
     bool SetBytes(const std::vector<uint8_t>& key){
         if(key.size()!=32){
