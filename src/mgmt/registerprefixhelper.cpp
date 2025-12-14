@@ -17,7 +17,7 @@ bool RegisterPrefixHelper::RegisterPrefix(const mindev::component::Identifier &i
 //     ConcreteLogicFaceBuilder concreteLogicFace(face);
 //     LogicFaceBuilderInterface logicFace =
 //         std::make_shared<ConcreteLogicFaceBuilder>(concreteLogicFace);
-    std::optional<MIRController> controller = MIRController::CreateMIRController(ConcreteLogicFaceBuilder(face), false, keyChain);
+    std::optional<MIRController> controller = MIRController::CreateMIRController(std::make_shared<ConcreteLogicFaceBuilder>(face), false, keyChain);
     if(!controller.has_value()){
         return false;
     }
@@ -25,7 +25,7 @@ bool RegisterPrefixHelper::RegisterPrefix(const mindev::component::Identifier &i
     parameters.controlParameterPrefix.SetPrefix(identifier);
     mindev::mgmt::fibcommands::RegisterPrefixCommand registerPrefixCommand =
         mindev::mgmt::fibcommands::RegisterPrefixCommand::CreateRegisterPrefixCommand("/min-mir/mgmt/localhost", parameters);
-    auto commandExecutor = controller.value().PrepareCommandExecutor(registerPrefixCommand);
+    auto commandExecutor = controller.value().PrepareCommandExecutor(std::make_shared<mindev::mgmt::fibcommands::RegisterPrefixCommand>(registerPrefixCommand));
     if (!commandExecutor.has_value()) {
         return false;
     }

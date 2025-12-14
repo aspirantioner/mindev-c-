@@ -9,9 +9,18 @@ namespace mindev::component{
         int totalLength = 0;
         int tmpLen = 0;
 
-        for(auto iter = this->identifiers.GetIdentifierWrappers().rbegin();iter!=this->identifiers.GetIdentifierWrappers().rend();iter++){
-            tmpLen = iter->WireEncode(encoder);
-            if(tmpLen<0){
+//         for(auto iter = this->identifiers.GetIdentifierWrappers().rbegin();iter!=this->identifiers.GetIdentifierWrappers().rend();iter++){
+//             tmpLen = iter->WireEncode(encoder);
+//             if(tmpLen<0){
+//                 return -1;
+//             }
+//             totalLength += tmpLen;
+//         }
+        
+        for(int i = this->identifiers.GetIdentifierWrappers().size()-1;i>=0;i--){
+            auto temp = this->identifiers.GetIdentifierWrappers()[i];
+            int tmpLen = temp.WireEncode(encoder);
+            if (tmpLen < 0) {
                 return -1;
             }
             totalLength += tmpLen;

@@ -109,7 +109,10 @@ public:
         return identity.HasPrivateKey() && !identity.IsLocked(); 
     }
     void Sign(mindev::packet::MINPacket& packet){
-        CheckIdentifyCanUseToSign(cur_identity);
+        if(!CheckIdentifyCanUseToSign(cur_identity)){
+            OH_LOG_INFO(LOG_APP,"current identity can't sign");
+//             return;
+        };
         auto rawdata = GetIdentifierAndReadOnlyValueFromPacket(packet);
         auto sign_res = cur_identity.Sign(rawdata);
         packet.signatureField.AddSignature(mindev::component::Signature(cur_identity,sign_res));
@@ -117,7 +120,9 @@ public:
     template<typename T>
     typename std::enable_if<std::is_same<T, mindev::packet::CPacket>::value || std::is_same<T, mindev::packet::Interest>::value ||std::is_same<T, mindev::packet::Data>::value,void>::type
     Sign(T& packet) {
-        packet.FillDataToFields();
+        if(!packet.FillDataToFields()){
+            OH_LOG_INFO(LOG_APP,"packet fill data to fields failed!");
+        }
         Sign(packet.minPacket);
     }
     std::vector<uint8_t> SignBytes(const std::vector<uint8_t>& data){

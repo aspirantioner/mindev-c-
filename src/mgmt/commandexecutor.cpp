@@ -84,11 +84,11 @@ mindev::packet::Interest CommandExecutor::NewCommandInterest() {
     interest.ttl.SetTtl(this->ttl);
     interest.interestLifeTime.SetInterestLifeTime(this->interestLifeTime);
     interest.isCommandInterest = true;
-    this->keyChain.Sign(interest);
+//     this->keyChain.Sign(interest);
     // 测试字段----------------
-    std::vector<char> value = interest.minPacket.signatureField.GetSignature(0).GetSigValue().GetValue();
-    std::string str1(value.begin(), value.end());
-    std::cout << "CommandExecutor-构造的兴趣包的签名字段: " << str1 << std::endl;
+//     std::vector<char> value = interest.minPacket.signatureField.GetSignature(0).GetSigValue().GetValue();
+//     std::string str1(value.begin(), value.end());
+//     std::cout << "CommandExecutor-构造的兴趣包的签名字段: " << str1 << std::endl;
     mindev::encoding::Encoder encoder;
     if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
                               mindev::encoding::SizeT(0))) {
@@ -109,7 +109,7 @@ std::optional<ControlResponse> CommandExecutor::Start() {
     }
     // 如果存在管理命令参数，则将其添加到命令兴趣包的名字当中
     //if (!this->command.GetParameters().empty()) {
-        auto param = this->command.GetParameters();
+        auto param = this->command->GetParameters();
         if (!commandInterest->AppendCommandParameters(param)) {
             return std::nullopt;
         }

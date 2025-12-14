@@ -8,6 +8,7 @@ namespace mindev::mgmt{
     class ControlParameters;
     class IControlCommand{
 public:
+    typedef std::shared_ptr<IControlCommand> ptr;
     virtual std::string GetTopPrefix(){auto tmp = std::string("");return tmp;};
     virtual std::string GetModuleName(){auto tmp = std::string("");return tmp;};
     virtual std::string GetAction(){auto tmp = std::string("");return tmp;};

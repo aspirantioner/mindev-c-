@@ -20,7 +20,7 @@ public:
     int PrependByte(char value);
     int AppendByte(char value);
     static std::vector<char> BuildNonNegativeIntegerArr(long uint64_value);
-    int PrependByteArray(std::vector<char>& array,const SizeT& size);
+    int PrependByteArray(const std::vector<char>& array,const SizeT& size);
     int AppendByteArray(std::vector<char>& array,SizeT& size);
     int AppendNonNegativeInteger(long uint64_value);
     int PrependNonNegativeInteger(long uint64_value);

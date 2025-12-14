@@ -8,6 +8,7 @@ class ConcreteLogicFaceBuilder:public LogicFaceBuilderInterface{
 private:
     mindev::logicface::LogicFace face;
 public:
+    typedef std::shared_ptr<ConcreteLogicFaceBuilder> ptr;
     ConcreteLogicFaceBuilder(){}
     ConcreteLogicFaceBuilder(const mindev::logicface::LogicFace& logicFace){this->face=logicFace;}
     inline std::optional<mindev::logicface::LogicFace> LogicFaceBuilder(){return face;}

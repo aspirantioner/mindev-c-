@@ -2,6 +2,7 @@
 #define VLINT_H_
 
 #include <climits>
+#include <cstdint>
 #include <vector>
 #include "mindev/include/common/bigint.hpp"
 #include "mindev/include/common/templateinit.h"
@@ -20,10 +21,10 @@ public:
     static const int VlIntSize5 = 5;
     static const int VlIntSize9 = 9;
     
-    static const long uint8Max = 2^8-1;
-    static const long uint16Max = 2^16-1;
-    static const long uint32Max = 2^32-1;
-    static const long uint64Max = LONG_MAX;
+    static const unsigned char uint8Max = UCHAR_MAX;
+    static const unsigned short uint16Max = USHRT_MAX;
+    static const unsigned long uint32Max = UINT32_MAX;
+    static const unsigned long long uint64Max = ULLONG_MAX;
     VlInt(){};
     template <typename T>
 	VlInt(T value){
@@ -58,8 +59,8 @@ public:
     }
     static int SizeOfVarNumber(const bigint& bignum);
     inline int GetSize() const {return this->size;}
-    inline bigint& GetVlIntValue()  {return this->VlIntValue;}
-    inline std::vector<char>& GetVlIntBytes() {return this->VlIntBytes;}
+    inline bigint GetVlIntValue() const {return this->VlIntValue;}
+    inline std::vector<char> GetVlIntBytes() const {return this->VlIntBytes;}
     inline bool IsValidVlIntBytes(){return IsValidVlIntBytes(this->VlIntBytes);}
     inline bool IsValidVlIntValue(){return this->IsValidVlIntValue(this->VlIntValue);}
     inline bool IsInitial(){return this->size>0;}

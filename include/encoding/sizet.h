@@ -21,9 +21,6 @@ public:
                 static_assert(always_false<T>, "Unsupported type in VlInt::operator+");
             }
         }
-//         SizeT operator + (SizeT& val) {
-//             return SizeT(this->GetVlIntValue()+val.GetVlIntValue());
-//         }
     };
 }
 

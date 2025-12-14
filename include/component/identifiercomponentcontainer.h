@@ -10,7 +10,8 @@ public:
     inline size_t Length()const{return this->identifierComponents.size();};
     inline std::optional<std::reference_wrapper<IdentifierComponent>> GetElement(int index){if(index<0 || index>=this->Length()){return std::nullopt;}auto iter = this->identifierComponents.begin();
         std::advance(iter,index);auto res = *iter;return res;};
-    inline std::vector<IdentifierComponent>& GetIdentifierComponents() {return this->identifierComponents;};
+    inline std::vector<IdentifierComponent> GetIdentifierComponents() const {return this->identifierComponents;};
+    
     inline void Clear(){identifierComponents.clear();};
     inline void AddElement(const IdentifierComponent& identifierComponent) {
         identifierComponents.emplace_back(identifierComponent);

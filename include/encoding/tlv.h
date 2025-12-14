@@ -92,9 +92,11 @@ public:
     static VlInt ReadType(const std::vector<char>& buffer,const VlInt& start);
     static long ReadNonNegativeInteger(const std::vector<char>& buffer,int start,int end);
     static inline bool ExpectType(const VlInt& current,const VlInt& target){return const_cast<VlInt&>(current).GetVlIntValue()== const_cast<VlInt&>(target).GetVlIntValue();}
-    static inline bool IsValidIdentifierType( VlInt& tlvType){return tlvType.GetVlIntValue()>=bigint::_to_bigint(TLV::TlvIdentifierCommon) && tlvType.GetVlIntValue()<bigint::_to_bigint(TLV::TlvSignatureValue);}
+    static inline bool IsValidIdentifierType( VlInt& tlvType){
+        return  tlvType.GetVlIntValue() >= bigint::_to_bigint(TLV::TlvIdentifierCommon) && tlvType.GetVlIntValue() < TLV::TlvSignatureValue;
+    }
     static inline bool IsValidPacketType( VlInt& tlvType){
-        return tlvType.GetVlIntValue()>TLV::TlvInvalid && tlvType.GetVlIntValue()<TLV::TlvIdentifierField;
+        return tlvType.GetVlIntValue()>TLV::TlvInvalid && bigint::_to_bigint(TLV::TlvIdentifierField) > tlvType.GetVlIntValue();
     }
     };
 }

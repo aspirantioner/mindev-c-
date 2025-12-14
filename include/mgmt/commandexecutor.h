@@ -28,7 +28,7 @@ public:
     //	2. 如果想通过控制管理命令做远程管理，需要显示设置这个值，将其设置为一个较大值，这样才能将命令兴趣包转发到多跳路由器上
     static const int defaultTTL=64;
     // 要执行的命令
-    IControlCommand command;
+    IControlCommand::ptr command;
     //命令兴趣包的生存周期
     long interestLifeTime;
     long ttl;
@@ -40,7 +40,7 @@ public:
      * @param command
      * @param logicFace
      */
-    inline void Init(const IControlCommand& command,const mindev::logicface::LogicFace& logicFace){this->command=command;this->interestLifeTime=CommandExecutor::defaultInterestLifetime;this->ttl=CommandExecutor::defaultTTL;this->logicFace= logicFace;this->autoShutdown=false;};
+    inline void Init(IControlCommand::ptr command,const mindev::logicface::LogicFace& logicFace){this->command=std::move(command);this->interestLifeTime=CommandExecutor::defaultInterestLifetime;this->ttl=CommandExecutor::defaultTTL;this->logicFace= logicFace;this->autoShutdown=false;};
     /**
      * GetKeyChain 获取用于签名的秘钥链
      * @return
@@ -104,7 +104,7 @@ public:
      * @param command
      * @return
      */
-    inline std::string BuildPrefix(IControlCommand& command){return command.GetTopPrefix()+"/"+command.GetModuleName()+"/"+command.GetAction();}
+    inline std::string BuildPrefix(IControlCommand::ptr command){return command->GetTopPrefix()+"/"+command->GetModuleName()+"/"+command->GetAction();}
     
     
     

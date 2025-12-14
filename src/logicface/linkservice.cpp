@@ -145,7 +145,8 @@ bool LinkService::CalculateLpPacketHeadSize() {
     lppacket.lpPacketHeader.SetLpPacketFragmentNum(mindev::component::LpPacketFragmentNum(LONG_MAX));
     lppacket.SetValue(std::vector<char>(mindev::encoding::Encoder::MaxPacketSize, 0));
     mindev::encoding::Encoder encoder;
-    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize + LpPacketHeaderMaxSize),
+    auto temp = mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize + LpPacketHeaderMaxSize);
+    if (!encoder.EncoderReset(temp,
                               mindev::encoding::SizeT(0))) {
         return false;
     }

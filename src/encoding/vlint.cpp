@@ -37,7 +37,7 @@ namespace mindev::encoding {
         return false;
     }
     bool VlInt::IsValidVlIntValue(const bigint& value){
-        static const  bigint max_bigint = bigint(bigint(2^63)*bigint(2));
+        static const  bigint max_bigint = bigint(uint64Max);
         if(value<0){
             return false;
         }
@@ -72,7 +72,7 @@ namespace mindev::encoding {
             res = byteutils::FromValue(bigint::_bigint_to<uint32_t>(value));
             res.insert(res.begin(),static_cast<char>(VlInt::VlIntExtend4));
         } else if (size == 9) {
-            res = byteutils::FromValue(bigint::_bigint_to<uint32_t>(value));
+            res = byteutils::FromValue(bigint::_bigint_to<uint64_t>(value));
             res.insert(res.begin(),static_cast<char>(VlInt::VlIntExtend8));
         }
         return res;

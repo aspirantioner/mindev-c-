@@ -24,11 +24,10 @@ private:
     
 public:
     IdentifierComponent(){};
-    IdentifierComponent(const IdentifierComponent&) = default;
-    IdentifierComponent(IdentifierComponent&&) noexcept = default;
-    IdentifierComponent& operator=(const IdentifierComponent&) = default;
-    IdentifierComponent& operator=(IdentifierComponent&&) noexcept = default;
-    //template<typename T>
+//     IdentifierComponent(const IdentifierComponent&) = default;
+//     IdentifierComponent(IdentifierComponent&&) noexcept = default;
+//     IdentifierComponent& operator=(const IdentifierComponent&) = default;
+//     IdentifierComponent& operator=(IdentifierComponent&&) noexcept = default;
     template<typename T, std::enable_if_t<!std::is_same_v<std::decay_t<T>, IdentifierComponent>, int> = 0>
     explicit IdentifierComponent(T&& val) {
         using ParamType = std::conditional_t<std::is_scalar_v<std::decay_t<T>>, std::decay_t<T>, const std::decay_t<T>&>;

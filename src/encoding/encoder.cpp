@@ -31,7 +31,7 @@ namespace mindev::encoding {
         if(!this->isInitial){
             return false;
         }
-        if(this->totalReserve>(this->Size()+size)){
+        if((this->Size()+size) > this->totalReserve){
             return false;
         }
         return true;
@@ -65,11 +65,16 @@ namespace mindev::encoding {
             return std::vector<char>{(char)uint64_value};
         }
         VlInt vlInt = VlInt(uint64_value);
-        return std::vector<char>(vlInt.GetVlIntBytes().begin()+1,vlInt.GetVlIntBytes().end());
+        std::vector<char> res;
+        for(int i = 1;i<vlInt.GetVlIntBytes().size();i++){
+            res.emplace_back(vlInt.GetVlIntBytes()[i]);
+        }
+        return res;
+//         return std::vector<char>(vlInt.GetVlIntBytes().begin()+1,vlInt.GetVlIntBytes().end());
     }
-    int Encoder::PrependByteArray(std::vector<char>& array,const SizeT& size){
-        if(Check(size) && const_cast<SizeT&>(size)<=int(array.size())){
-            auto copy_len = bigint::_bigint_to<int>(const_cast<SizeT&>(size).GetVlIntValue());
+    int Encoder::PrependByteArray(const std::vector<char>& array,const SizeT& size){
+        if(Check(size) && size.GetVlIntValue() <= int(array.size())){
+            auto copy_len = bigint::_bigint_to<int>(size.GetVlIntValue());
             if(!this->isEstimator){
                 std::copy(array.begin(),array.begin()+copy_len,this->buffer.begin()+this->left-copy_len+1);
             }
@@ -100,8 +105,8 @@ namespace mindev::encoding {
         return this->PrependByteArray(bytes,tmp);
     }
     int Encoder::PrependVarNumber(const VlInt& varNumber){
-        auto temp = const_cast<VlInt&>(varNumber).GetVlIntBytes();
-        auto tmp = SizeT(const_cast<VlInt&>(varNumber).GetSize());
+        auto temp = varNumber.GetVlIntBytes();
+        auto tmp = SizeT(varNumber.GetSize());
         return this->PrependByteArray(temp, tmp);
     }
     int Encoder::AppendVarNumber(VlInt& varNumber){
@@ -139,7 +144,7 @@ namespace mindev::encoding {
             return res;
         }
         res.resize(this->right-this->left-1);
-        std::copy(res.begin(),res.end(),this->GetBuffer().begin()+this->left+1);
+        std::copy(this->buffer.begin()+this->left+1,this->buffer.begin()+this->right,res.begin());
         return res;
     }
 }

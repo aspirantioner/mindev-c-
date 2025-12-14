@@ -613,18 +613,22 @@ class bigint {
                 throw std::runtime_error("Invalid Big Integer has been fed.");   // if the input string is not valid number.
             str = s;
         }
-        bigint(long long int n) {
-            str = std::to_string(n);
+        template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+        bigint(T val) {
+            str = std::to_string(val);
         }
-        bigint(int n) {
-            str = std::to_string(n);
-        }
-        bigint(long int n) {
-            str = std::to_string(n);
-        }
-        bigint(const bigint &n) {
-            str = n.str;
-        }
+//         bigint(long long int n) {
+//             str = std::to_string(n);
+//         }
+//         bigint(int n) {
+//             str = std::to_string(n);
+//         }
+//         bigint(long int n) {
+//             str = std::to_string(n);
+//         }
+//         bigint(const bigint &n) {
+//             str = n.str;
+//         }
 
         // operator overloading for output stream {<<}
         friend std::ostream &operator << (std::ostream& stream, const bigint &n) {
@@ -1036,6 +1040,11 @@ class bigint {
         }
         friend bool operator >= (long long int n1, bigint const &n2) {
             return is_maximum(std::to_string(n1), n2.str);
+        }
+        template<typename T >
+        friend bool operator >= (bigint const &n1,const T n2){
+            static_assert(std::is_integral_v<T>, "Only integral type are supported.");
+            return is_maximum(n1.str, std::to_string(n2));
         }
 
         /* Operator {<=} Overloadings, for different kind of 

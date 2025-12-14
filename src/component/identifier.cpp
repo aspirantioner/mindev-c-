@@ -30,7 +30,7 @@ namespace mindev::component{
         return res;
     }
     std::optional<Identifier> Identifier::BuildIdentifierByString(const std::string& identifierString){
-        if(stringutils::StartWith(identifierString,identifier_split_str)){
+        if(!stringutils::StartWith(identifierString,identifier_split_str) || identifierString.length()==0){
             return  std::nullopt;
         }
         if(identifierString==identifier_split_str){
@@ -40,7 +40,7 @@ namespace mindev::component{
         }
         auto componentStrings = stringutils::SplitBySubstr(identifierString, identifier_split_str);
         IdentifierComponentContainer components;
-        components.AddElement(IdentifierComponent(identifierString));
+        components.AddElement(IdentifierComponent(identifier_split_str));
         for(int i = 1;i<componentStrings.size();i++){
             components.AddElement(IdentifierComponent(componentStrings[i]));
         }
@@ -51,16 +51,26 @@ namespace mindev::component{
             return std::nullopt;
         }
         Identifier res;
-        for(const auto elem:static_cast<IdentifierComponentContainer>(container).GetIdentifierComponents()){
-            res.GetComponents().AddElement(elem);
+        for(const auto elem:container.GetIdentifierComponents()){
+            res.Append(elem); 
         }
+        return res;
     }
     int Identifier::WireEncode(mindev::encoding::Encoder& encoder){
         
         int totalLength = 0;
         // 编码 TLV-VALUE
-        for (auto iter = this->components.GetIdentifierComponents().rbegin();iter!=this->components.GetIdentifierComponents().rend();iter++) {
-            int tmpLen = iter->WireEncode(encoder);
+//         for (auto iter = this->components.GetIdentifierComponents().rbegin();iter!=this->components.GetIdentifierComponents().rend();iter++) {
+//             int tmpLen = iter->WireEncode(encoder);
+//             if (tmpLen < 0) {
+//                 return -1;
+//             }
+//             totalLength += tmpLen;
+//         }
+    
+        for(int i = this->components.GetIdentifierComponents().size()-1;i>=0;i--){
+            auto temp = this->components.GetIdentifierComponents()[i];
+            int tmpLen = temp.WireEncode(encoder);
             if (tmpLen < 0) {
                 return -1;
             }

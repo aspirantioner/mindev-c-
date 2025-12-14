@@ -1,7 +1,7 @@
 #include "mindev/include/component/lppacketfragmentseq.h"
 
 namespace mindev::component{
-        int LpPacketFragmentSeq::WireEncode(mindev::encoding::Encoder& encoder){
+    int LpPacketFragmentSeq::WireEncode(mindev::encoding::Encoder& encoder){
         
         int totalLength = 0;
 

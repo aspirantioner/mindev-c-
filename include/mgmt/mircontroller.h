@@ -12,7 +12,7 @@ namespace mindev::mgmt{
 class MIRController{
 public:
     // LogicFace 构造工厂
-    LogicFaceBuilderInterface logicFaceBuilderInterface;
+    LogicFaceBuilderInterface::ptr logicFaceBuilderInterface;
     mindev::security::KeyChain keyChain;
     bool autoShutdown;
     /**
@@ -22,13 +22,13 @@ public:
      * @param keyChain
      * @return
      */
-    static MIRController CreateMIRController(const LogicFaceBuilderInterface& logicFaceBuilderInterface,bool autoShutdown,const mindev::security::KeyChain& keyChain);
+    static MIRController CreateMIRController(std::shared_ptr<LogicFaceBuilderInterface> logicFaceBuilderInterface,bool autoShutdown,const mindev::security::KeyChain& keyChain);
     /**
      * PrepareCommandExecutor 构造一个命令执行器用来执行命令
      * @param command
      * @return
      */
-    std::optional<CommandExecutor> PrepareCommandExecutor(const IControlCommand& command);
+    std::optional<CommandExecutor> PrepareCommandExecutor(IControlCommand::ptr command);
 };
 
 }
