@@ -16,7 +16,7 @@ namespace mindev::component{
         }
         totalLength += tmpLen;
 
-        tmpLen = this->lpPacketFragmentSeq.WireEncode(encoder);
+        tmpLen = this->lpPacketFragmentId.WireEncode(encoder);
         if(tmpLen<0){
             return -1;
         }

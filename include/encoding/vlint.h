@@ -95,7 +95,7 @@ public:
         }
     }
     template<typename T>
-    bool operator != (T n) {
+    bool operator != (const T n) const{
         if constexpr(std::is_base_of_v<VlInt,T>){
             return this->GetVlIntValue()!=n.GetVlIntValue();
         }else if constexpr(std::is_integral_v<T>){

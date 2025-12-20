@@ -9,18 +9,14 @@ namespace mindev::logicface{
         if(!channel->Connect()){
             return false;
         }
-        auto ptr = new TcpTransport();
-        if(!ptr->Init(channel)){
-            delete ptr;
-            return false;
-        };
-
-        this->linkService = std::make_shared<LinkService>(std::ref(*this));
+        
+        this->linkService = std::make_shared<LinkService>();
+        this->linkService->logicFace =  shared_from_this();
         if(!this->linkService->Init(DefaultMtuSize)){
             return false;
         };
-        ptr->linkService = this->linkService;
-        this->transport = std::shared_ptr<TcpTransport>(ptr);
+
+        this->transport = std::make_shared<TcpTransport>(channel,this->linkService);
         this->linkService->transport = this->transport;
         this->type = LogicFaceType::TCP;
         this->state = true;
@@ -28,16 +24,15 @@ namespace mindev::logicface{
     }
     bool LogicFace::InitWithUdp(const std::string& ip,u_short port){
         auto channel = std::make_shared<mindev::vmsconnection::tcpnet::SocketChannel>(std::make_shared<mindev::vmsconnection::tcpnet::IPAddress>(ip,port));
-//         if(!channel->Connect()){
-//             return false;
-//         }
         auto ptr = new UdpTransport();
         if(!ptr->Init(channel)){
             delete ptr;
             return false;
         };
 
-        this->linkService = std::make_shared<LinkService>(std::ref(*this));
+//         this->linkService = std::make_shared<LinkService>(std::ref(*this));
+        this->linkService = std::make_shared<LinkService>();
+        this->linkService->logicFace =  shared_from_this();
         if(!this->linkService->Init(DefaultMtuSize)){
             return false;
         };
@@ -48,14 +43,14 @@ namespace mindev::logicface{
         this->state = true;
         return true;
     }
-    std::optional<LogicFace> LogicFace::InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix,const mindev::security::KeyChain& keyChain){
-        LogicFace face;
-        if(!face.InitWithTcp(ip, port)){
+    std::optional<LogicFace::ptr> LogicFace::InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix,const mindev::security::KeyChain& keyChain){
+        LogicFace::ptr face = std::make_shared<mindev::logicface::LogicFace>();
+        if(!face->InitWithTcp(ip, port)){
             return std::nullopt;
         }
         if(use_prefix){
             std::string local_face_prefix = "/min/mir1/default/"+std::to_string(timeutils::GetCurrentTime());
-            face.SetKeyChain(keyChain);
+            face->SetKeyChain(keyChain);
             mindev::mgmt::RegisterPrefixHelper registerhelper;
             auto res = component::Identifier::BuildIdentifierByString(local_face_prefix);
             if(!res.has_value()){

@@ -13,7 +13,7 @@ private:
 public:
     mindev::component::LpPacketHeader lpPacketHeader;
     mindev::component::Payload payload;
-    inline std::vector<char>& GetRawPayload(){return this->rawPayload;};
+    inline std::vector<char> GetRawPayload()const{return this->rawPayload;};
     bool DecodeSelf();
     LpPacket(){};
     LpPacket(const mindev::component::LpPacketHeader& lpPacketHeader,const mindev::component::Payload& payload){
@@ -21,11 +21,11 @@ public:
         this->payload=payload;
     }
     void SetId(long fragmentId);
-    long GetId(){return this->lpPacketHeader.GetLpPacketFragmentId().GetId();};
+    long GetId()const{return this->lpPacketHeader.GetLpPacketFragmentId().GetId();};
     void SetFragmentNum(long fragmentNum);
-    inline long GetFragmentNum(){return this->lpPacketHeader.GetLpPacketFragmentNum().GetFragmentNum();};
+    inline long GetFragmentNum()const{return this->lpPacketHeader.GetLpPacketFragmentNum().GetFragmentNum();};
     void SetFragmentSeq(long fragmentSeq);
-    inline long GetFragmentSeq(){return this->lpPacketHeader.GetLpPacketFragmentSeq().GetFragmentSeq();};
+    inline long GetFragmentSeq()const{return this->lpPacketHeader.GetLpPacketFragmentSeq().GetFragmentSeq();};
     void SetValue(const std::vector<char>& value);
     inline std::vector<char> GetValue()const{return this->payload.GetValue();};
     /**

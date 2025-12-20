@@ -1,4 +1,5 @@
 #include "mindev/include/logicface/linkservice.h"
+#include "mindev/include/logicface/logicface.h"
 #include "mindev/include/component/identifier.h"
 #include "mindev/include/packet/cpacket.h"
 #include "mindev/include/packet/lppacket.h"
@@ -44,8 +45,13 @@ bool LinkService::Init(int mtu) {
 std::optional<mindev::packet::MINPacket> LinkService::ReceivePacket() {
     if (auto locked = transport.lock()) {
         std::optional<mindev::packet::LpPacket> lpPacket = locked->Receive();
-        auto minPacket = this->GetMINPacketFromLpPacket(lpPacket.value());
-        return minPacket;
+        if(lpPacket.has_value()){
+            auto minPacket = this->GetMINPacketFromLpPacket(lpPacket.value());
+            return minPacket;
+        }
+    }
+    if(auto locked = logicFace.lock()){
+        locked->ShutDown();
     }
     return std::nullopt;
 }
@@ -158,8 +164,8 @@ bool LinkService::CalculateLpPacketHeadSize() {
     return true;
 }
 std::optional<mindev::packet::MINPacket> LinkService::GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket) {
-    std::vector<char> payload =const_cast<mindev::packet::LpPacket&>(lpPacket).payload.GetValue();
-    auto block = mindev::encoding::Block::CreateBlockByBuffer(payload, true);
+    std::vector<char> payload =lpPacket.payload.GetValue();
+    auto block = mindev::encoding::Block::DebugCreateBlockByBuffer(payload, true);
     if(!block.has_value()){
         return std::nullopt;
     }

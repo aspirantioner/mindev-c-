@@ -64,79 +64,17 @@ namespace mindev::encoding {
         std::vector<char> res;
         auto size = SizeOfVarNumber(value);
         if(size==1){
-            res = byteutils::FromValue(bigint::_bigint_to<uint8_t>(value));
+            res = byteutils::FromValue(bigint::_bigint_to<uint8_t>(value),false);
         } else if (size == 3) {
-            res = byteutils::FromValue(bigint::_bigint_to<uint16_t>(value));
+            res = byteutils::FromValue(bigint::_bigint_to<uint16_t>(value),false);
             res.insert(res.begin(),static_cast<char>(VlInt::VlIntExtend2));
         } else if (size == 5) {
-            res = byteutils::FromValue(bigint::_bigint_to<uint32_t>(value));
+            res = byteutils::FromValue(bigint::_bigint_to<uint32_t>(value),false);
             res.insert(res.begin(),static_cast<char>(VlInt::VlIntExtend4));
         } else if (size == 9) {
-            res = byteutils::FromValue(bigint::_bigint_to<uint64_t>(value));
+            res = byteutils::FromValue(bigint::_bigint_to<uint64_t>(value),false);
             res.insert(res.begin(),static_cast<char>(VlInt::VlIntExtend8));
         }
         return res;
     }
 }
-
-// /**
-//      * 传入的应是一个有效的变长整型数组
-//      * @param vlIntBytes
-//      */
-//     public VlInt(byte[] vlIntBytes){
-//         if(!isValidVlIntBytes(vlIntBytes)){
-//             throw new Error("VlInt(byte[] bytes): VlIntBytes is invalid.");
-//         }
-//         this.VlIntBytes=vlIntBytes;
-//         this.VlIntValue=vlintBytes2bigInteger(vlIntBytes);
-//         this.size = SizeOfVarNumber(this.VlIntValue);
-//     }
-//
-//     /**
-//      * 传入的应是一个有效的变长整型value
-//      * @param bigInteger
-//      */
-//     public VlInt(BigInteger bigInteger){
-//         if(!isValidVlIntValue(bigInteger)){
-//             throw new Error("VlInt(BigInteger bigInteger): VlIntValue is invalid.");
-//         }
-//         this.VlIntValue=bigInteger;
-//         this.VlIntBytes=bigInteger2vlintBytes(bigInteger);
-//         this.size=SizeOfVarNumber(this.VlIntValue);
-//     }
-//
-//     public VlInt(SizeT sizeT){
-//         if(!sizeT.isInitial()){
-//             throw new Error("VlInt(SizeT sizeT): The sizeT is invalid, it should be initial.");
-//         }
-//         this.VlIntBytes=sizeT.getVlIntBytes();
-//         this.VlIntValue=sizeT.getVlIntValue();
-//         this.size = sizeT.size();
-//     }
-//
-//     public VlInt(VlInt vlInt){
-//         if(!vlInt.isInitial()){
-//             throw new Error("VlInt vlInt: The vlInt is invalid, it should be initial.");
-//         }
-//         this.VlIntBytes=vlInt.getVlIntBytes();
-//         this.VlIntValue=vlInt.getVlIntValue();
-//         this.size = vlInt.size();
-//     }
-
-//     public VlInt(int i){
-//         this.VlIntValue=BigInteger.valueOf(i);
-//         if(!isValidVlIntValue(this.VlIntValue)){
-//             throw new Error("VlInt(int i): The i value is invalid, it is out of the bound.");
-//         }
-//         this.VlIntBytes=bigInteger2vlintBytes(this.VlIntValue);
-//         this.size=SizeOfVarNumber(this.VlIntValue);
-//     }
-//
-//     public VlInt(long l){
-//         this.VlIntValue=BigInteger.valueOf(l);
-//         if(!isValidVlIntValue(this.VlIntValue)){
-//             throw new Error("VlInt(long l): out of the bound, the l value is invalid.");
-//         }
-//         this.VlIntBytes=bigInteger2vlintBytes(this.VlIntValue);
-//         this.size=SizeOfVarNumber(this.VlIntValue);
-//     }

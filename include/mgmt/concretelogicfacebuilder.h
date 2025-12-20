@@ -6,12 +6,12 @@
 namespace mindev::mgmt{
 class ConcreteLogicFaceBuilder:public LogicFaceBuilderInterface{
 private:
-    mindev::logicface::LogicFace face;
+    mindev::logicface::LogicFace::ptr face;
 public:
     typedef std::shared_ptr<ConcreteLogicFaceBuilder> ptr;
     ConcreteLogicFaceBuilder(){}
-    ConcreteLogicFaceBuilder(const mindev::logicface::LogicFace& logicFace){this->face=logicFace;}
-    inline std::optional<mindev::logicface::LogicFace> LogicFaceBuilder(){return face;}
+    ConcreteLogicFaceBuilder(mindev::logicface::LogicFace::ptr logicFace){this->face=logicFace;}
+    inline std::optional<mindev::logicface::LogicFace::ptr> LogicFaceBuilder(){return face;}
     
     
 };

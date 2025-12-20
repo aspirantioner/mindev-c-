@@ -5,15 +5,26 @@
 namespace mindev::logicface {
     bool StreamTransport::Send(mindev::packet::LpPacket& lpPacket){
         auto encodeBuf = this->EncodeLpPacketToByteArray(lpPacket);
+        auto tmp = this->ParseByteArrayToLpPacket(encodeBuf);
+        if(tmp.has_value()){
+            if(auto link = this->linkService.lock()){
+                auto min = link->GetMINPacketFromLpPacket(tmp.value());
+                if(min.has_value()){
+                    int a = 0;
+                }
+            }
+        }
         if(encodeBuf.empty()){
             return false;
         }
         int writeLen = 0;
         while(writeLen < encodeBuf.size()){
-            auto writeRet = this->m_scoket_channel->Write(encodeBuf,writeLen);
+            auto writeRet = this->m_scoket_channel->Write(encodeBuf,writeLen,encodeBuf.size()-writeLen);
             if(writeRet<0){
                 if(auto tmp = this->linkService.lock()){
-                    tmp->logicFace.get().ShutDown();
+                    if(auto logicface = tmp->logicFace.lock()){
+                        logicface->ShutDown();
+                    }
                 }
                 return false;
             }
@@ -63,12 +74,10 @@ namespace mindev::logicface {
             if(!lpPacket.GetValue().empty()){
                 return lpPacket;
             }
-            std::vector<char> recv_vec(this->recBuf.size()-this->recvLen,0);
-            auto recvRet = this->m_scoket_channel->Read<char>(recv_vec);
-            if(recvRet<0){
+            auto recvRet = this->m_scoket_channel->Read<char>(this->recBuf,this->recvLen);
+            if(recvRet<=0){
                 return std::nullopt;
             }
-            std::copy(recv_vec.begin(),recv_vec.begin()+recvRet,this->recBuf.begin()+this->recvLen);
             this->recvLen += recvRet;
         }
     }

@@ -83,7 +83,7 @@ public:
     static const int TlvLpPacketFragmentId  = 252; // LpPacket 分片id
     static const int TlvLpPacketFragmentNum = 253; // LpPacket 分片数
     static const int TlvLpPacketFragmentSeq = 254; // LpPacket 分片号
-
+    static const int TlvLpPacketHeartBeat   = 255; // LpPacket 心跳包标记
     // 目前已分配的最大的Tlv值，第一轮分配的最大值为500，超过该值则断定为不合法
     // TODO: 目前TLV值的分配，第一轮分配都在500以内，如果以后分配更高值时，需要修改此处的限制
     static const int MaxTlvNum = 500;

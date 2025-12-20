@@ -25,8 +25,8 @@ namespace mindev::encoding {
             return res;
         }
         
-        int firstbyte = byteutils::ToValue<int>(buffer,index);
-        if(firstbyte<241){
+        int firstbyte = byteutils::ToValue<uint8_t>(buffer,index,false);
+        if(firstbyte<VlInt::VlIntExtend2){
             return VlInt(firstbyte);
         } else if (firstbyte==VlInt::VlIntExtend2) {
             
@@ -48,7 +48,7 @@ namespace mindev::encoding {
         return res;
     }
     VlInt TLV::ReadType(const std::vector<char>& buffer,const VlInt& start){
-        auto tlvtype = ReadVarNumber(buffer, const_cast<VlInt&>(start));
+        auto tlvtype = ReadVarNumber(buffer, start);
         
         if(!tlvtype.IsInitial()||static_cast<bigint>(tlvtype.GetVlIntValue())==bigint::_to_bigint(TLV::TlvInvalid)||static_cast<bigint>(tlvtype.GetVlIntValue())>bigint::_to_bigint(TLV::MaxTlvNum)){
             return VlInt();
@@ -63,16 +63,16 @@ namespace mindev::encoding {
         long res = -1;
         switch (new_buffer.size()) { 
             case sizeof(u_int8_t):
-                res = byteutils::ToValue<u_int8_t>(new_buffer);
+                res = byteutils::ToValue<u_int8_t>(new_buffer,0,false);
                 break;
             case sizeof(u_int16_t):
-                res = byteutils::ToValue<u_int16_t>(new_buffer);
+                res = byteutils::ToValue<u_int16_t>(new_buffer,0,false);
                 break;
             case sizeof(u_int32_t):
-                res = byteutils::ToValue<u_int32_t>(new_buffer);
+                res = byteutils::ToValue<u_int32_t>(new_buffer,0,false);
                 break;
             case sizeof(u_int64_t):
-                res = byteutils::ToValue<u_int64_t>(new_buffer);
+                res = byteutils::ToValue<u_int64_t>(new_buffer,0,false);
                 break;
         }
         return res;

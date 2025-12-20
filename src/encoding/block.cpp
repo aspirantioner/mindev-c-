@@ -16,7 +16,8 @@ namespace mindev::encoding {
             return std::nullopt;
         }
         Block res;
-        if(!res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, buffer, verifyLength)){
+        std::vector<char> encode_data(buffer.begin()+tlvType.GetSize()+tlvLength.GetSize(),buffer.end());
+        if(!res.BuildBlockByTypeLengthBuffer(tlvType, tlvLength, encode_data, verifyLength)){
             return std::nullopt;
         }
         return res;
@@ -28,7 +29,7 @@ namespace mindev::encoding {
         }
         return res;
     }
-    bool Block::BuildBlockByTypeLengthBuffer(VlInt& tlvType,VlInt& tlvLength,std::vector<char>& buffer,bool verifyLength){
+    bool Block::BuildBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength,const std::vector<char>& buffer,bool verifyLength){
         
         this->tlvType = tlvType;
         this->length = tlvLength;
@@ -39,7 +40,7 @@ namespace mindev::encoding {
         Encoder encoder = Encoder();
         auto size1 = SizeT(tlvType.GetSize()+tlvLength.GetSize()+buffer.size());
         auto size2 = SizeT(0);
-        if(encoder.EncoderReset(size1,size2)){
+        if(!encoder.EncoderReset(size1,size2)){
             return false;
         }
         auto tmp = SizeT(buffer.size());
@@ -71,6 +72,7 @@ namespace mindev::encoding {
             return true;
         }
         for(int start=0;start<this->value.size();){
+            auto origin_start = start;
             auto tmp = VlInt(start);
             auto tlvType = TLV::ReadType(this->value, tmp);
             if(!tlvType.IsInitial()){
@@ -92,12 +94,19 @@ namespace mindev::encoding {
             auto len = bigint::_bigint_to<int>(tlvLength.GetVlIntValue());
             std::vector<char> subBlockValue(len);
             std::copy(this->value.begin()+start,this->value.begin()+start+len,subBlockValue.begin());
-            auto block = CreateBlockByTypeLengthBuffer(tlvType, tlvLength,subBlockValue,true);
-            if(!block.has_value()){
-                this->ClearElements();
-                return false;
-            }
-            this->AddElement(block.value());
+            //Debug:
+            Block block;
+            block.tlvType = tlvType;
+            block.length = tlvLength;
+            block.value = subBlockValue;
+            block.raw = std::vector<char>(this->value.begin()+origin_start,this->value.begin()+start+len);
+            this->AddElement(block);
+//             auto block = CreateBlockByTypeLengthBuffer(tlvType, tlvLength,subBlockValue,true);
+//             if(!block.has_value()){
+//                 this->ClearElements();
+//                 return false;
+//             }
+//             this->AddElement(block.value());
             start+=len;
         }
         return true;

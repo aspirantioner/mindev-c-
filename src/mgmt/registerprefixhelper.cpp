@@ -12,7 +12,7 @@
 
 namespace mindev::mgmt {
 bool RegisterPrefixHelper::RegisterPrefix(const mindev::component::Identifier &identifier,
-                                          const mindev::logicface::LogicFace &face,
+                                          mindev::logicface::LogicFace::ptr face,
                                           const mindev::security::KeyChain &keyChain) {
 //     ConcreteLogicFaceBuilder concreteLogicFace(face);
 //     LogicFaceBuilderInterface logicFace =

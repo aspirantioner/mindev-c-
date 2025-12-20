@@ -31,7 +31,7 @@ namespace mindev::logicface{
     static const int PENDING = -3;
     static const int FAIL = -2;
     static const int FINISHED = -1;
-    class LogicFace{
+    class LogicFace:public std::enable_shared_from_this<LogicFace>{
 public:
     typedef std::shared_ptr<LogicFace> ptr; 
     LogicFaceType type;
@@ -44,7 +44,11 @@ public:
     LogicFace(){}
     bool InitWithTcp(const std::string& ip,u_short port);
     bool InitWithUdp(const std::string& ip,u_short port);
-    static std::optional<LogicFace> InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix,const mindev::security::KeyChain& keyChain);
+    inline void Test()const{
+        std::vector<char> buf = std::vector<char>(99,'0');
+        this->linkService->SendByteBuffer(buf, buf.size());
+    }
+    static std::optional<LogicFace::ptr> InitTcpLogicFace(const std::string& ip,u_short port,bool use_prefix,const mindev::security::KeyChain& keyChain);
     /**
      * GetKeyChain 获取用于注册前缀时签名的秘钥链
      * @return
@@ -184,8 +188,6 @@ public:
         if(this->state){
            this->transport->Close();
            this->state=false;
-//            this.executorService.shutdown();
-//            this.ITransport.close();
         }
         return true;
     }

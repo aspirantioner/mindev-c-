@@ -2,7 +2,7 @@
 
 namespace mindev::logicface {
     std::optional<mindev::packet::LpPacket> Transport::ParseByteArrayToLpPacket(std::vector<char>& buf){
-        auto block = mindev::encoding::Block::CreateBlockByBuffer(buf, true);
+        auto block = mindev::encoding::Block::DebugCreateBlockByBuffer(buf, true);
         if(!block.has_value()){
             return std::nullopt;
         }

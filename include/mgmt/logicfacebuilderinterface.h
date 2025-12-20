@@ -8,7 +8,7 @@ namespace mindev::mgmt{
 class LogicFaceBuilderInterface{
 public:
     typedef std::shared_ptr<LogicFaceBuilderInterface> ptr;
-    virtual std::optional<mindev::logicface::LogicFace> LogicFaceBuilder(){return std::nullopt;};
+    virtual std::optional<mindev::logicface::LogicFace::ptr> LogicFaceBuilder(){return std::nullopt;};
 };
 }
 

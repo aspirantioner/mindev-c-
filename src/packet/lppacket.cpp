@@ -102,7 +102,7 @@ bool LpPacket::WireDecode(mindev::encoding::Block& block){
                     return false;
                 }
                 break;
-        }
+        } 
     }
     return true;
 }

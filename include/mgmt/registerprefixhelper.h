@@ -13,7 +13,7 @@ public:
     * @param keyChain
     * @return
     */
-    bool RegisterPrefix(const mindev::component::Identifier& identifier,const mindev::logicface::LogicFace& face,const mindev::security::KeyChain& keyChain);
+    bool RegisterPrefix(const mindev::component::Identifier& identifier,mindev::logicface::LogicFace::ptr face,const mindev::security::KeyChain& keyChain);
 };
 }
 #endif

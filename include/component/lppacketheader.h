@@ -17,13 +17,13 @@ public:
         this->lpPacketFragmentNum = num;
         this->lpPacketFragmentSeq = seq;
     }
-    inline LpPacketFragmentId& GetLpPacketFragmentId(){
+    inline LpPacketFragmentId GetLpPacketFragmentId()const{
         return this->lpPacketFragmentId;
     }
-    inline LpPacketFragmentNum& GetLpPacketFragmentNum(){
+    inline LpPacketFragmentNum GetLpPacketFragmentNum()const{
         return this->lpPacketFragmentNum;
     }
-    inline LpPacketFragmentSeq& GetLpPacketFragmentSeq(){
+    inline LpPacketFragmentSeq GetLpPacketFragmentSeq()const{
         return this->lpPacketFragmentSeq;
     }
     inline void SetLpPacketFragmentId(const LpPacketFragmentId& id){

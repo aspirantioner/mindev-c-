@@ -11,6 +11,7 @@
 #include "mindev/include/packet/cpacket.h"
 #include <iostream>
 
+#define private public
 
 namespace mindev::logicface {
 class LogicFace;
@@ -19,12 +20,12 @@ class LinkService {
 public:
     typedef std::shared_ptr<LinkService> ptr;
     std::weak_ptr<ITransport> transport;
-    std::reference_wrapper<mindev::logicface::LogicFace> logicFace;
+    std::weak_ptr<LogicFace> logicFace;
     int mtu;
     int lpPacketHeadSize;
     long lpPacketId;
     std::vector<char> cpacketBytes;
-    LinkService(std::reference_wrapper<mindev::logicface::LogicFace> val) : logicFace(val) {}
+//     LinkService(std::reference_wrapper<mindev::logicface::LogicFace> val) : logicFace(val) {}
     /**
      * 初始化linkService
      * @param mtu
@@ -109,6 +110,7 @@ private:
      * @param bufLen
      * @return
      */
+public:
     bool SendByteBuffer(const std::vector<char> &buf, int bufLen);
     std::optional<mindev::packet::LpPacket> GetLpPacketFromQuickCPacket(const std::vector<char> &encodedBytes);
     std::optional<mindev::packet::LpPacket> GetLpPacketFromCPacket(const mindev::packet::CPacket &cPacket);

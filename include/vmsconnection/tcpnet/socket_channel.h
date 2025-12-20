@@ -23,31 +23,28 @@ namespace mindev::vmsconnection::tcpnet{
                 close(m_fd);
             }
             template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
-            inline int Read(std::vector<T>& read_buffer){
-                static struct timeval timeout{.tv_sec=2,.tv_usec=0};
-                static int read_error_count = 3;
-                int read_count = 0;
+            inline int Read(std::vector<T>& read_buffer,int offset = 0){
+                assert(read_buffer.size()>offset);
                 ssize_t len = 0;
-                while(read_count<read_error_count){
-                    if (setsockopt(m_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-                        perror("setsockopt error");
-                        exit(1);
+                len = read(m_fd,read_buffer.data()+offset,read_buffer.size()-offset);
+                if(len == 0){
+                    OH_LOG_INFO(LOG_APP,"peer socket closed!");
+                }
+                else if (len==-1){
+                    if(errno == EAGAIN ){
+                        OH_LOG_INFO(LOG_APP,"socket read timeout!");
+                    }else{
+                        OH_LOG_INFO(LOG_APP,"socket read occur error!");
                     }
-                    len = read(m_fd,read_buffer.data(),read_buffer.size());
-                    read_count++;
-                    if (len==-1 && (errno == EAGAIN || errno == EWOULDBLOCK)){
-                        continue;
-                    }
-                    break;
                 }
                 OH_LOG_INFO(LOG_APP,"buffer len is %{public}d ,read len is %{public}d",int(read_buffer.size()),len);
                 return len;
             }
-            template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
-            inline int Read(std::vector<T>& read_buffer,int need_read_len){
-                assert(read_buffer.size()>=need_read_len);
-                return read(m_fd,read_buffer.data(),need_read_len);
-            }
+//             template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
+//             inline int Read(std::vector<T>& read_buffer,int need_read_len){
+//                 assert(read_buffer.size()>=need_read_len);
+//                 return read(m_fd,read_buffer.data(),need_read_len);
+//             }
             template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
             inline int Write(std::vector<T>& write_buffer){
                 auto len = write(m_fd,write_buffer.data(),write_buffer.size());
@@ -55,12 +52,19 @@ namespace mindev::vmsconnection::tcpnet{
                 return len;
             }
             template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
-            inline int Write(std::vector<T>& write_buffer,int write_len){
-                assert(write_len<=write_buffer.size());
-                return write(m_fd,write_buffer.data(),write_len);
+            inline int Write(std::vector<T>& write_buffer,int offset,int write_len){
+                assert(offset+write_len<=write_buffer.size());
+                auto len = write(m_fd,write_buffer.data()+offset,write_len);
+                OH_LOG_INFO(LOG_APP,"buffer len is %{public}d ,write len is %{public}d",int(write_buffer.size()-offset),len);
+                return len;
             }
             inline bool GetState(){return m_state;}
             inline int GetFd(){return this->m_fd;}
+            void Test(){
+                std::vector<char> vec(99,'0');
+                auto len = this->Write(vec);
+                return;
+            }
         private:
             NetAddress::ptr  m_romote_addr;
             int m_fd;

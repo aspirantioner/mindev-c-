@@ -6,7 +6,7 @@
 namespace mindev::logicface{
 class IRegisterPrefixHelper{
 public:
-    virtual bool RegisterPrefix(const mindev::component::Identifier& identifier,const mindev::logicface::LogicFace& face,const mindev::security::KeyChain& keyChain)=0;
+    virtual bool RegisterPrefix(const mindev::component::Identifier& identifier,std::shared_ptr<mindev::logicface::LogicFace> face,const mindev::security::KeyChain& keyChain)=0;
 };
 }
 #endif

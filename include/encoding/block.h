@@ -16,8 +16,35 @@ namespace mindev::encoding{
             ElementContainer elements;// TLV-sub-elements
             std::vector<char> raw; //TLV编码后的字节数组
         public:
+            static std::optional<Block> DebugCreateBlockByBuffer(const std::vector<char> &buffer, bool verifyLength){
+                auto tmp = VlInt(0);
+                auto tlvType = TLV::ReadType(buffer, tmp);
+                if(!tlvType.IsInitial()){
+                    return std::nullopt;
+                }
+                auto val = tlvType.GetSize();
+                tmp = VlInt(val);
+                auto tlvLength = TLV::ReadVarNumber(buffer, tmp);
+                if(!tlvLength.IsInitial()){
+                    return std::nullopt;
+                }
+                Block res;
+                res.tlvType = tlvType;
+                res.length = tlvLength;
+                res.raw = buffer;
+                res.value = std::vector<char>(buffer.begin()+tlvType.GetSize()+tlvLength.GetSize(),buffer.end()); 
+//                 if(!res.BuildBlockByTypeLengthBuffer(tlvType, tlvType+tlvLength, buffer, verifyLength)){
+//                     return std::nullopt;
+//                 }
+                return res;
+            }
             typedef std::shared_ptr<Block> ptr;
-            Block(){};
+            Block(){
+                this->value.clear();
+                this->tlvType = mindev::encoding::VlInt(mindev::encoding::TLV::TlvInvalid);
+                this->length = mindev::encoding::VlInt(0);
+                this->raw.clear();
+            };
             static std::optional<Block> CreateBlockByBuffer(std::vector<char>& buffer,bool verifyLength);
             static std::optional<Block> CreateBlockByTypeLengthBuffer(VlInt& tlvType,VlInt& tlvLength, std::vector<char>& buffer, bool verifyLength);
             inline VlInt& GetType(){return tlvType;} 
@@ -35,14 +62,13 @@ namespace mindev::encoding{
             inline bool HasValue()const{return this->value.size()!=0;};
             inline bool HasRaw()const{return this->raw.size()!=0;};
             inline bool HasSubElement()const{return this->elements.Length()!=0;};
-            inline bool IsValid(){
-                long long int val = 1;
-                return this->tlvType != val;
+            inline bool IsValid()const{
+                return this->tlvType != mindev::encoding::TLV::TlvInvalid;
             };
             inline void ClearElements(){this->elements.Clear();};
             bool ParseSubElements();
             int Encode(Encoder& encoder);
-            bool BuildBlockByTypeLengthBuffer(VlInt& tlvType,VlInt& tlvLength,std::vector<char>& buffer,bool verifyLength);
+            bool BuildBlockByTypeLengthBuffer(const VlInt& tlvType,const VlInt& tlvLength,const std::vector<char>& buffer,bool verifyLength);
     };
 }
 #endif

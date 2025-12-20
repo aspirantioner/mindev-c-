@@ -39,13 +39,13 @@ std::optional<ControlResponse> CommandExecutor::OnReceiveFirstMetaData(const min
             tempInterest.ttl.SetTtl(this->ttl);
             tempInterest.interestLifeTime.SetInterestLifeTime(this->interestLifeTime);
             // 将兴趣包发出
-            if (!this->logicFace.SendInterest(tempInterest)) {
+            if (!this->logicFace->SendInterest(tempInterest)) {
                 controlResponse.code = ControlResponse::ControlResponseCodeCommonError;
                 controlResponse.msg = "Send Interest failed!";
                 return controlResponse;
             }
             // 等待接收分片
-            std::optional<mindev::packet::MINPacket> newPacket = this->logicFace.ReceivePacket(this->interestLifeTime);
+            std::optional<mindev::packet::MINPacket> newPacket = this->logicFace->ReceivePacket(this->interestLifeTime);
             if (!newPacket.has_value()) {
                 controlResponse.code = ControlResponse::ControlResponseCodeCommonError;
                 controlResponse.msg = "Request timeout!";
@@ -116,28 +116,31 @@ std::optional<ControlResponse> CommandExecutor::Start() {
     //}
     ControlResponse controlResponse;
     // 打印输出
-    std::vector<char> raw1 = mindev::encoding::SelfEncodingBase().SelfWireEncode(commandInterest.value())->GetRaw();
-    std::string str1(raw1.begin(), raw1.end());
-    std::cout << "旧的输出【最最终形态】: " << str1 << std::endl;
-    mindev::encoding::Encoder encoder;
-    if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
-                              mindev::encoding::SizeT(0))) {
-        std::cout << "fucking test";
-    }
-    int bufLen = commandInterest->WireEncode(encoder);
-    std::vector<char> buf = encoder.GetBuffer();
-    std::string str2(buf.begin(), buf.end());
-    std::cout << "新的输出【最最终形态】: " << str2 << std::endl;
+//     std::vector<char> raw1 = mindev::encoding::SelfEncodingBase().SelfWireEncode(commandInterest.value())->GetRaw();
+//     std::string str1(raw1.begin(), raw1.end());
+//     std::cout << "旧的输出【最最终形态】: " << str1 << std::endl;
+//     mindev::encoding::Encoder encoder;
+//     if (!encoder.EncoderReset(mindev::encoding::SizeT(mindev::encoding::Encoder::MaxPacketSize),
+//                               mindev::encoding::SizeT(0))) {
+//         std::cout << "fucking test";
+//     }
+//     int bufLen = commandInterest->WireEncode(encoder);
+//     std::vector<char> buf = encoder.GetBuffer();
+//     std::string str2(buf.begin(), buf.end());
+//     std::cout << "新的输出【最最终形态】: " << str2 << std::endl;
     // 发送第一个命令兴趣包
-    if (!this->logicFace.SendInterest(commandInterest.value())) {
+    if (!this->logicFace->SendInterest(commandInterest.value())) {
         return std::nullopt;
     }
     // 等待兴趣包应答
     std::optional<mindev::packet::MINPacket> minPacket =
-        this->logicFace.ReceivePacket(commandInterest->interestLifeTime.GetInterestLifeTime());
+        this->logicFace->ReceivePacket(commandInterest->interestLifeTime.GetInterestLifeTime());
+    if(!minPacket.has_value()){
+        return std::nullopt;
+    }
     std::vector<char> raw2 = mindev::encoding::SelfEncodingBase().SelfWireEncode(minPacket.value())->GetRaw();
     std::string str3(raw2.begin(), raw2.end());
-    std::cout << "收到的注册应答包: " << str3 << std::endl;
+    std::cout << "收到的注册应答包: " << str3 << std::endl; 
     // 判断收到的什么包
     if (!minPacket.has_value()) {
         controlResponse.code = ControlResponse::ControlResponseCodeCommonError;

@@ -32,7 +32,7 @@ public:
     //命令兴趣包的生存周期
     long interestLifeTime;
     long ttl;
-    mindev::logicface::LogicFace logicFace;
+    mindev::logicface::LogicFace::ptr logicFace;
     mindev::security::KeyChain keyChain;
     bool autoShutdown;
     /**
@@ -40,7 +40,7 @@ public:
      * @param command
      * @param logicFace
      */
-    inline void Init(IControlCommand::ptr command,const mindev::logicface::LogicFace& logicFace){this->command=std::move(command);this->interestLifeTime=CommandExecutor::defaultInterestLifetime;this->ttl=CommandExecutor::defaultTTL;this->logicFace= logicFace;this->autoShutdown=false;};
+    inline void Init(IControlCommand::ptr command,mindev::logicface::LogicFace::ptr logicFace){this->command=std::move(command);this->interestLifeTime=CommandExecutor::defaultInterestLifetime;this->ttl=CommandExecutor::defaultTTL;this->logicFace= logicFace;this->autoShutdown=false;};
     /**
      * GetKeyChain 获取用于签名的秘钥链
      * @return
@@ -85,7 +85,7 @@ public:
      * Shutdown 命令请求结束之后，如果想要关闭使用的 LogicFace，需要调用本函数关闭LogicFace
      * @return
      */
-    inline bool Shutdown(){return this->logicFace.ShutDown();}
+    inline bool Shutdown(){return this->logicFace->ShutDown();}
     /**
      * newCommandInterest 根据请求命令构造对应的命令兴趣包
      * @return
