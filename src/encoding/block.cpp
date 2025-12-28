@@ -95,18 +95,18 @@ namespace mindev::encoding {
             std::vector<char> subBlockValue(len);
             std::copy(this->value.begin()+start,this->value.begin()+start+len,subBlockValue.begin());
             //Debug:
-            Block block;
-            block.tlvType = tlvType;
-            block.length = tlvLength;
-            block.value = subBlockValue;
-            block.raw = std::vector<char>(this->value.begin()+origin_start,this->value.begin()+start+len);
-            this->AddElement(block);
-//             auto block = CreateBlockByTypeLengthBuffer(tlvType, tlvLength,subBlockValue,true);
-//             if(!block.has_value()){
-//                 this->ClearElements();
-//                 return false;
-//             }
-//             this->AddElement(block.value());
+//             Block block;
+//             block.tlvType = tlvType;
+//             block.length = tlvLength;
+//             block.value = subBlockValue;
+//             block.raw = std::vector<char>(this->value.begin()+origin_start,this->value.begin()+start+len);
+//             this->AddElement(block);
+            auto block = CreateBlockByTypeLengthBuffer(tlvType, tlvLength,subBlockValue,true);
+            if(!block.has_value()){
+                this->ClearElements();
+                return false;
+            }
+            this->AddElement(block.value());
             start+=len;
         }
         return true;

@@ -207,7 +207,7 @@ bool Interest::DoExtraDataFromFields(MINPacket& minPacket){
     if(interestIdentifierWrapper==std::nullopt){
         return false;
     }
-    this->SetName(interestIdentifierWrapper.value().get().GetIdentifier());
+    this->SetName(interestIdentifierWrapper.value().GetIdentifier());
     return true;
     }
 

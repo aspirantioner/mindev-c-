@@ -8,7 +8,7 @@ namespace mindev::packet{
         if(!identifierWrapper.has_value()){
             return std::nullopt;
         }
-        return identifierWrapper.value().get().GetTlvType();
+        return identifierWrapper.value().GetTlvType();
     }
     int MINPacket::WireEncode(mindev::encoding::Encoder& encoder){
         if(!this->IsPacketValid()){

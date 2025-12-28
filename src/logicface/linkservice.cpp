@@ -165,7 +165,7 @@ bool LinkService::CalculateLpPacketHeadSize() {
 }
 std::optional<mindev::packet::MINPacket> LinkService::GetMINPacketFromLpPacket(const mindev::packet::LpPacket &lpPacket) {
     std::vector<char> payload =lpPacket.payload.GetValue();
-    auto block = mindev::encoding::Block::DebugCreateBlockByBuffer(payload, true);
+    auto block = mindev::encoding::Block::CreateBlockByBuffer(payload, true);
     if(!block.has_value()){
         return std::nullopt;
     }

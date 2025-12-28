@@ -11,16 +11,16 @@ private:
     std::vector<IdentifierWrapper> identifierWrappers;
 public:
     IdentifierContainer(){}
-    inline int Length(){return this->identifierWrappers.size();}
+    inline int Length()const{return this->identifierWrappers.size();}
     inline void Clear(){identifierWrappers.clear();}
     inline void AddElement(const IdentifierWrapper& elem){this->identifierWrappers.emplace_back(elem);}
-    inline std::optional<std::reference_wrapper<IdentifierWrapper>> GetElement(int index){
+    inline std::optional<IdentifierWrapper> GetElement(int index)const{
         if(index>=this->Length()){
             return std::nullopt;
         }
         return this->identifierWrappers[index];
     }
-    inline std::optional<std::reference_wrapper<IdentifierWrapper>> GetElementByType(const mindev::encoding::VlInt& vlnt){
+    inline std::optional<IdentifierWrapper> GetElementByType(const mindev::encoding::VlInt& vlnt)const{
         for(auto elem:this->identifierWrappers){
             if(elem.GetTlvType()==const_cast<mindev::encoding::VlInt&>(vlnt)){
                 return elem;
@@ -34,7 +34,7 @@ public:
         }
         this->identifierWrappers[index] = wrapper;
     }
-    inline std::vector<IdentifierWrapper>& GetIdentifierWrappers(){
+    inline const std::vector<IdentifierWrapper>& GetIdentifierWrappers()const{
         return this->identifierWrappers;
     }
     };

@@ -49,7 +49,7 @@ namespace mindev::logicface{
             return std::nullopt;
         }
         if(use_prefix){
-            std::string local_face_prefix = "/min/mir1/default/"+std::to_string(timeutils::GetCurrentTime());
+            std::string local_face_prefix = "/min/mir1/default/"+timeutils::GetCurrentTimeStr();
             face->SetKeyChain(keyChain);
             mindev::mgmt::RegisterPrefixHelper registerhelper;
             auto res = component::Identifier::BuildIdentifierByString(local_face_prefix);

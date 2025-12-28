@@ -14,10 +14,10 @@ public:
     inline void AddIdentifier(const IdentifierWrapper& wrapper){
         this->identifiers.AddElement(wrapper);
     }
-    inline std::optional<std::reference_wrapper<IdentifierWrapper>> GetIdentifierByType(const mindev::encoding::VlInt& tlvType){
+    inline std::optional<IdentifierWrapper> GetIdentifierByType(const mindev::encoding::VlInt& tlvType){
         return this->identifiers.GetElementByType(tlvType);
     }
-    inline std::optional<std::reference_wrapper<IdentifierWrapper>> GetIdentifier(int index){
+    inline std::optional<IdentifierWrapper> GetIdentifier(int index){
         return this->identifiers.GetElement(index);
     }
     inline void SetIdentifier(int index,const IdentifierWrapper& wrapper){

@@ -36,7 +36,7 @@ namespace mindev::component{
             return false;
         }
         auto val = block.GetSubElements().GetBlock(0);
-        if(val.has_value()){
+        if(!val.has_value()){
             return false;
         }
         return this->identifier.WireDecode(val.value());

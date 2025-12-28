@@ -5,15 +5,15 @@
 namespace mindev::logicface {
     bool StreamTransport::Send(mindev::packet::LpPacket& lpPacket){
         auto encodeBuf = this->EncodeLpPacketToByteArray(lpPacket);
-        auto tmp = this->ParseByteArrayToLpPacket(encodeBuf);
-        if(tmp.has_value()){
-            if(auto link = this->linkService.lock()){
-                auto min = link->GetMINPacketFromLpPacket(tmp.value());
-                if(min.has_value()){
-                    int a = 0;
-                }
-            }
-        }
+//         auto tmp = this->ParseByteArrayToLpPacket(encodeBuf);
+//         if(tmp.has_value()){
+//             if(auto link = this->linkService.lock()){
+//                 auto min = link->GetMINPacketFromLpPacket(tmp.value());
+//                 if(min.has_value()){
+//                     int a = 0;
+//                 }
+//             }
+//         }
         if(encodeBuf.empty()){
             return false;
         }

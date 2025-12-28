@@ -136,7 +136,7 @@ namespace mindev::packet{
             if(!this->congestionMark.WireDecode(*block)){
                 return false;
             }
-            }
+        }
         //ttl
         block=minPacket.mutableField.mutableDangerousField.GetFirstBlockByType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvTTL));
     if(!block){
@@ -166,6 +166,11 @@ namespace mindev::packet{
                         return false;
                     }
                     break;
+                case mindev::encoding::TLV::TlvNoCache:
+                    if(!this->noCache.WireDecode(elem)){
+                        return false;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -175,7 +180,7 @@ namespace mindev::packet{
         if(!identifierWrapper.has_value()){
             return false;
         }
-        this->name=identifierWrapper.value().get().GetIdentifier();
+        this->name=identifierWrapper.value().GetIdentifier();
         return true;
     }
     bool Data::ExtraDataFromFields(){

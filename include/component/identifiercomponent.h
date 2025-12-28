@@ -57,7 +57,7 @@ public:
             this->identifierBlock.SetType(mindev::encoding::VlInt(mindev::encoding::TLV::TlvIdentifierComponent));
             this->identifierBlock.SetLength(mindev::encoding::VlInt(value.size()+1));
             std::vector<char> tmp(value.size()+1);
-            tmp[0] = MarkerNonNegativeInteger;
+            tmp[0] = MarkerByteArray;
             std::copy(value.begin(),value.end(),tmp.begin()+1);
             this->identifierBlock.SetValue(tmp);
             this->marker = MarkerByteArray;

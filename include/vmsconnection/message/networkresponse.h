@@ -25,7 +25,10 @@ public:
     void from_json(const json& j, NetworkResponse& response){
         j.at("Code").get_to(response.code);
         j.at("Header").get_to(response.header);
-        j.at("Data").get_to(response.data);
+        if(!j["Data"].is_null()){
+            auto decode_str = mindev::Base64::Decode(j.at("Data"));
+            response.data = byteutils::StringToVector<uint8_t>(decode_str);
+        }
         j.at("ErrorMsg").get_to(response.errormsg);
     }
 }

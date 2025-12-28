@@ -98,8 +98,8 @@ bool CPacket::DoExtraDataFromFields(const MINPacket& minPacket) {
     if(!dstIdentifierWrapper.has_value()){
         return false;
     }
-    this->srcIdentifier=srcIdentifierWrapper.value().get().GetIdentifier();
-    this->dstIdentifier=dstIdentifierWrapper.value().get().GetIdentifier();
+    this->srcIdentifier=srcIdentifierWrapper.value().GetIdentifier();
+    this->dstIdentifier=dstIdentifierWrapper.value().GetIdentifier();
     return true;
 };
 bool CPacket::ExtraDataFromFields(){

@@ -26,19 +26,29 @@ namespace mindev::vmsconnection::tcpnet{
             inline int Read(std::vector<T>& read_buffer,int offset = 0){
                 assert(read_buffer.size()>offset);
                 ssize_t len = 0;
-                len = read(m_fd,read_buffer.data()+offset,read_buffer.size()-offset);
-                if(len == 0){
-                    OH_LOG_INFO(LOG_APP,"peer socket closed!");
-                }
-                else if (len==-1){
-                    if(errno == EAGAIN ){
-                        OH_LOG_INFO(LOG_APP,"socket read timeout!");
-                    }else{
-                        OH_LOG_INFO(LOG_APP,"socket read occur error!");
+                while(true){
+                    len = read(m_fd,read_buffer.data()+offset,read_buffer.size()-offset);
+                    if(len == 0){
+                        OH_LOG_INFO(LOG_APP,"peer socket closed!");
                     }
+                    else if (len==-1){
+                        if(errno == EAGAIN ){
+                            OH_LOG_INFO(LOG_APP,"socket read timeout!");
+                        }else if (errno == EINTR){
+                            OH_LOG_INFO(LOG_APP,"socket read interrupt,try again!");
+                            continue;
+                        }else{
+                            OH_LOG_ERROR(
+                                LOG_APP,
+                                "socket read error, errno=%{public}d (%{public}s)",
+                                errno,
+                                strerror(errno)
+                            );
+                        }
+                    }
+                    OH_LOG_INFO(LOG_APP,"buffer len is %{public}d ,read len is %{public}d",int(read_buffer.size()),len);
+                    return len;
                 }
-                OH_LOG_INFO(LOG_APP,"buffer len is %{public}d ,read len is %{public}d",int(read_buffer.size()),len);
-                return len;
             }
 //             template<typename T,typename = typename std::enable_if<std::is_integral<T>::value>::type>
 //             inline int Read(std::vector<T>& read_buffer,int need_read_len){
